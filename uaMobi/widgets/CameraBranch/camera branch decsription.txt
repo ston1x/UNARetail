@@ -1,0 +1,5 @@
+This branch is short and concentrated on letting user use camera as normal. 
+/CameraWidget/
+	This widget is based on Abstract Camera Widget and is implementing make-image button with normal behaviour.
+	This widget is using CameraSurface qml file for building camera surface - it is using ZXing filter without any decoders
+	and without borders. ZXing filter is required because normal Viewfinder does not work with Android.

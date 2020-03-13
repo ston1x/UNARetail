@@ -1,0 +1,36 @@
+	This application is based on widget tree which can be expanded in any branch. Main idea was:
+every widget must handle only one layer of it's childs, giving them full freedom while they are shown.
+
+root\
+	CoreWidget: This widget is root for 7 branches. It provides a frame with general utility buttons:
+		    settings and shutdown. It tries to capture key events and pass them to the currently 
+		    opened branch if this widget is in focus, allowing children to react.
+	SettingsForm: This widget is basic settings screen associated with coreWidget. It is modifying 
+		    GlobalAppSettings - a global structure which is used to provide any widget info about 
+		    important data: at least there are saved url's and paths.
+  \CameraBranch\
+	This branch responds for camera widget specialization which can operate with camera.Check parents
+	directory for AbstractCameraWidget which provides base for this branch's main widget.
+  \InventoryBranch\
+	This branch is based on BranchRootWidget and provides standard branch for operating with particular
+	database - Inventory. Check parents\BranchRootWidget for base of this wrapper.
+  \MainPage\
+	This branch is used as default in CoreWidget and allows to choose which branch must be opened
+  \MultibranchWidgets\
+	This folder holds all widgets related to widgets which are not branch-unique. These are Scaning
+	family, which is included in every branch based on BranchRoot etc. Many branches are using widgets
+	from this folder, but most of them are based on BranchRoot.
+  \parents\
+	This folder contains parents widgets for many other widgets. One of core parents, which is inherited by most
+	other widgets is inframedWidget - an abstract inheritor of QWidget which provides important interfaces 
+	for one-screen applications, such as back() method which hides current widget and opens parent one. Other are 
+	abstracted combo-widgets which can be inherited to provide more functions.
+  \SearchBranch\
+	This branch inherits AbstractScaningWidget to provide simple search interface
+  \SupplyBranch\
+	This branch is similar with Inventory - at least now
+  \SimpleBranch\
+	Is similar with Inventory
+  \utils\
+	This folder contains all classes which are used in widgets, but does not belong to any branch. There can be
+	different elements - buttons, little widgets, styles, core storage elements.

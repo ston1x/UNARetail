@@ -1,0 +1,5 @@
+This "branch" is default screen of CoreWidget. When no other widgets are displayed - this one is. it provides buttons placed on
+GridLayout and after picking branch it emits signal with index of required branch.
+/MainPageWidget/
+	This widget is normal iframedWidget child, which reimplements ExpectingControls to handle number keys press.It's contents
+	are 5 MegaIconButtons which are linked with corresponding branches. This widget is final and can not be inherited

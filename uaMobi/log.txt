@@ -1,0 +1,70 @@
+in uniform assoc
+in uniform assoc
+<<<<<<< HEAD
+execing query: insert into Scanned ( barcode , scanedtime , quantity , uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '03.01.2020 12.15.32' , 1488 , 1 , '03.01.2020 12.15.32' , '' , 0 ) 
+=======
+execing query: insert into Scanned ( barcode , scanedtime , quantity , uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '09.03.2020 10.55.47' , 1488 , 1 , '09.03.2020 10.55.47' , '' , 0 ) 
+>>>>>>> 563b176... Refactor starts
+in uniform assoc
+execing query: delete from Scanned  where barcode = 'testtesttestMUSTNOTBESHOWN'  
+in uniform assoc
+in uniform assoc
+<<<<<<< HEAD
+execing query: insert into Uploaded ( barcode , scanedtime , quantity , uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '03.01.2020 12.15.32' , 1488 , 1 , '03.01.2020 12.15.32' , '' , 0 ) 
+=======
+execing query: insert into Uploaded ( barcode , scanedtime , quantity , uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '09.03.2020 10.55.47' , 1488 , 1 , '09.03.2020 10.55.47' , '' , 0 ) 
+>>>>>>> 563b176... Refactor starts
+in uniform assoc
+execing query: delete from Uploaded  where barcode = 'testtesttestMUSTNOTBESHOWN'  
+in uniform assoc
+in uniform assoc
+<<<<<<< HEAD
+execing query: insert into Scanned ( barcode , scanedtime , quantity , uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '03.01.2020 12.15.32' , 1488 , 1 , '03.01.2020 12.15.32' , '' , 0 ) 
+=======
+execing query: insert into Scanned ( barcode , scanedtime , quantity , uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '09.03.2020 10.55.47' , 1488 , 1 , '09.03.2020 10.55.47' , '' , 0 ) 
+>>>>>>> 563b176... Refactor starts
+in uniform assoc
+execing query: delete from Scanned  where barcode = 'testtesttestMUSTNOTBESHOWN'  
+in uniform assoc
+in uniform assoc
+<<<<<<< HEAD
+execing query: insert into Uploaded ( barcode , scanedtime , quantity , uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '03.01.2020 12.15.32' , 1488 , 1 , '03.01.2020 12.15.32' , '' , 0 ) 
+=======
+execing query: insert into Uploaded ( barcode , scanedtime , quantity , uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '09.03.2020 10.55.47' , 1488 , 1 , '09.03.2020 10.55.47' , '' , 0 ) 
+>>>>>>> 563b176... Refactor starts
+in uniform assoc
+execing query: delete from Uploaded  where barcode = 'testtesttestMUSTNOTBESHOWN'  
+in uniform assoc
+in uniform assoc
+<<<<<<< HEAD
+execing query: insert into Scanned ( barcode , scanedtime , quantity , uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '03.01.2020 12.15.32' , 1488 , 1 , '03.01.2020 12.15.32' , '' , 0 ) 
+=======
+execing query: insert into Scanned ( barcode , scanedtime , quantity , uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '09.03.2020 10.55.47' , 1488 , 1 , '09.03.2020 10.55.47' , '' , 0 ) 
+>>>>>>> 563b176... Refactor starts
+in uniform assoc
+execing query: delete from Scanned  where barcode = 'testtesttestMUSTNOTBESHOWN'  
+in uniform assoc
+in uniform assoc
+<<<<<<< HEAD
+execing query: insert into Uploaded ( barcode , scanedtime , quantity , uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '03.01.2020 12.15.32' , 1488 , 1 , '03.01.2020 12.15.32' , '' , 0 ) 
+in uniform assoc
+execing query: delete from Uploaded  where barcode = 'testtesttestMUSTNOTBESHOWN'  
+execing query: insert into Scanned ( barcode , scanedtime , generalPrice , discountPrice, secondaryPrice, unnecessaryPrice, uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '03.01.2020 12.15.33' , 1488 , 1488 , 0 , 0 , 1 , '03.01.2020 12.15.33' , '' , 0 ) 
+execing query: delete from Scanned  where barcode = 'testtesttestMUSTNOTBESHOWN'  
+execing query: insert into Uploaded ( barcode , scanedtime , generalPrice , discountPrice, secondaryPrice, unnecessaryPrice, uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '03.01.2020 12.15.33' , 1488 , 1488 , 0 , 0 , 1 , '03.01.2020 12.15.33' , '' , 0 ) 
+execing query: delete from Uploaded  where barcode = 'testtesttestMUSTNOTBESHOWN'  
+execing query: create table DownloadedData(barcode TEXT,cod Numeric(10,0),name Caracter(100),count TEXT) 
+errors: table DownloadedData already exists Unable to execute statement 
+execing query: insert into tempScanning ( barcode , scanedtime , generalPrice , discountPrice, secondaryPrice, unnecessaryPrice, uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '03.01.2020 12.15.35' , 1488 , 1488 , 0 , 0 , 1 , '03.01.2020 12.15.35' , '' , 0 ) 
+execing query: delete from tempScanning  where barcode = 'testtesttestMUSTNOTBESHOWN'  
+=======
+execing query: insert into Uploaded ( barcode , scanedtime , quantity , uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '09.03.2020 10.55.47' , 1488 , 1 , '09.03.2020 10.55.47' , '' , 0 ) 
+in uniform assoc
+execing query: delete from Uploaded  where barcode = 'testtesttestMUSTNOTBESHOWN'  
+execing query: insert into Scanned ( barcode , scanedtime , generalPrice , discountPrice, secondaryPrice, unnecessaryPrice, uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '09.03.2020 10.55.47' , 1488 , 1488 , 0 , 0 , 1 , '09.03.2020 10.55.47' , '' , 0 ) 
+execing query: delete from Scanned  where barcode = 'testtesttestMUSTNOTBESHOWN'  
+execing query: insert into Uploaded ( barcode , scanedtime , generalPrice , discountPrice, secondaryPrice, unnecessaryPrice, uploaded , expDateTime , expComment, scanedSessions ) values ( 'testtesttestMUSTNOTBESHOWN' , '09.03.2020 10.55.47' , 1488 , 1488 , 0 , 0 , 1 , '09.03.2020 10.55.47' , '' , 0 ) 
+execing query: delete from Uploaded  where barcode = 'testtesttestMUSTNOTBESHOWN'  
+execing query: create table DownloadedData(barcode TEXT,cod Numeric(10,0),name Caracter(100),count TEXT) 
+errors: table DownloadedData already exists Unable to execute statement 
+>>>>>>> 563b176... Refactor starts

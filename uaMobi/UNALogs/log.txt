@@ -1,0 +1,3 @@
+***	method execing query: drop table shortbcscalled
+***	method execing query: create table shortbcs ( barcode TEXT,code number,info TEXT,count TEXT)called
+***	method execing query: insert into shortbcs (barcode , code , info , count) values ('1488322',32323, 'HH', '3232' )called

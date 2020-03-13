@@ -1,0 +1,4 @@
+This branch is based on BranchRoot widget and currently only overrides connections to database. look to parent BranchRoot widget 
+to see detalized description about any branch similar with basic.
+/Inventory Widget/
+	This widget specializes BranchRoot so it will be working with Inventory database.

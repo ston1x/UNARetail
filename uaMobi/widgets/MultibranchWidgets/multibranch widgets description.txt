@@ -1,0 +1,7 @@
+These widgets generally are used in BranchRootWidget but can be easily adapted for any other branch. 
+/BarcodeRedactingWidget/
+	This widget is concentrated on redacting barcodes. It must be initialized with barcode, then it can be used in any branch.
+	Previously it was used twice - in ScaningWidget and in ScanedStorageWidget, but now it is only used in Scaning.
+/innerSettingsForm/
+	This widget is providing BranchRootWidget settings screen. It's ambiguos name stays after an idea to make universal in-branch
+	settings form. It allows to change data representation and then 
