@@ -53,6 +53,49 @@ QString TemplatedTableHandler::select_by_primary_key(const QString pkeyvalue, co
 		+ QStringLiteral(" = ") + pkeyvalue;
 }
 
+QString TemplatedTableHandler::select_some_fields(const QList<int>& indexes, const QString another_name) const noexcept
+{
+	const QString& name = assertAnotherName(another_name);
+	if (indexes.isEmpty())
+	{
+		return select_all( name);
+	}
+	QList<int>::ConstIterator index = indexes.begin();
+	QString fields;
+	while (index != indexes.end())
+	{
+		if (*index >= 0 && *index < table_fields.count())
+		{
+			fields += table_fields.at(*index) + ",";
+		}
+		++index;
+	}
+	fields.chop(1);
+	return QStringLiteral("select ") + fields + QStringLiteral(" from ") + name;
+}
+
+QString TemplatedTableHandler::select_some_fields_filtered(const QString& filter, const QList<int>& indexes, const QString another_name) const noexcept
+{
+	const QString& name = assertAnotherName(another_name);
+	if (indexes.isEmpty())
+	{
+		return select_filtered(filter, name);
+	}
+	QList<int>::ConstIterator index = indexes.begin();
+	QString fields;
+	while (index != indexes.end())
+	{
+		if (*index >= 0 && *index < table_fields.count())
+		{
+			fields += table_fields.at(*index) + " ";
+		}
+		++index;
+	}
+	fields.chop(1);
+	return QStringLiteral("select ") + fields + QStringLiteral(" from ") + name + QStringLiteral(" where ")
+		+ filter;
+}
+
 QString TemplatedTableHandler::update(const QString& values, const QString another_name) const noexcept
 {
 	const QString& name = assertAnotherName(another_name);
@@ -138,6 +181,14 @@ QString TemplatedTableHandler::sum(unsigned int index, const QString& newName) c
 	if (index >= table_fields.count())
 		return "SELECT sum(" + table_fields.at(0) + ") from " + name;
 	return "SELECT sum(" + table_fields.at(index) + ") from " + name;
+}
+
+QString TemplatedTableHandler::sumFieldFiltered(unsigned int index, const QString& value, const QString& newName) const noexcept
+{
+	const QString& name = assertAnotherName(newName);
+	if (index >= table_fields.count())
+		return "SELECT sum(" + table_fields.at(0) + ") from " + name + " where " + table_fields.at(0) + " = " + value;
+	return "SELECT sum(" + table_fields.at(index) + ") from " + name + " where " + table_fields.at(0) + " = " + value;
 }
 
 QString TemplatedTableHandler::countUnique(const QString field, const QString& newName) const noexcept

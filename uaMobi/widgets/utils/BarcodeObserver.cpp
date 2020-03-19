@@ -55,8 +55,9 @@ bool BarcodeObserver::eventFilter(QObject* object, QEvent* event)
 				emit prefixCaught();
 				return true;
 			}
-			else if (temp->key() == scanButton[0])
+			else if (scanButton.matches( temp->key()))
 			{
+				auto a = scanButton.toString();
 				emit scanButtonPress();
 			}
 			else
@@ -74,6 +75,16 @@ bool BarcodeObserver::eventFilter(QObject* object, QEvent* event)
 			event->accept();
 			return true;
 		}
+		else
+		{
+			QKeyEvent* temp = static_cast<QKeyEvent*>(event);
+			if (temp->key() == Qt::Key_Escape || temp->key() == Qt::Key_Back)
+			{
+				emit backButtonPress();
+				event->accept();
+				return true;
+			}
+		}
 	}
 	return QObject::eventFilter(object, event);
 }
@@ -85,11 +96,11 @@ BarcodeObserver::BarcodeObserver(QChar pref, QChar suff, QChar scanb ,QObject* p
 {
 }
 
-void BarcodeObserver::resetCapture(QChar pref, QChar suff, QChar scanb)
+void BarcodeObserver::resetCapture(QChar pref, QChar suff, int scanb)
 {
 	prefix = _initiateSequence(pref);
 	suffix = _initiateSequence(suff);
-	scanButton = _initiateSequence(scanb);
+	scanButton = QKeySequence(scanb);
 	buffer.clear();
 	prefixFound = false;
 }

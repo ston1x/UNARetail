@@ -1,6 +1,7 @@
 #include "GlobalAppSettings.h"
 #include <QtCore/qsettings.h>
 #include <QtWidgets/QApplication>
+#include <QVector>
 #ifdef DEBUG
 #include "debugtrace.h"
 #endif
@@ -35,8 +36,31 @@ GlobalAppSettings::GlobalAppSettings()
 	sendingFormat = settings.value("sendingFormat", 0).toInt();
 	scanPrefix = settings.value("scanPrefix", QVariant(int('$'))).toInt();
 	scanSuffix = settings.value("scanSuffix", QVariant(int('\n'))).toInt();
-	navigationElements = settings.value("navigation", QVariant(true)).toInt();
+	navigationElements = settings.value("navigation", QVariant(true)).toBool();
 	scanButtonCode = settings.value("scanButtonCode", QVariant(int('`'))).toInt();
+	localDatabase = settings.value("localDatabase", QVariant()).toString();
+	fontMaxHeight = settings.value("fontMaxHeight", QVariant(30)).toInt();
+	fontMinHeight = settings.value("fontMinHeight", QVariant(10)).toInt();
+	fontPercent = settings.value("fontPercent", QVariant(0.03)).toDouble();
+	QStringList temp = settings.value("serializationOrder", QStringList()).toStringList();
+	QList<int> orderForOneMode;
+	serializationOrder.reserve(temp.count());
+	for (int i = 0; i < temp.count(); ++i)
+	{
+		QStringList splitted(temp[i].split("|", QString::SplitBehavior::SkipEmptyParts));
+		for (int j = 0; j < splitted.count(); ++j)
+		{
+			orderForOneMode << splitted[j].toInt();
+		}
+		serializationOrder.push_back(orderForOneMode);
+	}
+	if (serializationOrder.isEmpty())
+	{
+		serializationOrder.push_back(QList<int>());
+		serializationOrder.push_back(QList<int>());
+		serializationOrder.push_back(QList<int>());
+		serializationOrder.push_back(QList<int>());
+	}
 	SetTranslator();
 #ifdef DEBUG
 	detrace_METHDATAS("initializeGlobalAppSettings", "localfile, httpin, httpout", << localfile << httpIn.toString() << httpOut.toString());
@@ -47,15 +71,15 @@ void GlobalAppSettings::SetTranslator()
 {
 	if (language == "Russian")
 	{
-		qt_translator.load(":/translations/uamobi_ru.qm", ".");
+		qt_translator.load(":/translations/unaretail_ru.qm", ".");
 	}
 	else if (language == "Romanian")
 	{
-		qt_translator.load(":/translations/uamobi_ro.qm", ".");
+		qt_translator.load(":/translations/unaretail_ro.qm", ".");
 	}
 	else
 	{
-		qt_translator.load(":/translations/uamobi_en.qm", ".");
+		qt_translator.load(":/translations/unaretail_en.qm", ".");
 	}
 	qApp->installTranslator(&qt_translator);
 }
@@ -82,6 +106,12 @@ void GlobalAppSettings::Save()
 	settings.setValue("scanSuffix", scanSuffix);
 	settings.setValue("scanButtonCode", scanButtonCode);
 	settings.setValue("navigation", navigationElements);
+	settings.setValue("localDatabase", localDatabase);
+	auto a = serializeLists<int>(serializationOrder);
+	settings.setValue("serializationOrder", serializeLists<int>(serializationOrder));
+	settings.setValue("fontMaxHeight", fontMaxHeight);
+	settings.setValue("fontMinHeight", fontMinHeight);
+	settings.setValue("fontPercent", fontPercent);
 #ifdef DEBUG
 	detrace_METHDATAS("dumpGlobalAppSettings", "localfile, httpIn, httpOut", << localfile << httpIn.toString() << httpOut.toString());
 #endif

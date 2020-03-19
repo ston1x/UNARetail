@@ -68,6 +68,11 @@ void ShortBarcodeEntity::_invalidate()
 	barcode.clear();
 }
 
+const QStringList& ShortBarcodeEntity::_getFields() const
+{
+	return tableFields;
+}
+
 QString ShortBarcodeEntity::_toSql() const
 {
 	return "( '" + barcode + "'," + QString::number(code) + ",'" + info + "','"

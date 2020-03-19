@@ -3,7 +3,7 @@
 #include <qsqldatabase.h>
 #include <QInputDialog>
 
-static QStringList formats{ {"xml" , "json" ,  "csv" } };
+static QStringList formats{ {"xml" , "json" ,  "csv" , "txt"} };
 
 QString inputDialogFormats(QString lang)
 {
@@ -32,6 +32,8 @@ QString DataFormater::getFormatedSql(QSqlQuery query, QString dbname, QString la
 		return getFormatedSqlAsJson(query, dbname);
 	case 2:
 		return  getFormatedSqlAsCsv(query, dbname);
+	case 3:
+		return  getFormatedSqlAsTxt(query, dbname);
 	default:
 		QString format{ getFormat(lang) };
 		if (format == "json")
@@ -47,6 +49,10 @@ QString DataFormater::getFormatedSql(QSqlQuery query, QString dbname, QString la
 		if (format == "csv")
 		{
 			return  getFormatedSqlAsCsv(query, dbname);
+		}
+		if (format == "txt")
+		{
+			return getFormatedSqlAsTxt(query, dbname);
 		}
 		return "";
 	}

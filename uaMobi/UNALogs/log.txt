@@ -1,3 +1,13 @@
+***	method execing query: PRAGMA TABLE_INFO(invbarcodesscan)called
+***	method execing query: PRAGMA TABLE_INFO(invbarcodesupld)called
+***	method execing query: PRAGMA TABLE_INFO(simbarcodesscan)called
+***	method execing query: PRAGMA TABLE_INFO(simbarcodesupld)called
+***	method execing query: PRAGMA TABLE_INFO(supbarcodesscan)called
+***	method execing query: PRAGMA TABLE_INFO(supbarcodesupld)called
+***	method execing query: PRAGMA TABLE_INFO(pripricedbcsscan)called
+***	method execing query: PRAGMA TABLE_INFO(pripricedbcsupld)called
 ***	method execing query: drop table shortbcscalled
 ***	method execing query: create table shortbcs ( barcode TEXT,code number,info TEXT,count TEXT)called
 ***	method execing query: insert into shortbcs (barcode , code , info , count) values ('1488322',32323, 'HH', '3232' )called
+***	method execing query: select barcode , code , info , count from shortbcs where barcode = '1488322'called
+***	method execing query: SELECT sum(quantity) from invbarcodesscan where barcode = 1488322called

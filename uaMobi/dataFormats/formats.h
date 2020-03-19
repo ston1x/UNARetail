@@ -13,3 +13,4 @@
 QString getFormatedSqlAsXml(QSqlQuery query, QString dbname);
 QString getFormatedSqlAsJson(QSqlQuery query, QString dbname);
 QString getFormatedSqlAsCsv(QSqlQuery query, QString dbname);
+QString getFormatedSqlAsTxt(QSqlQuery query, QString dbname);

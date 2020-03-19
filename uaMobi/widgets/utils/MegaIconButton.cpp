@@ -15,7 +15,7 @@ void MegaIconButton::paintEvent(QPaintEvent*)
 	opt.text = "";
 	spainter.drawControl(QStyle::CE_PushButton, opt);
 	spainter.drawItemPixmap(this->rect(), Qt::AlignCenter, this->ico.pixmap(this->rect().height() * imageCoefficient));
-	spainter.drawItemText(this->rect(), Qt::AlignBottom | Qt::AlignCenter, QPalette(), true, text(), QPalette::NoRole);
+	spainter.drawItemText(this->rect(), Qt::AlignBottom | Qt::AlignHCenter | Qt::TextWrapAnywhere, QPalette(), true, text(), QPalette::NoRole);
 }
 //	Changed default imgCoef 0.7 > 0.6 for better view
 MegaIconButton::MegaIconButton(QWidget* parent)

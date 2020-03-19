@@ -1,7 +1,8 @@
 #include "PricedBarcodeEntity.h"
 #include <QtSql/qsqlquery.h>
 #include <QVariant>
-
+#include "widgets/utils/ElementsStyles.h"
+#include <cmath>
 static QString tableDefinition(QStringLiteral("( barcode TEXT,"
 		"scanedtime datetime,"
 		"generalPrice number,"
@@ -10,8 +11,7 @@ static QString tableDefinition(QStringLiteral("( barcode TEXT,"
 		"unnecessaryPrice number,"
 		"uploaded number,"
 		"expDateTime datetime,"
-		"expComment TEXT,"
-		"scanedSessions number"
+		"expComment TEXT"
 	")"));
 static QStringList tableFields
 {
@@ -23,8 +23,7 @@ static QStringList tableFields
 		QStringLiteral("unnecessaryPrice"),
 		QStringLiteral("uploaded"),
 		QStringLiteral("expDateTime"),
-		QStringLiteral("expComment"),
-		QStringLiteral("scanedSessions")
+		QStringLiteral("expComment")
 };
 
 
@@ -36,21 +35,9 @@ static TemplatedTableHandler* barcodeTableHandler(
 	)
 );
 
-QString normalizePrice(int num)
+QString normalizePrice(double num)
 {
-	QString asnum = QString::number(num);
-	if (asnum.isEmpty())
-	{
-		return asnum;
-	}
-	if (num > 100)
-	{
-		return asnum.chopped(2) + "," + asnum.right(2);
-	}
-	else
-	{
-		return "0," + asnum.rightJustified(2, '0');
-	}
+	return QString::number(num, 'g',4);
 }
 
 QString PricedBarcodeEntity::_toSql() const
@@ -61,8 +48,7 @@ QString PricedBarcodeEntity::_toSql() const
 		QString::number(secondaryPrice) + " , " +
 		QString::number(unnecessaryPrice) + " , 1 , '" 
 		+ expDate.toString(datetimeDBEncoding) + 
-		"' , '" + comment + "' , " +
-		QString::number(scanningSessions) + ")";
+		"' , '" + comment + "')";
 }
 
 const TemplatedTableHandler* PricedBarcodeEntity::_assocTable() const
@@ -103,7 +89,7 @@ QString PricedBarcodeEntity::_normalizedCsvView() const
 
 bool PricedBarcodeEntity::_isValid() const
 {
-	return generalPrice > 0 || discountPrice > 0;
+	return !barcode.isEmpty() &&(generalPrice > 0 || discountPrice > 0);
 }
 
 bool PricedBarcodeEntity::_fromSql(QSqlQuery* q)
@@ -112,13 +98,12 @@ bool PricedBarcodeEntity::_fromSql(QSqlQuery* q)
 		return false;
 	barcode = q->value(0).toString();
 	addDate = QDateTime::fromString(q->value(1).toString(), datetimeDBEncoding);
-	generalPrice = q->value(2).toInt();
-	discountPrice = q->value(3).toInt();
-	secondaryPrice = q->value(4).toInt();
-	unnecessaryPrice = q->value(5).toInt();
+	generalPrice = q->value(2).toDouble();
+	discountPrice = q->value(3).toDouble();
+	secondaryPrice = q->value(4).toDouble();
+	unnecessaryPrice = q->value(5).toDouble();
 	expDate = QDateTime::fromString(q->value(6).toString(), datetimeDBEncoding);
 	comment = q->value(7).toString();
-	scanningSessions = q->value(8).toInt();
 	return true;
 }
 
@@ -127,10 +112,10 @@ AbsEntity* PricedBarcodeEntity::_clone() const
 	return new PricedBarcodeEntity(*this);
 }
 
-PricedBarcodeEntity::PricedBarcodeEntity(QString Barcode, QDateTime adddt, int scsess,
-	QDateTime expdt, QString comm, int gP, int dP, int sP, int unP)
+PricedBarcodeEntity::PricedBarcodeEntity(QString Barcode, QDateTime adddt, 
+	QDateTime expdt, QString comm, double gP, double dP, double sP, double unP)
 	:AbsEntity(int(barcodeUtil::barcodetypes::pricedBc)),  barcode(Barcode),
-	addDate(adddt), scanningSessions(scsess), expDate(expdt), comment(comm), 
+	addDate(adddt), expDate(expdt), comment(comm), 
 	generalPrice(gP), discountPrice(dP), secondaryPrice(sP), unnecessaryPrice(unP)
 {
 }
@@ -167,5 +152,12 @@ void PricedBarcodeEntity::_invalidate()
 
 int PricedBarcodeEntity::_getHeight() const
 {
-	return 2 + comment.count("\n");
+	return (std::ceil(double(barcode.count() + comment.count()
+		+ datetimeDBEncoding.count()
+		) / double(AppFonts->howMuchCharacterFitsIntoScreen())) + comment.count("\n") + 1);
+}
+
+const QStringList& PricedBarcodeEntity::_getFields() const
+{
+	return tableFields;
 }

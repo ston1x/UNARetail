@@ -47,6 +47,10 @@ public:
 	// select using primary key. keeps column order
 	QString select_by_primary_key(const QString pkeyvalue, const QString another_name = QString::null) const noexcept;
 	// updates table
+	QString select_some_fields(const QList<int>& indexes, const QString another_name = QString::null) const noexcept;
+
+	QString select_some_fields_filtered(const QString& filter, const QList<int>& indexes, const QString another_name = QString::null) const noexcept;
+
 	QString update(const QString& values, const QString another_name = QString::null) const noexcept;
 	// replaces values using REPLACE. It guaranties that after query there will be only one value
 	QString replace(const QString& values, const QString& another_name = QString::null) const noexcept;
@@ -71,5 +75,6 @@ public:
 
 	QString sum(const QString field, const QString& newName = QString::null) const noexcept;
 	QString sum(unsigned int index, const QString& newName = QString::null) const noexcept;
+	QString sumFieldFiltered(unsigned int index, const QString& value, const QString& newName = QString::null) const noexcept;
 	QString countUnique(QString field, const QString & newName = QString::null) const noexcept;
 };

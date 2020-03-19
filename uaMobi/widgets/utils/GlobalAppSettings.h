@@ -3,8 +3,7 @@
 #include <QtCore/qurl.h>
 #include "dataproviders/sqldataprovider.h"
 #include <QtCore/QTranslator>
-
-
+#include <QtCore/QTextStream>
 /*
 		This class is responsible for global settings.
 */
@@ -23,7 +22,7 @@ public:
 	QString localfile;		//	file for tolocalmemory
 	QUrl httpOut;				//	address for tohttp upload
 	QUrl httpIn;			//	address for tohttp download
-
+	QString localDatabase;
 	bool additionalControlElements;	//	controls panel with camera\ keyboard shortcuts
 	bool navigationElements;
 
@@ -35,12 +34,35 @@ public:
 	int scanPrefix;
 	int scanSuffix;
 	int scanButtonCode;
-
+	QList<QList<int>> serializationOrder;
 	QString language;					//	language of the application
 	QTranslator qt_translator;			//	global translator is stored here
+	int	fontMinHeight;
+	int fontMaxHeight;
+	double fontPercent;
 
 	void SetTranslator();				//	Sets translator. Can be used any time
 	void Save();						//	Forse save
 	~GlobalAppSettings();				//	Dumping destructor. Saves state before exit
 	static GlobalAppSettings* instanse();
 };
+template <class LItem>
+QStringList serializeLists(const QList < QList< LItem> > & list)
+{
+	QStringList temp;
+	temp.reserve(list.count());
+	for (int i = 0; i < list.count(); ++i)
+	{
+		QString out;
+		QTextStream stream(&out);
+		out.clear();
+		for (int j = 0; j < list[i].count(); ++j)
+		{
+			stream << list[i][j] << "|";
+		}
+		stream.flush();
+	
+		temp.push_back(out);
+	}
+	return temp;
+}

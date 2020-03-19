@@ -26,7 +26,8 @@ ScaningSettings::ScaningSettings(QWidget* parent)
 	suffixSymbol(new QLabel(this)),
 	suffixCapturer(new QSpinBox(this)),
 	scanButtonCapturer(new Capturer(this)),
-	additionInputElements(new MegaIconButton(this))
+	additionInputElements(new MegaIconButton(this)),
+	navigationElements(new MegaIconButton(this))
 {
 	mainLayout->addRow(tr("Prefix symbol"), prefixSymbol);
 	mainLayout->addRow(tr("Enter prefix code"), prefixCapturer);
@@ -34,6 +35,7 @@ ScaningSettings::ScaningSettings(QWidget* parent)
 	mainLayout->addRow(tr("Enter suffix code"), suffixCapturer);
 	mainLayout->addRow(tr("Scan key setter"), scanButtonCapturer);
 	mainLayout->addRow(tr("More input"), additionInputElements);
+	mainLayout->addRow(tr("Navigation elements"), navigationElements);
 	mainLayout->setContentsMargins(0, 0, 0, 0);
 	mainLayout->setSpacing(0);
 
@@ -48,21 +50,31 @@ ScaningSettings::ScaningSettings(QWidget* parent)
 	additionInputElements->setStyleSheet(CHECKED_BUTTONS_STYLESHEET);
 	additionInputElements->setIcon(QIcon(":/res/toinput.png"));
 
+	navigationElements->setCheckable(true);
+	navigationElements->setChecked(AppSettings->navigationElements);
+	navigationElements->setStyleSheet(CHECKED_BUTTONS_STYLESHEET);
+	navigationElements->setIcon(QIcon(":/res/forward.png"));
+
 	QObject::connect(suffixCapturer, QOverload<int>::of(&QSpinBox::valueChanged),
 		this, &ScaningSettings::updateSymbols);
 	QObject::connect(prefixCapturer, QOverload<int>::of(&QSpinBox::valueChanged),
 		this, &ScaningSettings::updateSymbols);
 	QObject::connect(scanButtonCapturer, &Capturer::keyCaptured, this, &ScaningSettings::scanKeyPressed);
-	
 }
 
 void ScaningSettings::extractAndSave()
 {
+	AppSettings->additionalControlElements = additionInputElements->isChecked();
+	AppSettings->navigationElements = navigationElements->isChecked();
+	AppSettings->scanPrefix = prefixCapturer->value();
+	AppSettings->scanSuffix = suffixCapturer->value();
+	BarcodeObs->resetCapture(AppSettings->scanPrefix, AppSettings->scanSuffix, AppSettings->scanButtonCode);
 }
 
 void ScaningSettings::scanKeyPressed(int keycode)
 {
 	AppSettings->scanButtonCode = keycode;
+	BarcodeObs->resetCapture(AppSettings->scanPrefix, AppSettings->scanSuffix, AppSettings->scanButtonCode);
 }
 
 void ScaningSettings::updateSymbols(int)

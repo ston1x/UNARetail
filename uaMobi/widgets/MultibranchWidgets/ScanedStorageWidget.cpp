@@ -51,7 +51,15 @@ ScanedStorageWidget::ScanedStorageWidget(Modes mode, QWidget* parent)
 	asyncloader->moveToThread(dataloadThread);
 	refresh();
 
-	QObject::connect(backButton, &QPushButton::clicked, this, &ScanedStorageWidget::backRequired);
+    QObject::connect(backButton, &QPushButton::clicked, this, &ScanedStorageWidget::backRequired);
+}
+
+ScanedStorageWidget::~ScanedStorageWidget()
+{
+	if (!dataloadThread->isFinished())
+		dataloadThread->exit(0);
+	asyncloader->moveToThread(thread());
+    asyncloader->deleteLater();
 }
 
 void ScanedStorageWidget::refresh()
@@ -92,7 +100,7 @@ bool ScanedStorageWidget::back()
 void ScanedStorageWidget::dataLoaded(EntityList elist)
 {
 	model->insertData(elist);
-	dataloadThread->terminate();
+	dataloadThread->exit();
 }
 
 void ScanedStorageWidget::drop()

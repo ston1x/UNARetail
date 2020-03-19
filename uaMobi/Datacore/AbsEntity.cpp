@@ -7,7 +7,7 @@ bool AbsEntity::deepCompare(AbsEntity* bc) const
 
 int AbsEntity::_getHeight() const
 {
-	return _getName().count("\n");
+	return _getName().count("\n") + 1;
 }
 
 AbsEntity::AbsEntity(int type)
@@ -92,12 +92,17 @@ int AbsEntity::getHeight() const
 	return _getHeight();
 }
 
+const QStringList& AbsEntity::getFields() const
+{
+	return _getFields();
+}
 
-static const QString datetimeDBEncoding(QStringLiteral("dd.MM.yyyy hh.mm.ss"));
-static const QString dateDBEncoding(QStringLiteral("dd.MM.yyyy"));
+
+const QString datetimeDBEncoding = "dd.MM.yyyy hh.mm.ss";
+const QString dateDBEncoding(QStringLiteral("dd.MM.yyyy"));
 namespace barcodeUtil {
-	static const int TOTAL_CSV_LEN = 12;
-	static const QStringList CSV_FIELD_NAMES
+    const int TOTAL_CSV_LEN = 12;
+    const QStringList CSV_FIELD_NAMES
 	{
 		QStringLiteral("OPERATION"),
 		QStringLiteral("MODE"),
@@ -112,13 +117,13 @@ namespace barcodeUtil {
 		QStringLiteral("RESERVED1"),
 		QStringLiteral("RESERVED2")
 	};
-	static const QString CSV_STRING_TEMPLATE = 
+    const QString CSV_STRING_TEMPLATE =
 		QStringLiteral("%0;%1;\"%2\";%3;%4;%5;\"%6\";%7;%8;%9;%10;%11\r\n");
-	static const QString CSV_BARCODE_STR_TEMPLATE = 
+    const QString CSV_BARCODE_STR_TEMPLATE =
 		QStringLiteral("\"%0\";\"%1\";\"%2\";\"%3\";\"%4\";%5;%6;%7;%8;%9");
-	static const QString CSV_HEADER_STRING = 
+    const QString CSV_HEADER_STRING =
 		QStringLiteral("OPERATION;MODE;BARCODE;ADDDATE;QUANTITY|PRICE;"
 		"EXPDATE;COMMENT;BARCODESP1;BARCODESP2;BARCODESP3;RESERVED1;RESERVED2\r\n");
-	static const QString CSV_BARCODE_HEADER = QStringLiteral("%0;%1;%2\r\n");
-	static const QString CSV_NONBARCODE_OP_TEMPLATE = QStringLiteral("%0;%1;;;;;;;;;%2;%3\r\n");
+    const QString CSV_BARCODE_HEADER = QStringLiteral("%0;%1;%2\r\n");
+    const QString CSV_NONBARCODE_OP_TEMPLATE = QStringLiteral("%0;%1;;;;;;;;;%2;%3\r\n");
 }

@@ -20,6 +20,7 @@ protected:
 	MegaIconButton* unsentButton;
 	MegaIconButton* sentButton;
 	MegaIconButton* allButton;
+	MegaIconButton* settingsButton;
 	QLabel* sentQuantityInfo;
 	QLabel* unsentQuantityInfo;
 	QLabel* totalQantityInfo;
@@ -43,6 +44,7 @@ protected slots:
 	void allChosen();
 	void hideCurrent();
 	void sendingSuccess();
+	void showSettings();
 signals:
 	void sendingSuccesfull();
 };

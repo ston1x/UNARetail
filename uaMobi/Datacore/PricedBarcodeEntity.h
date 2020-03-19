@@ -19,22 +19,21 @@ protected:
 	virtual bool deepCompare(AbsEntity*) const override;
 	virtual void _invalidate() override;
 	virtual int _getHeight() const override;
+	virtual const QStringList& _getFields() const override;
 public:
 	QString barcode;			//	String representation of barcode. Is used to distinct one barcode from another.
 	QDateTime addDate;		//	datetime when barcode was scanned. If it was scanned multiple times - only first stays
-	int scanningSessions;				//	int value - quantity of scans
 	QDateTime expDate;		//	datetime of expiration. Is needed only for sending - no modifications after user input
 	QString comment;		//	comment to barcode
-	int generalPrice;
-	int discountPrice;
-	int secondaryPrice;
-	int unnecessaryPrice;
+	double generalPrice;
+	double discountPrice;
+	double secondaryPrice;
+	double unnecessaryPrice;
 
 	explicit PricedBarcodeEntity(QString barcode = QString(),
 		QDateTime adddt = QDateTime::currentDateTime(),
-		int scsess = 0,
 		QDateTime expdt = QDateTime::currentDateTime(),
-		QString comm = "", int gP = 0, int dP = 0, int sP = 0, int unP = 0);
+		QString comm = "", double gP = 0, double dP = 0, double sP = 0, double unP = 0);
 };
 
 typedef std::shared_ptr<PricedBarcodeEntity> PricedBarcode;

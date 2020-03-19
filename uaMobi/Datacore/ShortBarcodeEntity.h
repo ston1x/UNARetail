@@ -19,6 +19,7 @@ protected:
 	virtual int _getEnumerable(int role) const override;
 	virtual bool deepCompare(AbsEntity*) const override;
 	virtual void _invalidate() override;
+	virtual const QStringList& _getFields() const override;
 public:
 	QString barcode;			//	String representation of barcode. Is used to distinct one barcode from another.
 	int code;		

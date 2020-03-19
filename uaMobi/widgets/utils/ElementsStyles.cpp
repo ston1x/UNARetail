@@ -1,4 +1,5 @@
 #include "ElementsStyles.h"
+#include "GlobalAppSettings.h"
 
 /*
 	This file contains stylesheet definitions
@@ -182,10 +183,23 @@ void FontAdapter::reset(int mh, int Mh, double mfp)
 	maxheight = Mh;
 	minimumFontPercent = mfp;
 	*_generalFont = QFont(makeFont(1.0));
+	_setCharPerWidth();
 }
 int FontAdapter::howMuchCharacterFitsIntoScreen()
 {
 	return averageCharPerWidth;
+}
+int FontAdapter::getMinFontHeight()
+{
+	return minheight;
+}
+int FontAdapter::getMaxFontHeight()
+{
+	return maxheight;
+}
+double FontAdapter::getFontPercent()
+{
+	return minimumFontPercent;
 }
 FontAdapter* FontAdapter::_instanse = Q_NULLPTR;
 QFont* FontAdapter::_generalFont = Q_NULLPTR;
@@ -193,8 +207,8 @@ FontAdapter* FontAdapter::instanse()
 {
 	if (_instanse == Q_NULLPTR)
 	{
-		_instanse = new FontAdapter(/*AppSettings->fontMinHeight, AppSettings->fontMaxHeight,
-			AppSettings->fontPercent*/ 10, 30, 0.05);
+		_instanse = new FontAdapter(AppSettings->fontMinHeight, AppSettings->fontMaxHeight,
+			AppSettings->fontPercent);
 	}
 	return _instanse;
 }
@@ -207,6 +221,18 @@ const QFont* FontAdapter::general()
 		FontAdapter::instanse()->_setCharPerWidth();
 	}
 	return _generalFont;
+}
+
+const QFont FontAdapter::makeIndependentFont(int minheight, int maxheight, double minimumFontPercent)
+{
+	double currentHeight = qApp->screens().first()->availableGeometry().height();
+	currentHeight *= minimumFontPercent;
+	if (currentHeight < minheight)
+		currentHeight = minheight;
+	else
+		if (currentHeight > maxheight)
+			currentHeight = maxheight;
+	return QFont("Times new Roman", int(currentHeight));
 }
 
 QFont FontAdapter::makeFont(double extrapercents)

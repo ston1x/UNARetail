@@ -10,8 +10,8 @@ void ZebraItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
 {
 	if (!index.isValid())
 		return;
+	painter->save();
 	QRect rct = option.rect;
-	
 	Entity ent = index.data(DataEntityListModel::DirectAccessRole).value<Entity>();
 	if (ent == Q_NULLPTR)
 		return;
@@ -25,6 +25,13 @@ void ZebraItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
 	}
 	painter->drawRect(rct);
 	painter->drawText(rct, Qt::AlignCenter | Qt::TextWordWrap, ent->maximizedView(separator, datetimeDBEncoding));
+	if (option.checkState == Qt::Checked)
+	{
+		painter->setBrush(option.palette.highlight());
+		painter->setOpacity(0.4);
+		painter->drawRect(rct);
+	}
+	painter->restore();
 }
 
 QSize ZebraItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -32,5 +39,5 @@ QSize ZebraItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QMod
 	Entity ent = index.data(DataEntityListModel::DirectAccessRole).value<Entity>();
 	if (ent == Q_NULLPTR)
 		return option.rect.size();
-	return QSize(option.rect.width(),  option.fontMetrics.height() * ent->getHeight());
+	return QSize(option.rect.width(), ent->getHeight() * option.fontMetrics.height());
 }

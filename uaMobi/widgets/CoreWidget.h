@@ -3,7 +3,9 @@
 #include "widgets/SupplyBranch/SuppliesWidget.h"
 #include "widgets/InventoryBranch/InventoryWidget.h"
 #include "widgets/SimpleBranch/SimpleBranchWidget.h"
+#ifdef CAMERA_SUPPORT
 #include "widgets/CameraBranch/CameraWidget.h"
+#endif
 #include "widgets/SearchBranch/SearchWidget.h"
 #include "dataproviders/sqldataprovider.h"
 #include <QKeyEvent>
@@ -37,7 +39,9 @@ private:
 	IndexedButton* supplies;
 	IndexedButton* search;
 	IndexedButton* simple;
+#ifdef CAMERA_SUPPORT
 	IndexedButton* camera;
+#endif
 	IndexedButton* prices;
 	QHBoxLayout* controlPanel;			//	This overlay is always enabled on any widget
 	IgnorantButton* exitButton;			//	quits app
@@ -54,6 +58,8 @@ public slots:
 	void allocateLock();
 	void deallocateLock();
 	void handleBack();
+	void retranslate();
+	void refreshFonts();
 signals:
 	void requestSettings();
 };

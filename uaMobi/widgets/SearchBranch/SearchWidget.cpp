@@ -31,6 +31,12 @@ void SearchWidget::_emplaceBarcode(QString barcode)
 		return;
 	barcodeInfo->setText(AppData->barcodeInfo(barcode));
 }
+#ifdef CAMERA_SUPPORT
+void SearchWidget::handleCameraBarcode(QString value)
+{
+	_emplaceBarcode(value);
+}
+#endif
 
 void SearchWidget::_clearControls()
 {

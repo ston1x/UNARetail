@@ -50,7 +50,6 @@ BranchRootWidget::BranchRootWidget(Modes mode, QWidget* parent) :
 	scanner->setSizePolicy(expandToAl);
 	receive->setSizePolicy(expandToAl);
 	settings->setSizePolicy(expandToAl);
-	backButton->setSizePolicy(expandToAl);
 	setFocus();
 	
 

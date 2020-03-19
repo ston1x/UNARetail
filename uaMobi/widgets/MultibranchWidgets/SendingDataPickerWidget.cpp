@@ -6,12 +6,13 @@ SendingDataPickerWidget::SendingDataPickerWidget(Modes mode, QWidget* parent)
 	:inframedWidget(parent), abstractNode(), mainLayout(new QVBoxLayout(this)),
 	innerWidget(new inframedWidget(this)), innerLayout(new QVBoxLayout(innerWidget)),
 	unsentButton(new MegaIconButton(innerWidget)), sentButton(new MegaIconButton(innerWidget)),
-	allButton(new MegaIconButton(innerWidget)), sentQuantityInfo(new QLabel(innerWidget)),
+	allButton(new MegaIconButton(innerWidget)), settingsButton(new MegaIconButton(innerWidget)),
+	sentQuantityInfo(new QLabel(innerWidget)),
 	unsentQuantityInfo(new QLabel(innerWidget)), totalQantityInfo(new QLabel(innerWidget)),
 	backButton(new MegaIconButton(innerWidget)),
 	currentMode(mode)
 	, sendWidget(new ReceiveWidget(mode, this)), 
-	settingsWidget(new SendSettings(this))
+	settingsWidget(new SendSettings(modenamesLinker[mode], this))
 {
 	this->setLayout(mainLayout);
 	main = this;
@@ -24,9 +25,14 @@ SendingDataPickerWidget::SendingDataPickerWidget(Modes mode, QWidget* parent)
 	innerLayout->addWidget(unsentButton);
 	innerLayout->addWidget(totalQantityInfo);
 	innerLayout->addWidget(allButton);
+	innerLayout->addWidget(settingsButton);
 	innerLayout->addWidget(backButton);
 	mainLayout->addWidget(sendWidget);
 	mainLayout->addWidget(settingsWidget);
+	innerLayout->setContentsMargins(0, 0, 0, 0);
+	innerLayout->setSpacing(0);
+	mainLayout->setContentsMargins(0, 0, 0, 0);
+	mainLayout->setSpacing(0);
 
 	sendWidget->hide();
 	settingsWidget->hide();
@@ -35,15 +41,18 @@ SendingDataPickerWidget::SendingDataPickerWidget(Modes mode, QWidget* parent)
 	unsentButton->setIcon(QIcon(":/res/viaNet.png"));
 	allButton->setIcon(QIcon(":/res/viaFile.png"));
 	backButton->setIcon(QIcon(":/res/back.png"));
+	settingsButton->setIcon(QIcon(":/res/settings.png"));
 
 	backButton->setStyleSheet(BACK_BUTTONS_STYLESHEET);
 	sentQuantityInfo->setStyleSheet(COUNTERS_LABEL_STYLESHEET);
 	unsentQuantityInfo->setStyleSheet(COUNTERS_LABEL_STYLESHEET);
 	totalQantityInfo->setStyleSheet(COUNTERS_LABEL_STYLESHEET);
 
+
 	sentButton->setText(tr("send_sent_button"));
 	unsentButton->setText(tr("send_unsent_button"));
 	allButton->setText(tr("send_all_button"));
+	settingsButton->setText(tr("Settings"));
 
 	QObject::connect(unsentButton, &MegaIconButton::clicked, this, &SendingDataPickerWidget::unsentChosen);
 	QObject::connect(sentButton, &MegaIconButton::clicked, this, &SendingDataPickerWidget::sentChosen);
@@ -52,6 +61,7 @@ SendingDataPickerWidget::SendingDataPickerWidget(Modes mode, QWidget* parent)
 	QObject::connect(sendWidget, &ReceiveWidget::backRequired, this, &SendingDataPickerWidget::hideCurrent);
 	QObject::connect(sendWidget, &ReceiveWidget::sendingSuccess, this, &SendingDataPickerWidget::sendingSuccess);
 	QObject::connect(settingsWidget, &SendSettings::backRequired, this, &SendingDataPickerWidget::hideCurrent);
+	QObject::connect(settingsButton, &MegaIconButton::clicked, this, &SendingDataPickerWidget::showSettings);
 }
 
 void SendingDataPickerWidget::show()
@@ -187,4 +197,9 @@ void SendingDataPickerWidget::sendingSuccess()
 {
 	emit sendingSuccesfull();
 	QTimer::singleShot(1000, this, &SendingDataPickerWidget::set_info);
+}
+
+void SendingDataPickerWidget::showSettings()
+{
+	_hideAny(settingsWidget);
 }

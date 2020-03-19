@@ -22,6 +22,9 @@ protected:
 	virtual void _clearControls() override;
 	virtual void handleValueFromKeyboard(QString value) override;
 	virtual void barcodeReady() override;
+#ifdef CAMERA_SUPPORT
+	virtual void handleCameraBarcode(QString value) override;
+#endif
 	virtual void handleScanButton();
 public:
 	ScaningWidget(Modes mode, QWidget* parent);

@@ -80,18 +80,7 @@ bool VirtualBarcodeKeyboard::isExpectingControl(int contr)
 
 void VirtualBarcodeKeyboard::okPressed()
 {
-	switch (phase)
-	{
-	case Barcode:
-		emit barcodeConfirmed(barcodeLine->text());
-		break;
-	case Value:
-		emit valueConfirmed(barcodeLine->text());
-		break;
-	case Flushing:
-		emit valueConfirmed("");
-	}
-	barcodeLine->clear();
+	emit valueConfirmed(barcodeLine->text());
 	emit backRequired();
 }
 

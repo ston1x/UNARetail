@@ -1,5 +1,6 @@
 #pragma once
 #include "widgets/parents/AbstractScaningWidget.h"
+#include "widgets/ControlsMiniwidgets/QuantityControl.h"
 
 
 class PriceScaningWidget :
@@ -10,8 +11,8 @@ protected:
 	QLabel* lengthCounter;
 	QLabel* totalCounter;				//	how much times user scanned this barcode
 	
-	QSpinBox* generalPrice;
-	QSpinBox* discountPrice;
+	QuantityControl* generalPrice;
+	QuantityControl* discountPrice;
 	
 	MegaIconButton* okButton;
 
@@ -23,6 +24,10 @@ protected:
 	virtual void handleValueFromKeyboard(QString value) override;
 	virtual void handleScanButton() override;
 	virtual void barcodeReady() override;
+
+#ifdef CAMERA_SUPPORT
+	virtual void handleCameraBarcode(QString value) override;
+#endif
 public:
 	PriceScaningWidget(QWidget* parent);
 	

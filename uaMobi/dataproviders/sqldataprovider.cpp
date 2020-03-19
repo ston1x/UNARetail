@@ -9,7 +9,7 @@
 #ifdef DEBUG
 #include "debugtrace.h"
 #endif
-
+#include "widgets/utils/GlobalAppSettings.h"
 
 
 static const QString ModePrefixes[5]{
@@ -71,11 +71,14 @@ std::shared_ptr<QSqlQuery> SqlDataProvider::runQuery(QString sql)
 	_assertAndOpenSession();
 	std::shared_ptr<QSqlQuery> q(new QSqlQuery(mainDb));
 	q->exec(sql);
-	if (q->lastError().isValid()) {
-		q.reset();
 #ifdef DEBUG
-		detrace_METHPERROR("DBEXECUTE", q->lastError().text());
+	detrace_METHFRECALL("execing query: " << sql);
 #endif
+	if (q->lastError().isValid()) {
+#ifdef DEBUG
+		detrace_METHPERROR("DBEXECUTE", " : " + q->lastError().text());
+#endif
+		q.reset();
 		_assertAndCloseSession();
 		return q;
 	}
@@ -258,6 +261,10 @@ bool SqlDataProvider::clearSendingSelector(Modes mode, Entity prototype)
 		prototype->getAssociatedTable()->update(
 			" set uploaded = 1 where uploaded = 2", scanedTableName));
 }
+bool SqlDataProvider::pushIntoDownloaded(ShortBarcodeEntity& shb)
+{
+	return DBexecute(shb.getAssociatedTable()->insert(shb.asSqlInsertion()));
+}
 QString SqlDataProvider::barcodeInfo(QString code)
 //This method is searching for barcode in downLoadedDB
 {
@@ -307,18 +314,46 @@ QString SqlDataProvider::uploadFullList(Modes mode, Entity prototype, sendingMod
 //This method is selecting from dbname all barcodes that are ready to upload
 {
 	_assertAndOpenSession();
-	QSqlQuery sql(mainDb);
 	QString scanedTableName = ModePrefixes[int(mode)] + prototype->getAssociatedTable()->declaration()
 		+ TableSuffixes[int(TableNames::Scanned)];
+	std::shared_ptr<QSqlQuery> sql;
 	switch (sendmode)
 	{
 	case sendSent:
-		sql.prepare(
-			prototype->getAssociatedTable()->select_all(scanedTableName)
+		sql = runQuery(
+			prototype->getAssociatedTable()->select_some_fields(AppSettings->serializationOrder
+				[prototype->myType()],
+				scanedTableName)
 		);
 		break;
 	case sendUnsent:
-		sql.prepare
+		sql = runQuery
+		(
+			prototype->getAssociatedTable()->select_some_fields_filtered(
+				" uploaded = 1"
+				" order by scanedtime desc", AppSettings->serializationOrder
+				[prototype->myType()], scanedTableName)
+		);
+		break;
+	case sendAll:
+		sql = runQuery(
+			prototype->getAssociatedTable()->select_some_fields(AppSettings->serializationOrder
+				[prototype->myType()],
+				scanedTableName) +
+			" union all " + prototype->getAssociatedTable()->select_some_fields(
+				AppSettings->serializationOrder[prototype->myType()],
+				ModePrefixes[int(mode)] + prototype->getAssociatedTable()->declaration()
+				+ TableSuffixes[int(TableNames::Uploaded)]
+			)
+		);
+	}
+	if (sql == Q_NULLPTR)
+		return "";
+	QString formatedResponce{ DataFormater::getFormatedSql(*sql, dbnameToMode(mode), lang, format) };
+	switch (sendmode)
+	{
+	case sendUnsent:
+		sql = runQuery
 		(
 			prototype->getAssociatedTable()->select_filtered(
 				" uploaded = 1"
@@ -326,26 +361,32 @@ QString SqlDataProvider::uploadFullList(Modes mode, Entity prototype, sendingMod
 		);
 		break;
 	case sendAll:
-		sql.prepare(
-			prototype->getAssociatedTable()->select_all(scanedTableName) +
+		sql = runQuery(
+			prototype->getAssociatedTable()->select_all(
+				scanedTableName) +
 			" union all " + prototype->getAssociatedTable()->select_all(
 				ModePrefixes[int(mode)] + prototype->getAssociatedTable()->declaration()
 				+ TableSuffixes[int(TableNames::Uploaded)]
 			)
 		);
+		break;
+	default:
+		break;
 	}
-	QString formatedResponce{ DataFormater::getFormatedSql(sql, dbnameToMode(mode), lang, format) };
-	sql.exec();
+	if (sql == Q_NULLPTR)
+	{
+		return QString();
+	}
 	switch (sendmode)
 	{
 	case sendUnsent:
 	case sendAll:
 	{
-		while (sql.next())
+		while (sql->next())
 		{
 			execInSession(
 				prototype->getAssociatedTable()->update(" set uploaded = 2 where barcode = '" 
-					+ sql.value(0).toString() + "'", scanedTableName
+					+ sql->value(0).toString() + "'", scanedTableName
 				));
 		}
 	}
@@ -464,14 +505,29 @@ int SqlDataProvider::sumAllIn(Modes mode, unsigned int field, Entity prototype, 
 {
 	_assertAndOpenSession();
 	QString fname = formatTableName(mode, prototype, tab);
-	QSqlQuery q(mainDb);
-	q.prepare(prototype->getAssociatedTable()->sum(field, fname));
-	q.exec();
+	std::shared_ptr<QSqlQuery> q = runQuery(prototype->getAssociatedTable()->sum(field, fname));
 	int quantity = 0;
-	if (q.next())
+	if (q->next())
 	{
 		bool ok = false;
-		quantity = q.value(0).toInt(&ok);
+		quantity = q->value(0).toInt(&ok);
+		if (!ok)
+			quantity = 0;
+	}
+	_assertAndCloseSession();
+	return quantity;
+}
+
+int SqlDataProvider::sumAllFilteredIn(Modes mode, const QString value, unsigned int field, Entity prototype, TableNames tab)
+{
+	_assertAndOpenSession();
+	QString fname = formatTableName(mode, prototype, tab);
+	std::shared_ptr<QSqlQuery> q = runQuery(prototype->getAssociatedTable()->sumFieldFiltered(field, value, fname));
+	int quantity = 0;
+	if (q->next())
+	{
+		bool ok = false;
+		quantity = q->value(0).toInt(&ok);
 		if (!ok)
 			quantity = 0;
 	}

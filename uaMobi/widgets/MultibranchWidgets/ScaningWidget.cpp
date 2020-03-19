@@ -34,6 +34,11 @@ ScaningWidget::ScaningWidget(Modes mode, QWidget* parent)
 	totalInfo->setMinimumHeight(calculateAdaptiveButtonHeight());
 	lengthInfo->setMinimumHeight(calculateAdaptiveButtonHeight());
 	
+	if (!AppSettings->navigationElements)
+	{
+		okButton->hide();
+	}
+
 	controlLayout->addWidget(quantityControl->myWidget());
 
 	quantityControl->show();
@@ -47,11 +52,13 @@ ScaningWidget::ScaningWidget(Modes mode, QWidget* parent)
 void ScaningWidget::handleScanButton()
 // handles Scan button, inserts data into all inner lists
 {
-	if (pendingBarcode->isValid())
+	if (!pendingBarcode->barcode.isEmpty())
 	{
-		emit barcodeReceived(pendingBarcode);
-		barcodeInput->clear();
-		pendingBarcode.reset(new BarcodeEntity());
+		bool ok = false;
+		pendingBarcode->quantity = quantityControl->getValue().toInt(&ok);
+		if (!ok)
+			return;
+		barcodeReady();
 	}
 }
 void ScaningWidget::setTotal(int total)
@@ -70,6 +77,12 @@ void ScaningWidget::handleValueFromKeyboard(QString val)
 	{
 		barcodeInput->setText(val);
 	}
+	else
+	{
+		quantityControl->setValue(val);
+		barcodeReady();
+		barcodeInput->clear();
+	}
 }
 void ScaningWidget::barcodeReady()
 {
@@ -79,13 +92,24 @@ void ScaningWidget::barcodeReady()
 		emit barcodeReceived(pendingBarcode);
 		quantityControl->setValue("0");
 	}
-	setTotal(AppData->sumAllIn(currentMode, BarcodeEntity::getEnumerableFieldIndex(), pendingBarcode, TableNames::Scanned));
+	setTotal(AppData->sumAllFilteredIn(currentMode, pendingBarcode->barcode,
+		BarcodeEntity::getEnumerableFieldIndex(), pendingBarcode, TableNames::Scanned));
 }
-
+#ifdef CAMERA_SUPPORT
+void ScaningWidget::handleCameraBarcode(QString value)
+{
+	if (!pendingBarcode->barcode.isEmpty() && !quantityControl->canGiveValue())
+	{
+		quantityControl->setValue("1");
+	}
+	barcodeReady();
+	_emplaceBarcode(value);
+}
+#endif
 void ScaningWidget::okPressed()
 //	submits data to connected widget
 {
-	emit backRequired();
+	barcodeReady();
 }
 
 void ScaningWidget::_emplaceBarcode(QString barcode)
@@ -94,10 +118,12 @@ void ScaningWidget::_emplaceBarcode(QString barcode)
 	{
 		pendingBarcode.reset(new BarcodeEntity(barcode));
 		quantityControl->setFocus();
+		quantityControl->setValue("0");
 		barcodeInput->setText(barcode);
-		barcodeInfo->setText(AppData->barcodeInfo(barcode));
+		if (AppSettings->autoSearch)
+			barcodeInfo->setText(AppData->barcodeInfo(barcode));
 		setLen();
-		setTotal(AppData->sumAllIn(currentMode, BarcodeEntity::getEnumerableFieldIndex(), pendingBarcode, TableNames::Scanned));
+		setTotal(AppData->sumAllFilteredIn(currentMode, barcode, BarcodeEntity::getEnumerableFieldIndex(), pendingBarcode, TableNames::Scanned));
 
 	}
 }

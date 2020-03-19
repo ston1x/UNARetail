@@ -32,7 +32,7 @@ protected:
 	QSpinBox* suffixCapturer;
 	Capturer* scanButtonCapturer;
 	MegaIconButton* additionInputElements;
-
+	MegaIconButton* navigationElements;
 public:
 	ScaningSettings(QWidget* parent);
 	void extractAndSave();

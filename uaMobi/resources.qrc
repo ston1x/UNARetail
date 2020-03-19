@@ -41,14 +41,11 @@
         <file>res/eng.png</file>
         <file>res/ro.png</file>
         <file>res/ru.png</file>
-        <file>translations/uamobi_en.qm</file>
-        <file>uamobi_en.ts</file>
-        <file>translations/uamobi_ro.qm</file>
-        <file>uamobi_ro.ts</file>
-        <file>translations/uamobi_ru.qm</file>
-        <file>uamobi_ru.ts</file>
         <file>res/alreadySent.png</file>
         <file>res/toinput.png</file>
         <file>res/cash.png</file>
+        <file>translations/unaretail_en.qm</file>
+        <file>translations/unaretail_ro.qm</file>
+        <file>translations/unaretail_ru.qm</file>
     </qresource>
 </RCC>

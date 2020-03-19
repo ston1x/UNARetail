@@ -24,7 +24,7 @@ protected:
 	BarcodeObserver(QChar pref, QChar suff, QChar scanb,  QObject* parent = Q_NULLPTR);
 
 public:
-	void resetCapture(QChar pref, QChar suff, QChar scanb);
+	void resetCapture(QChar pref, QChar suff, int scanb);
 	void activate();
 	void deactivate();
 	bool activated();
@@ -34,6 +34,7 @@ signals:
 	void prefixCaught();
 	void suffixCaught();
 	void scanButtonPress();
+	void backButtonPress();
 };
 
 

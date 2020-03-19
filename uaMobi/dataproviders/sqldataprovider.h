@@ -110,6 +110,8 @@ public:
 
 	int sumAllIn(Modes mode, unsigned int field, Entity prototype, TableNames tab);
 
+	int sumAllFilteredIn(Modes mode, const QString value, unsigned int field, Entity prototype, TableNames tab);
+
 	int countUniqueIn(Modes mode, Entity prototype, TableNames tab);
 	int countUniqueIn(Modes mode, TableNames tab);
 	
@@ -130,6 +132,7 @@ public:
 	QString barcodeInfo(QString code);			//	Looks for barcode
 	bool pushSendingBarcodesToSent(Modes, Entity);	//	moves all marked with 2 barcodes into uploaded table
 	bool clearSendingSelector(Modes, Entity);		//	sets state to 1 for all barcodes in scanned
+	bool pushIntoDownloaded(ShortBarcodeEntity&);
 
 	bool downloadFullList(QString upload);	//	same, but for downloading
 	

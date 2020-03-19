@@ -50,7 +50,7 @@ private:
 	Modes currentMode;
 public:
 	ScanedStorageWidget(Modes mode,  QWidget* parent);
-	
+    ~ScanedStorageWidget();
 	void addEntity(Entity);
 	virtual void show() override;	//	auto-refresh on show
 	virtual bool back() override;

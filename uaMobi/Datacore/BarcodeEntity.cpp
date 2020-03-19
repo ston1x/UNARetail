@@ -2,7 +2,8 @@
 #include "dataproviders/TableHandlers.h"
 #include <QtSql/qsqlquery.h>
 #include <QVariant>
-
+#include "widgets/utils/ElementsStyles.h"
+#include <cmath>
 static QString tableDefinition ( QStringLiteral( "( barcode TEXT,"
 		"scanedtime datetime,"
 		"quantity number,"
@@ -86,7 +87,7 @@ QString BarcodeEntity::_normalizedCsvView() const
 
 bool BarcodeEntity::_isValid() const
 {
-	return quantity != 0;
+	return quantity != 0 && (!barcode.isEmpty());
 }
 
 BarcodeEntity::BarcodeEntity(QString Barcode, QDateTime adddt, int isupl, 
@@ -126,7 +127,14 @@ void BarcodeEntity::_invalidate()
 
 int BarcodeEntity::_getHeight() const
 {
-	return 2 + comment.count("\n");
+	return (std::ceil(double(barcode.count() + comment.count() 
+		+ datetimeDBEncoding.count() 
+		)  / double(AppFonts->howMuchCharacterFitsIntoScreen())) + comment.count("\n") + 1);
+}
+
+const QStringList& BarcodeEntity::_getFields() const
+{
+	return tableFields;
 }
 
 bool BarcodeEntity::_fromSql(QSqlQuery* q)

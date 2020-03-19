@@ -102,6 +102,20 @@ QString _CSV_sqlRowValues(QSqlRecord record)
 	return rowValuesString;
 }
 
+QString _TXT_fromSqlRecord(QSqlRecord rec)
+{
+	QString rowValuesString;
+	for (int i = 0; i < rec.count(); i++)
+	{
+		if (!rowValuesString.isEmpty())
+		{
+			rowValuesString += "\t";
+		}
+		rowValuesString += rec.value(i).toString();
+	}
+	return rowValuesString + "\n";
+}
+
 QString _CSV_sqlAllRowsValues(QSqlQuery query)
 {
 	QString rowsValuesString{};
@@ -119,22 +133,16 @@ QString _CSV_sqlAllRowsValues(QSqlQuery query)
 
 QString getFormatedSqlAsXml(QSqlQuery query, QString dbname)
 {
-	if (query.exec())
-	{
-		QDomDocument xml{ "file" };
-		QDomElement file{ xml.createElement(dbname) };
-		file.appendChild(_XML_sqlColumnNames(query.record(), xml));
-		file.appendChild(_XML_sqlAllRowsValues(query, xml));
-		xml.appendChild(file);
-		return xml.toString();
-	}
-	return "";
+	QDomDocument xml{ "file" };
+	QDomElement file{ xml.createElement(dbname) };
+	file.appendChild(_XML_sqlColumnNames(query.record(), xml));
+	file.appendChild(_XML_sqlAllRowsValues(query, xml));
+	xml.appendChild(file);
+	return xml.toString();
 }
 
 QString getFormatedSqlAsJson(QSqlQuery query, QString dbname)
 {
-	if (query.exec())
-	{
 		QJsonObject json;
 
 		json.insert("mode", dbname);
@@ -146,17 +154,22 @@ QString getFormatedSqlAsJson(QSqlQuery query, QString dbname)
 
 		QJsonDocument doc(json);
 		return doc.toJson();
-	}
-	return "";
 }
 
 QString getFormatedSqlAsCsv(QSqlQuery query, QString dbname)
 {
-	if (query.exec())
-	{
 		QString csv(dbname);
 		csv += "\n" + _CSV_sqlColumnNames(query.record());
 		return csv + "\n" + _CSV_sqlAllRowsValues(query);
-	}
 	return "";
+}
+
+QString getFormatedSqlAsTxt(QSqlQuery query, QString dbname)
+{
+	QString txt;
+		while (query.next())
+		{
+			txt += _TXT_fromSqlRecord(query.record());
+		}
+	return txt;
 }

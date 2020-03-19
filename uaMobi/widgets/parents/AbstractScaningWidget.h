@@ -34,8 +34,9 @@ protected:
 	QLineEdit* barcodeInput;		//	field for manual barcode input
 	MegaIconButton* backButton;		//	emits backRequired
 	MegaIconButton* keyboardButton;	//	opens keyboard widget
+#ifdef CAMERA_SUPPORT
 	MegaIconButton* cameraButton;	//	opens camera widget
-
+#endif
 	Modes currentMode;
 
 	virtual void _emplaceBarcode(QString barcode) = 0;
@@ -50,9 +51,11 @@ protected slots:					//	Slots for inner usage. To submit barcodes etc use tree i
 	virtual void handleScanButton() = 0;		//	handles scan press
 	virtual void handleValueFromKeyboard(QString value) = 0;
 	virtual void barcodeReady() = 0;
-
 	void barcodeConfirmed(QString barcode);
+#ifdef CAMERA_SUPPORT
 	void cameraRequired();					//	shows camera widget
+	virtual void handleCameraBarcode(QString value) = 0;
+#endif
 	void keyboardRequired();				//	shows keyboard
 	void hideCurrent();
 	void manualConfirmed();

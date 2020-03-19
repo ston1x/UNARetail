@@ -102,6 +102,12 @@
     <Filter Include="Header Files\widgets\SettingsScreens">
       <UniqueIdentifier>{1d6a9a58-bcfa-4dfd-97d3-235a12707f3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Datacore">
+      <UniqueIdentifier>{08573db5-161e-4151-be8c-06f4fb3f89e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\widgets\SettingScreens">
+      <UniqueIdentifier>{1062b1e9-0760-4e63-a606-d4f18ef02c7d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -620,9 +626,6 @@
     <ClCompile Include="widgets\parents\inframedWidget.cpp">
       <Filter>Source Files\widgets\parents</Filter>
     </ClCompile>
-    <ClCompile Include="widgets\utils\ScanState.cpp">
-      <Filter>Source Files\util</Filter>
-    </ClCompile>
     <ClCompile Include="widgets\utils\GlobalAppSettings.cpp">
       <Filter>Source Files\util</Filter>
     </ClCompile>
@@ -674,35 +677,11 @@
     <ClCompile Include="widgets\PriceBranch\PriceBranchWidget.cpp">
       <Filter>Source Files\widgets\Root</Filter>
     </ClCompile>
-    <ClCompile Include="widgets\MultibranchWidgets\SendSettings.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dataproviders\BackupingEngine.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Datacore\AbsEntity.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Datacore\BarcodeEntity.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Datacore\PricedBarcodeEntity.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Datacore\ShortBarcodeEntity.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Datacore\DataEntities.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="widgets\utils\BarcodeObserver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="widgets\parents\abstractNodeInterface.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dataproviders\DataAsyncLoader.cpp">
-      <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="widgets\ControlsMiniwidgets\abs_control.cpp">
       <Filter>Source Files\widgets\elements</Filter>
@@ -719,11 +698,50 @@
     <ClCompile Include="widgets\ControlsMiniwidgets\StringControl.cpp">
       <Filter>Source Files\widgets\elements</Filter>
     </ClCompile>
+    <ClCompile Include="Datacore\AbsEntity.cpp">
+      <Filter>Source Files\Datacore</Filter>
+    </ClCompile>
+    <ClCompile Include="dataproviders\BackupingEngine.cpp">
+      <Filter>Source Files\commcore</Filter>
+    </ClCompile>
+    <ClCompile Include="Datacore\BarcodeEntity.cpp">
+      <Filter>Source Files\Datacore</Filter>
+    </ClCompile>
+    <ClCompile Include="dataproviders\DataAsyncLoader.cpp">
+      <Filter>Source Files\Datacore</Filter>
+    </ClCompile>
     <ClCompile Include="widgets\SettingsWidgets\ScaningSettings.cpp">
-      <Filter>Generated Files</Filter>
+      <Filter>Source Files\widgets\SettingScreens</Filter>
     </ClCompile>
     <ClCompile Include="widgets\SettingsWidgets\DatabaseSettings.cpp">
-      <Filter>Generated Files</Filter>
+      <Filter>Source Files\widgets\SettingScreens</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\MultibranchWidgets\SendSettings.cpp">
+      <Filter>Source Files\widgets\SettingScreens</Filter>
+    </ClCompile>
+    <ClCompile Include="Datacore\ShortBarcodeEntity.cpp">
+      <Filter>Source Files\Datacore</Filter>
+    </ClCompile>
+    <ClCompile Include="Datacore\PricedBarcodeEntity.cpp">
+      <Filter>Source Files\Datacore</Filter>
+    </ClCompile>
+    <ClCompile Include="Datacore\DataEntities.cpp">
+      <Filter>Source Files\Datacore</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\SettingsWidgets\QuickSendSettings.cpp">
+      <Filter>Source Files\widgets\SettingScreens</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\SettingsWidgets\SerializationSettings.cpp">
+      <Filter>Source Files\widgets\SettingScreens</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\SettingsWidgets\SearchDatabaseSettings.cpp">
+      <Filter>Source Files\widgets\SettingScreens</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\SettingsWidgets\GeneralSettings.cpp">
+      <Filter>Source Files\widgets\SettingScreens</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\SettingsWidgets\ViewSettings.cpp">
+      <Filter>Source Files\widgets\SettingScreens</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -799,23 +817,14 @@
     <ClInclude Include="widgets\utils\ElementsStyles.h">
       <Filter>Header Files\util</Filter>
     </ClInclude>
-    <QtMoc Include="widgets\SettingsForm.h">
-      <Filter>Header Files\widgets</Filter>
-    </QtMoc>
     <ClInclude Include="dataproviders\TableHandlers.h">
       <Filter>Header Files\util</Filter>
     </ClInclude>
     <ClInclude Include="dataproviders\sqldataprovider.h">
       <Filter>Header Files\commcore</Filter>
     </ClInclude>
-    <ClInclude Include="widgets\utils\ScanState.h">
-      <Filter>Header Files\util</Filter>
-    </ClInclude>
     <ClInclude Include="dataFormats\formats.h">
       <Filter>Header Files\commcore</Filter>
-    </ClInclude>
-    <ClInclude Include="dataproviders\BackupingEngine.h">
-      <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="Datacore\AbsEntity.h">
       <Filter>Header Files\Datacore</Filter>
@@ -835,6 +844,9 @@
     <ClInclude Include="widgets\ControlsMiniwidgets\QuantityControl.h">
       <Filter>Header Files\widgets\elements</Filter>
     </ClInclude>
+    <ClInclude Include="dataproviders\BackupingEngine.h">
+      <Filter>Header Files\commcore</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="debug\moc_predefs.h.cbt">
@@ -845,9 +857,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="CameraSurface.qml">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="translations\Romanian.qm">
       <Filter>Resource Files</Filter>
     </None>
@@ -985,6 +994,12 @@
     <None Include="CameraSurface.qml" />
     <None Include="CameraSurface.qml" />
     <None Include="CameraSurface.qml" />
+    <None Include="CameraSurface.qml" />
+    <None Include="CameraSurface.qml" />
+    <None Include="CameraSurface.qml" />
+    <None Include="CameraSurface.qml">
+      <Filter>qml</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="android-sources\AndroidManifest.xml">
@@ -1513,9 +1528,6 @@
     <QtMoc Include="widgets\PriceBranch\PricedBarcodeRedacting.h">
       <Filter>Header Files\widgets\Multibranch</Filter>
     </QtMoc>
-    <QtMoc Include="widgets\MultibranchWidgets\SendSettings.h">
-      <Filter>Generated Files</Filter>
-    </QtMoc>
     <QtMoc Include="Datacore\DataEntities.h">
       <Filter>Header Files\Datacore</Filter>
     </QtMoc>
@@ -1547,6 +1559,27 @@
       <Filter>Header Files\widgets\SettingsScreens</Filter>
     </QtMoc>
     <QtMoc Include="widgets\SettingsWidgets\DatabaseSettings.h">
+      <Filter>Header Files\widgets\SettingsScreens</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\MultibranchWidgets\SendSettings.h">
+      <Filter>Header Files\widgets\SettingsScreens</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\SettingsWidgets\QuickSendSettings.h">
+      <Filter>Header Files\widgets\SettingsScreens</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\SettingsWidgets\SerializationSettings.h">
+      <Filter>Header Files\widgets\SettingsScreens</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\SettingsForm.h">
+      <Filter>Header Files\widgets\SettingsScreens</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\SettingsWidgets\GeneralSettings.h">
+      <Filter>Header Files\widgets\SettingsScreens</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\SettingsWidgets\SearchDatabaseSettings.h">
+      <Filter>Header Files\widgets\SettingsScreens</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\SettingsWidgets\ViewSettings.h">
       <Filter>Header Files\widgets\SettingsScreens</Filter>
     </QtMoc>
   </ItemGroup>

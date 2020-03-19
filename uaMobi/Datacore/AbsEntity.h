@@ -17,14 +17,15 @@ namespace barcodeUtil
 	// This enum holds barcode types which are used to define which descendant of the abs_barcode is stored in pointer
 	enum class barcodetypes { abstractBc, uniformBc, pricedBc, shortBc };
 	enum barcodeenumerables { quantity, generalPrice, discountPrice, };
-}
-inline uint qHash(barcodeUtil::barcodeenumerables a)
-{
-	return uint(a);
-}
-inline uint qHash(barcodeUtil::barcodetypes a)
-{
-	return uint(a);
+    inline uint qHash(barcodeUtil::barcodeenumerables a)
+    {
+        return uint(a);
+    }
+    inline uint qHash(barcodeUtil::barcodetypes a)
+    {
+        return uint(a);
+    }
+
 }
 
 class QSqlQuery;
@@ -44,6 +45,7 @@ protected:
 	virtual int _getEnumerable(int role) const = 0;
 	virtual void _invalidate() = 0;
 	virtual int _getHeight() const;
+	virtual const QStringList& _getFields() const = 0;
 	int mytype;
 
 public:
@@ -64,6 +66,8 @@ public:
 	int getEnumerable(int role = -1) const;
 	void invalidate();
 	int getHeight() const;
+	const QStringList& getFields() const;
+    virtual ~AbsEntity(){}
 };
 
 typedef std::shared_ptr<AbsEntity> Entity;

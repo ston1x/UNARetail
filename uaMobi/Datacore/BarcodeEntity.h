@@ -21,6 +21,7 @@ protected:
 	virtual int _getEnumerable(int role) const override;
 	virtual void _invalidate() override;
 	virtual int _getHeight() const override;
+	virtual const QStringList& _getFields() const override;
 public:
 	QString barcode;			//	String representation of barcode. Is used to distinct one barcode from another.
 	QDateTime addDate;		//	datetime when barcode was scanned. If it was scanned multiple times - only first stays

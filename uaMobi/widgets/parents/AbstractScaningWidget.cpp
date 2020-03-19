@@ -17,7 +17,10 @@ AbstractScaningWidget::AbstractScaningWidget(Modes mode, QWidget* parent)
 	barcodeInfo(new QLabel(untouchable)),
 	barcodeInput(new QLineEdit(untouchable)),
 	backButton(new MegaIconButton(untouchable)),
-	keyboardButton(new MegaIconButton(untouchable)), cameraButton(new MegaIconButton(untouchable)),
+	keyboardButton(new MegaIconButton(untouchable)),
+#ifdef CAMERA_SUPPORT
+	cameraButton(new MegaIconButton(untouchable)),
+#endif
 	currentMode(mode)
 {
 	this->setLayout(mainLayout);
@@ -35,7 +38,11 @@ AbstractScaningWidget::AbstractScaningWidget(Modes mode, QWidget* parent)
 	
 	buttonLayout->addWidget(backButton);
 	additionalInputLayout->addWidget(keyboardButton);
+#ifdef CAMERA_SUPPORT
 	additionalInputLayout->addWidget(cameraButton);
+	cameraButton->setIcon(QIcon(":/res/camera.png"));
+	QObject::connect(cameraButton, &QPushButton::clicked, this, &AbstractScaningWidget::cameraRequired);
+#endif
 
 	// Layouts are reversal so that new elements were pushed to left
 	buttonLayout->setDirection(QBoxLayout::RightToLeft);
@@ -45,7 +52,7 @@ AbstractScaningWidget::AbstractScaningWidget(Modes mode, QWidget* parent)
 	innerLayout->setContentsMargins(0, 0, 0, 0);
 	// Set up view
 	backButton->setIcon(QIcon(":/res/back.png"));
-	cameraButton->setIcon(QIcon(":/res/camera.png"));
+	
 	keyboardButton->setIcon(QIcon(":/res/key.png"));
 
 	backButton->setStyleSheet(BACK_BUTTONS_STYLESHEET);
@@ -66,7 +73,9 @@ AbstractScaningWidget::AbstractScaningWidget(Modes mode, QWidget* parent)
 
 	if (!AppSettings->additionalControlElements)
 	{
+#ifdef CAMERA_SUPPORT
 		cameraButton->hide();
+#endif
 		keyboardButton->hide();
 	}
 	if (!AppSettings->navigationElements)
@@ -78,9 +87,10 @@ AbstractScaningWidget::AbstractScaningWidget(Modes mode, QWidget* parent)
 	
 	QObject::connect(backButton, &QPushButton::clicked, this, &AbstractScaningWidget::backRequired);
 	QObject::connect(keyboardButton, &MegaIconButton::clicked, this, &AbstractScaningWidget::keyboardRequired);
-	QObject::connect(cameraButton, &QPushButton::clicked, this, &AbstractScaningWidget::cameraRequired);
+	
 	QObject::connect(BarcodeObs, &BarcodeObserver::barcodeCaught, this, &AbstractScaningWidget::barcodeConfirmed);
 	QObject::connect(BarcodeObs, &BarcodeObserver::scanButtonPress, this, &AbstractScaningWidget::handleScanButton);
+	QObject::connect(BarcodeObs, &BarcodeObserver::backButtonPress, this, &AbstractScaningWidget::backRequired);
 	QObject::connect(barcodeInput, &QLineEdit::returnPressed, this, &AbstractScaningWidget::manualConfirmed);
 }
 
@@ -89,12 +99,16 @@ void AbstractScaningWidget::show()
 	if (AppSettings->additionalControlElements)
 	{
 		keyboardButton->show();
+#ifdef CAMERA_SUPPORT
 		cameraButton->show();
+#endif
 	}
 	else
 	{
 		keyboardButton->hide();
+#ifdef CAMERA_SUPPORT
 		cameraButton->hide();
+#endif
 	}
 	if (AppSettings->navigationElements)
 	{
@@ -119,15 +133,15 @@ void AbstractScaningWidget::barcodeConfirmed(QString barcode)
 	_emplaceBarcode(barcode);
 	_clearControls();
 }
-
+#ifdef CAMERA_SUPPORT
 void AbstractScaningWidget::cameraRequired()
 //	This slot creates new camera widget because only one camera widget can exist
 {
 	_hideAndDeleteCurrent(new ScaningCameraWidget(this));
 	QObject::connect(_upCO<ScaningCameraWidget>(), &ScaningCameraWidget::backRequired, this, &AbstractScaningWidget::hideCurrent);
-	QObject::connect(_upCO<ScaningCameraWidget>(), &ScaningCameraWidget::hasBarcode, this, &AbstractScaningWidget::barcodeConfirmed);
+	QObject::connect(_upCO<ScaningCameraWidget>(), &ScaningCameraWidget::hasBarcode, this, &AbstractScaningWidget::handleCameraBarcode);
 }
-
+#endif
 void AbstractScaningWidget::keyboardRequired()
 //	This slot creates new keyboard
 {
