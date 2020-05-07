@@ -1,5 +1,7 @@
 #include "DecodedNumeric.h"
-
+#ifndef Q_NULLPTR
+#define Q_NULLPTR nullptr
+#endif
 namespace zxing {
 	namespace oned {
 		namespace rss {
@@ -16,11 +18,11 @@ namespace zxing {
 			}
 
 			DecodedNumeric::DecodedNumeric(const DecodedNumeric* other)
-				: DecodedObject(other == nullptr ? 0 : other->m_newPosition)
+				: DecodedObject(other == Q_NULLPTR ? 0 : other->m_newPosition)
 			{
-				m_newPosition = other == nullptr ? 0 : other->m_newPosition;
-				m_firstDigit = other == nullptr ? 0 : other->m_firstDigit;
-				m_secondDigit = other == nullptr ? 0 : other->m_secondDigit;
+				m_newPosition = other == Q_NULLPTR ? 0 : other->m_newPosition;
+				m_firstDigit = other == Q_NULLPTR ? 0 : other->m_firstDigit;
+				m_secondDigit = other == Q_NULLPTR ? 0 : other->m_secondDigit;
 			}
 
 			int DecodedNumeric::getFirstDigit() const

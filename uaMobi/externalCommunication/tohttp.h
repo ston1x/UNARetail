@@ -3,7 +3,7 @@
 #include "externalCommunication/communicationCore.h"
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
-
+#include <QLinkedList>
 
 /*
 	This child of commcore is creating http-connection for implementation of send\get pair
@@ -17,31 +17,52 @@
 
 																Written by Ovidiu, modified by Anke
 */
-class toHttp : public communicationCore		//	Child of commcore oriented for http protocol
+class toHttp : public QObject
 {
 	Q_OBJECT
 private:
-	QNetworkAccessManager* manager;			//	used for establishing connection
-	QNetworkReply* gReplay;					//	used for awaiting data
+	QString address;
+	Modes currentMode;
+	QNetworkReply* awaitedReply;					//	used for awaiting data
 
 	long long int li, lip;						//	these are currentlyRead value and totalLength value
 	QString input;							//	here is stored input
-	bool inProgress;
-	QObject* networkManager;				//	This is link to dangling manager. Is this a good decision?
 
+	QLinkedList<ShortBarcode> loaded;
+
+	int currentlyAwaiting;
+
+	enum {
+		notAwaiting,
+		awaitingPlaces,
+		awaitingProducts
+	};
+	QPair<QStringList, QStringList> _parsePlaceList();
+	QString _loadDataToSend(sendingMode sendmode, int format);
+	void _parseProductList();
+	bool _checkAddress();
+	bool _setReply(QNetworkReply*);
 public:
 	toHttp(Modes mode);
 
-	virtual bool send(sendingMode, int) override; // interface override
-	virtual void get() override;
-	bool isUsed() const { return inProgress; };
+	void setAddress(QString newAddress);
+
+	bool send(sendingMode, int); // interface override
+	bool isUsed() const { return currentlyAwaiting != notAwaiting; };
 	void dropAwaiting();
+	bool getPlacelist();
+	bool getProductList( QString place_code);
+	void clear();
 private slots:
-	void uploadResponce(QNetworkReply* replay);	//	is triggered when upload responce came
-	void downloadResponce(QNetworkReply* replay);	//	receives downoad response and stores it in input
-	void readingNL();								//	activated when block is partially arrived
+	void uploadResponce();	//	is triggered when upload responce came
+	void downloadResponce();	//	receives downoad response and stores it in input
 
 signals:
 	void readNL();									//	emitted when block is partially arrived
 	void progressLeap(int);							//	emmited when part of the process is passed
+
+	void productlistReceived(QLinkedList<ShortBarcode>&);
+	void placelistReceived(QStringList names, QStringList codes);
+	void errorReceived(QString stack = QString(),QString message = QString(), int code = 404);
+	void sendSuccesfull(QString);
 };

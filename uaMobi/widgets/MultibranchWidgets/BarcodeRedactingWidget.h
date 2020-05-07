@@ -1,12 +1,9 @@
 #pragma once
-#include <QtWidgets/QTextEdit>
-#include <QtWidgets/qlabel.h>
-#include <QtWidgets/QLineEdit>
+#include "widgets/MultibranchWidgets/Redactors/BarcodeRedactorForm.h"
+#include "widgets/MultibranchWidgets/Redactors/PricedBarcodeRedactorForm.h"
 #include "widgets/parents/inframedWidget.h"
-#include "Datacore/DataEntities.h"
-#include "widgets/utils/MegaIconButton.h"
-#include "widgets/utils/BigButtonsSpinbox.h"
-#include <QtWidgets/QCalendarWidget>
+#include "dataproviders/sqldataprovider.h"
+#include <QGridLayout>
 /*
 	This class responds for redacting barcode entry. It has signals
 		barcodeCommited() - holds new barcode entry
@@ -34,36 +31,22 @@ class BarcodeRedactingWidget : public inframedWidget
 {
 	Q_OBJECT
 private:
-	QVBoxLayout* mainLayout;
-	QHBoxLayout* buttonLayout;
-	QLabel* aboutForm;
-	QLabel* aboutQuantity;
-	QLabel* aboutExpDates;
-	QLabel* aboutBarcode; // maybe must be more accented. larger font etc
-	QLabel* aboutComment;
-	BigButtonsSpinbox* quantity;
-	QTextEdit* comment;
-	QDateEdit* expDateedit;
-	BigButtonsSpinbox* expTimeEdit;
+	QGridLayout* mainLayout;
+	
+	Abs_Redactor* redactor;
 	MegaIconButton* okButton;
 	MegaIconButton* backButton;
-	MegaIconButton* removeButton;
-	filters::CaptureBackFilter* keyFilter;
+
 
 	Entity entityCopy;
-
+	Entity originalLink;
 public:
-	BarcodeRedactingWidget(QWidget* parent);
+	BarcodeRedactingWidget(Modes mode, QWidget* parent);
 
-	void setBarcode(const Entity&);    // this method is requred to set barcode. WARNING: if you forget this,
-	//			form will still be created, and will submit result - just with empty barcode values
-	void setTimeFormat(const QString);			//	this method sets time format which will be used in displaying
-
+	bool setBarcode(const Entity&);    // this method is requred to set barcode. 
 protected slots:
 	void okPressed();
 	void backPressed();
-	void removePressed();
 signals:
-	void barcodeCommited(Entity);			//	commit changed barcode
-	void backRequired();							//	exit without save
+	void barcodeCommited(Entity, Entity);			//	commit changed barcode
 };

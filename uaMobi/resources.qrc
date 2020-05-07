@@ -47,5 +47,6 @@
         <file>translations/unaretail_en.qm</file>
         <file>translations/unaretail_ro.qm</file>
         <file>translations/unaretail_ru.qm</file>
+        <file>res/best.png</file>
     </qresource>
 </RCC>

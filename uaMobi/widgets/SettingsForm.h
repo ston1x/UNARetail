@@ -1,8 +1,8 @@
 #pragma once
-#include <QtWidgets/qboxlayout.h>
-#include <QtWidgets/qlabel.h>
-#include <QtWidgets/qlineedit.h>
-#include <QtWidgets/qprogressbar.h>
+#include <qboxlayout.h>
+#include <qlabel.h>
+#include <qlineedit.h>
+#include <qprogressbar.h>
 #include "externalCommunication/tohttp.h"
 #include "widgets/parents/inframedWidget.h"
 #include "widgets/utils/GlobalAppSettings.h"
@@ -12,6 +12,7 @@
 #include "widgets/SettingsWidgets/GeneralSettings.h"
 #include "widgets/SettingsWidgets/SearchDatabaseSettings.h"
 #include "widgets/SettingsWidgets/ViewSettings.h"
+#include "widgets/SettingsWidgets/DatabaseLoadSettings.h"
 /*
 */
 
@@ -24,6 +25,7 @@ private:
 	GeneralSettings* generalSettings;
 	SearchDatabaseSettings* databaseSettings;
 	ViewSettings* viewSettings;
+	DatabaseLoadSettings* dataloadSettings;
 	MegaIconButton* backButton;
 	
 public:

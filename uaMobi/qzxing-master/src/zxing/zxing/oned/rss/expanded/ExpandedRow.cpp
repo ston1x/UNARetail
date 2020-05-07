@@ -1,5 +1,7 @@
 #include "ExpandedRow.h"
-
+#ifndef Q_NULLPTR
+#define Q_NULLPTR nullptr
+#endif
 namespace zxing {
 	namespace oned {
 		namespace rss {
@@ -12,9 +14,9 @@ namespace zxing {
 
 			ExpandedRow::ExpandedRow(const ExpandedRow* other)
 			{
-				m_pairs = other != nullptr ? other->m_pairs : std::vector<ExpandedPair>();
-				m_rowNumber = other != nullptr ? other->m_rowNumber : 0;
-				m_wasReversed = other != nullptr ? other->m_wasReversed : false;
+				m_pairs = other != Q_NULLPTR ? other->m_pairs : std::vector<ExpandedPair>();
+				m_rowNumber = other != Q_NULLPTR ? other->m_rowNumber : 0;
+				m_wasReversed = other != Q_NULLPTR ? other->m_wasReversed : false;
 			}
 
 			std::vector<ExpandedPair>& ExpandedRow::getPairs()

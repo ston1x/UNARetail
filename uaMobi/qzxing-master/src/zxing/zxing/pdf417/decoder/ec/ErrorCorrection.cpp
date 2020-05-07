@@ -89,6 +89,7 @@ void ErrorCorrection::decode(ArrayRef<int> received,
 				throw ReedSolomonException("Bad error location!");
 			}
 			received[position] = field_.subtract(received[position], errorMagnitudes[i]);
+#undef DEBUG
 #if (defined (DEBUG)  && defined _WIN32)
 			{
 				WCHAR szmsg[256];
@@ -175,6 +176,7 @@ ArrayRef<int> ErrorCorrection::findErrorLocations(Ref<ModulusPoly> errorLocator)
 		throw ReedSolomonException("Error number inconsistency!");
 #endif
 	}
+#undef DEBUG
 #if (defined (DEBUG) && defined _WIN32)
 	{
 		WCHAR szmsg[256];

@@ -32,10 +32,15 @@ DatabaseSettings::DatabaseSettings(Modes mode, QWidget* parent)
 	
 	searchOnScan->setCheckable(true);
 	searchOnScan->setChecked(AppSettings->autoSearch);
-
+#ifdef QT_VERSION5X
 	QObject::connect(clearScanned, &MegaIconButton::clicked, this, &DatabaseSettings::clearScannedConfirmed);
 	QObject::connect(wipeDatabase, &MegaIconButton::clicked, this, &DatabaseSettings::wipeDatabaseConfirmed);
 	QObject::connect(clearLogs, &MegaIconButton::clicked, this, &DatabaseSettings::clearLogsConfirmed);
+#else
+	QObject::connect(clearScanned, SIGNAL(clicked()), this, SLOT(clearScannedConfirmed()));
+	QObject::connect(wipeDatabase, SIGNAL(clicked()), this, SLOT(wipeDatabaseConfirmed()));
+	QObject::connect(clearLogs, SIGNAL(clicked()), this, SLOT(clearLogsConfirmed()));
+#endif
 	
 }
 

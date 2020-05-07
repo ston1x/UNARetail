@@ -17,11 +17,18 @@ inframedWidget::inframedWidget(QWidget* parent)
 	: QWidget(parent), keyfilter(new filters::GeneralPurposeFilter(filters::GeneralPurposeFilter::infPack, this))
 {
 	QObject::installEventFilter(keyfilter);
+#ifdef QT_VERSION5X
 	QObject::connect(keyfilter, &GeneralPurposeFilter::backPressed, this, &inframedWidget::backReaction);
 	QObject::connect(keyfilter, &GeneralPurposeFilter::returnPressed, this, &inframedWidget::returnReaction);
 	QObject::connect(keyfilter, &GeneralPurposeFilter::numberPressed, this, &inframedWidget::controlReaction);
 	QObject::connect(keyfilter, &GeneralPurposeFilter::scanPressed, this, &inframedWidget::allocateLock);
 	QObject::connect(keyfilter, &GeneralPurposeFilter::scanReleased, this, &inframedWidget::deallocateLock);
+#else
+    QObject::connect(keyfilter, SIGNAL(backPressed()), this, SLOT(backReaction()));
+    QObject::connect(keyfilter, SIGNAL(returnPressed()), this, SLOT(returnReaction()));
+    QObject::connect(keyfilter, SIGNAL(numberPressed(int)), this, SLOT(controlReaction(int)));
+#endif
+
 }
 bool inframedWidget::back()
 {

@@ -1,5 +1,7 @@
 #include "ExpandedPair.h"
-
+#ifndef Q_NULLPTR
+#define Q_NULLPTR nullptr
+#endif
 namespace zxing {
 	namespace oned {
 		namespace rss {
@@ -12,9 +14,9 @@ namespace zxing {
 
 			ExpandedPair::ExpandedPair(const ExpandedPair* other)
 			{
-				m_leftChar = other != nullptr ? other->m_leftChar : DataCharacter();
-				m_rightChar = other != nullptr ? other->m_rightChar : DataCharacter();
-				m_finderPattern = other != nullptr ? other->m_finderPattern : nullptr;
+				m_leftChar = other != Q_NULLPTR ? other->m_leftChar : DataCharacter();
+				m_rightChar = other != Q_NULLPTR ? other->m_rightChar : DataCharacter();
+				m_finderPattern = other != Q_NULLPTR ? other->m_finderPattern : Q_NULLPTR;
 			}
 
 			DataCharacter& ExpandedPair::getLeftChar()

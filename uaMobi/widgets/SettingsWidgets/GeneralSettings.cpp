@@ -39,8 +39,11 @@ GeneralSettings::GeneralSettings(QWidget* parent)
 	localPath->setText(AppSettings->localfile);
 	versionControl->setAlignment(Qt::AlignCenter);
 	versionControl->setText(QString::number(VERSION) + SUFFIX);
-
+#ifdef QT_VERSION5X
 	QObject::connect(langButton, &MegaIconButton::clicked, this, &GeneralSettings::langChangePressed);
+#else
+	QObject::connect(langButton, SIGNAL(clicked()), this, SLOT(langChangePressed()));
+#endif
 }
 
 void GeneralSettings::extractAndSave()

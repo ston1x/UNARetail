@@ -52,12 +52,19 @@ BranchRootWidget::BranchRootWidget(Modes mode, QWidget* parent) :
 	settings->setSizePolicy(expandToAl);
 	setFocus();
 	
-
+#ifdef QT_VERSION5X
 	QObject::connect(scanner, &QPushButton::clicked, this, &BranchRootWidget::scannerPressed);
 	QObject::connect(scanned, &QPushButton::clicked, this, &BranchRootWidget::scannedPressed);
 	QObject::connect(receive, &QPushButton::clicked, this, &BranchRootWidget::receivePressed);
 	QObject::connect(settings, &QPushButton::clicked, this, &BranchRootWidget::settingsPressed);
 	QObject::connect(backButton, &QPushButton::clicked, this, &BranchRootWidget::backRequire);
+#else
+	QObject::connect(scanner, SIGNAL(clicked()), this, SLOT(scannerPressed()));
+	QObject::connect(scanned, SIGNAL(clicked()), this, SLOT(scannedPressed()));
+	QObject::connect(receive, SIGNAL(clicked()), this, SLOT(receivePressed()));
+	QObject::connect(settings, SIGNAL(clicked()), this, SLOT(settingsPressed()));
+	QObject::connect(backButton, SIGNAL(clicked()), this, SLOT(backRequire()));
+#endif
 }
 
 bool BranchRootWidget::giveSettings()
@@ -108,7 +115,11 @@ void BranchRootWidget::scannedPressed()
 void BranchRootWidget::receivePressed()
 {
 	_hideAndDeleteCurrent(new SendingDataPickerWidget(currentMode, this));
+#ifdef QT_VERSION5X
 	QObject::connect(_upCO<SendingDataPickerWidget>(), &SendingDataPickerWidget::backRequired, this, &BranchRootWidget::backRequire);
+#else
+	QObject::connect(_upCO<SendingDataPickerWidget>(), SIGNAL(backRequired()), this, SLOT(backRequire()));
+#endif
 }
 
 void BranchRootWidget::settingsPressed()
@@ -119,6 +130,7 @@ void BranchRootWidget::settingsPressed()
 void BranchRootWidget::newBarcodeArrived(Entity e)
 {
 	AppData->postEntityInto(TableNames::Scanned, e, currentMode);
+	AppBackup->pushOperation(OpType::SCAN, int(currentMode), e);
 }
 
 

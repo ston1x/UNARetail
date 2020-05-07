@@ -15,11 +15,13 @@ protected:
 	virtual bool _fromSql(QSqlQuery*) override;
 	virtual AbsEntity* _clone() const override;
 	virtual QString _getName() const override;
-	virtual int _getEnumerable(int role) const override;
+	virtual double _getEnumerable(int role) const override;
 	virtual bool deepCompare(AbsEntity*) const override;
 	virtual void _invalidate() override;
 	virtual int _getHeight() const override;
 	virtual const QStringList& _getFields() const override;
+	virtual QString _fullComparationQuery() const override;
+	virtual void _setEnumerable(int role, double value) override;
 public:
 	QString barcode;			//	String representation of barcode. Is used to distinct one barcode from another.
 	QDateTime addDate;		//	datetime when barcode was scanned. If it was scanned multiple times - only first stays
@@ -36,5 +38,5 @@ public:
 		QString comm = "", double gP = 0, double dP = 0, double sP = 0, double unP = 0);
 };
 
-typedef std::shared_ptr<PricedBarcodeEntity> PricedBarcode;
+typedef QSharedPointer<PricedBarcodeEntity> PricedBarcode;
 typedef QVector<PricedBarcode> PricedBcList;

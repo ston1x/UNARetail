@@ -1,5 +1,5 @@
 #pragma once
-#include <QtWidgets/QStyledItemDelegate>
+#include <QStyledItemDelegate>
 #include <QtGui/QPainter>
 
 /*
@@ -22,4 +22,15 @@ public:
 	ZebraItemDelegate(QObject* parent);
 	
 
+};
+
+class ShortZebraItemDelegate : public ZebraItemDelegate
+{
+	Q_OBJECT
+protected:
+	virtual void paint(QPainter* painter, const QStyleOptionViewItem& option,
+		const QModelIndex& index) const override;
+	virtual QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+public:
+	ShortZebraItemDelegate(QObject* parent);
 };

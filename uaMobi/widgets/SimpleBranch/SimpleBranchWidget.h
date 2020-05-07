@@ -17,4 +17,5 @@ protected:
 	virtual inframedWidget* _allocateSettings() override;
 public:
 	SimpleBranchWidget(QWidget* parent);
+	virtual void backRequire() override;
 };

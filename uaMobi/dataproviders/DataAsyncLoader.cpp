@@ -29,7 +29,8 @@ void DataAsyncLoader::loadEntitiesForMode(Modes mode, TableNames table)
 
 void DataAsyncLoader::loadAllEntitiesForMode(Modes mode)
 {
-	QSqlDatabase tempConnection = AppData->cloneConnection();
+    QSqlDatabase tempConnection = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), QStringLiteral("maindbAsLoader" ) + QString::number(QTime::currentTime().msec()));
+    tempConnection.setDatabaseName(QStringLiteral("MAIN.db"));
 	Entity prototype = modenamesLinker.value(mode);
 	QString formatedName = formatTableName(mode, prototype, TableNames::Scanned);
 	tempConnection.open();
@@ -43,6 +44,7 @@ void DataAsyncLoader::loadAllEntitiesForMode(Modes mode)
 	{
 		Entities.push_back(Entity(prototype->clone()));
 	}
+	Entities.push_back(Entity(new SeparatorEntity()));
 	formatedName = formatTableName(mode, prototype, TableNames::Uploaded);
 	q.exec(
 		prototype->getAssociatedTable()->select_all(formatedName)
@@ -51,5 +53,6 @@ void DataAsyncLoader::loadAllEntitiesForMode(Modes mode)
 	{
 		Entities.push_back(Entity(prototype->clone()));
 	}
+    tempConnection.close();
 	emit resultReady(Entities);
 }

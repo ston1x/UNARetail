@@ -25,7 +25,11 @@ VirtualBarcodeKeyboard::VirtualBarcodeKeyboard(QWidget* parent)
 		numberButtons[i]->setSizePolicy(bsp);
 		numberButtons[i]->setText(QString::number(i + 1));
 		mainLayout->addWidget(numberButtons[i], row, col);
+#ifdef QT_VERSION5X
 		QObject::connect(numberButtons[i], &QPushButton::pressed, this, &VirtualBarcodeKeyboard::numberPressed);
+#else
+		QObject::connect(numberButtons[i], SIGNAL(pressed()), this, SLOT(numberPressed()));
+#endif
 		++col;
 		if (col == 3)
 		{
@@ -36,7 +40,11 @@ VirtualBarcodeKeyboard::VirtualBarcodeKeyboard(QWidget* parent)
 	numberButtons[9] = new QPushButton(this);
 	numberButtons[9]->setSizePolicy(bsp);
 	numberButtons[9]->setText("0");
+#ifdef QT_VERSION5X
 	QObject::connect(numberButtons[9], &QPushButton::pressed, this, &VirtualBarcodeKeyboard::numberPressed);
+#else
+	QObject::connect(numberButtons[9], SIGNAL(pressed()), this, SLOT(numberPressed()));
+#endif
 	mainLayout->addWidget(numberButtons[9], 5, 1);
 	mainLayout->addWidget(clearButton, 5, 0);
 	mainLayout->addWidget(eraseButton, 5, 2);
@@ -57,10 +65,17 @@ VirtualBarcodeKeyboard::VirtualBarcodeKeyboard(QWidget* parent)
 	okButton->setMinimumHeight(calculateAdaptiveButtonHeight());
 	backButton->setMinimumHeight(calculateAdaptiveButtonHeight());
 	setFocus();
+#ifdef QT_VERSION5X
 	QObject::connect(clearButton, &QPushButton::pressed, barcodeLine, &QLineEdit::clear);
 	QObject::connect(eraseButton, &QPushButton::pressed, barcodeLine, &QLineEdit::backspace);
 	QObject::connect(okButton, &QPushButton::pressed, this, &VirtualBarcodeKeyboard::okPressed);
 	QObject::connect(backButton, &QPushButton::pressed, this, &VirtualBarcodeKeyboard::backPressed);
+#else
+	QObject::connect(clearButton, SIGNAL(pressed()), barcodeLine, SLOT(clear()));
+	QObject::connect(eraseButton, SIGNAL(pressed()), barcodeLine, SLOT(backspace()));
+	QObject::connect(okButton, SIGNAL(pressed()), this, SLOT(okPressed()));
+	QObject::connect(backButton, SIGNAL(pressed()), this, SLOT(backPressed()));
+#endif
 }
 
 bool VirtualBarcodeKeyboard::isExpectingControl(int contr)
@@ -99,11 +114,11 @@ void VirtualBarcodeKeyboard::setStartingText(QString& str, VirtualBarcodeKeyboar
 
 void VirtualBarcodeKeyboard::numberPressed()
 {
-	auto buttonsent = sender();
-	if (buttonsent != nullptr)
+	QObject* buttonsent = sender();
+	if (buttonsent != Q_NULLPTR)
 	{
-		QPushButton* castedPointer = dynamic_cast<QPushButton*>(buttonsent);
-		if (castedPointer == nullptr)
+		QPushButton* castedPointer = static_cast<QPushButton*>(buttonsent);
+		if (castedPointer == Q_NULLPTR)
 			return;
 		barcodeLine->setText(barcodeLine->text() + castedPointer->text());
 	}

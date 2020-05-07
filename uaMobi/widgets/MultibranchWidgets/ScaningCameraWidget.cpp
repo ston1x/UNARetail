@@ -1,4 +1,5 @@
 #include "ScaningCameraWidget.h"
+#ifdef CAMERA_SUPPORT
 #include <QtQuick/QQuickItem>
 void ScaningCameraWidget::show()
 {
@@ -6,9 +7,7 @@ void ScaningCameraWidget::show()
 }
 void ScaningCameraWidget::barcodeObtained(QString str)
 {
-	backButton->setText(str);
-	emit hasBarcode(str);
-	emit backRequired();
+    emit hasBarcode(str);
 }
 ScaningCameraWidget::ScaningCameraWidget(QWidget* parent)
 	: AbstractCameraWidget("qrc:///ScaningCameraSurface.qml", parent)
@@ -17,3 +16,4 @@ ScaningCameraWidget::ScaningCameraWidget(QWidget* parent)
 	auto filter = root2->findChild<QObject*>("FilterZX");
 	QObject::connect(filter, SIGNAL(bcArr(QString)), this, SLOT(barcodeObtained(QString)));
 }
+#endif

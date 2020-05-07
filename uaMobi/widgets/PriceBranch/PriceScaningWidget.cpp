@@ -3,12 +3,11 @@
 #include <algorithm>
 #include "widgets/utils/ElementsStyles.h"
 #include <QtCore/QTimer>
-#include "PricedBarcodeRedacting.h"
-
+#include <QInputMethod>
 #ifdef DEBUG
 #include "debugtrace.h"
 #endif
-
+#include "widgets/utils/GlobalAppSettings.h"
 PriceScaningWidget::PriceScaningWidget(QWidget* parent)
 	: AbstractScaningWidget(Modes::Prices, parent),
 	lengthCounter(new QLabel(untouchable)),
@@ -32,8 +31,13 @@ PriceScaningWidget::PriceScaningWidget(QWidget* parent)
 
 	lengthCounter->setStyleSheet(COUNTERS_LABEL_STYLESHEET);
 	totalCounter->setStyleSheet(COUNTERS_LABEL_STYLESHEET);
+#ifdef Q_OS_WINCE
+	lengthCounter->setFont(AppFonts->makeFont(1.5));
+	totalCounter->setFont(AppFonts->makeFont(1.5));
+#else
 	lengthCounter->setFont(AppFonts->makeFont(2.5));
 	totalCounter->setFont(AppFonts->makeFont(2.5));
+#endif
 	totalCounter->setMinimumHeight(calculateAdaptiveButtonHeight());
 	lengthCounter->setMinimumHeight(calculateAdaptiveButtonHeight());
 
@@ -44,11 +48,20 @@ PriceScaningWidget::PriceScaningWidget(QWidget* parent)
 
 	generalPrice->show();
 	discountPrice->show();
-	
+#ifdef QT_VERSION5X
 	QObject::connect(okButton, &QPushButton::clicked, this, &PriceScaningWidget::okPressed);
 	QObject::connect(generalPrice, &QuantityControl::editingFinished, discountPrice, 
 		&QuantityControl::setFocus);
 	QObject::connect(discountPrice, &QuantityControl::editingFinished, this, &PriceScaningWidget::barcodeReady);
+#ifdef Q_OS_ANDROID
+    QObject::connect(discountPrice, &QuantityControl::editingFinished, qApp->inputMethod(), &QInputMethod::hide);
+#endif
+#else
+	QObject::connect(okButton, SIGNAL(clicked()), this, SLOT(okPressed()));
+	QObject::connect(generalPrice, SIGNAL(editingFinished()), discountPrice,
+		SLOT(setFocus()));
+	QObject::connect(discountPrice, SIGNAL(editingFinished()), this, SLOT(barcodeReady()));
+#endif
 }
 
 void PriceScaningWidget::show()
@@ -60,20 +73,42 @@ void PriceScaningWidget::_emplaceBarcode(QString barcode)
 {
 	if (!barcode.isEmpty())
 	{
-		pendingBarcode.reset(new PricedBarcodeEntity(barcode));
-		generalPrice->setFocus();
+		barcode = _extractionCheck(barcode);
+        pendingBarcode.clear();
+        pendingBarcode = PricedBarcode(new PricedBarcodeEntity(barcode));
 		barcodeInput->setText(barcode);
 		if (AppSettings->autoSearch)
-			barcodeInfo->setText(AppData->barcodeInfo(barcode));
+		{
+			ShortBarcode info = upcastEntity<ShortBarcodeEntity>(AppData->barcodeInfo(barcode));
+			if (info != Q_NULLPTR)
+			{
+				barcodeInfo->setText(info->info);
+				pendingBarcode->comment = info->info;
+			}
+			else
+			{
+				barcodeInfo->clear();
+			}
+		}
 		setLen();
-		setTotal(AppData->sumAllIn(currentMode, BarcodeEntity::getEnumerableFieldIndex(), pendingBarcode, TableNames::Scanned));
+		setTotal(AppData->sumAllIn(currentMode, 3, pendingBarcode, TableNames::Scanned));
+		generalPrice->setFocus();
 	}
 }
 
 void PriceScaningWidget::_clearControls()
 {
-	generalPrice->setValue(0);
-	discountPrice->setValue(0);
+    generalPrice->setValue(QString("0"));
+    discountPrice->setValue(QString("0"));
+}
+
+void PriceScaningWidget::_pushToHistory(Entity e)
+{
+	if (barcodeModel != Q_NULLPTR)
+	{
+		barcodeModel->addToDataEntity(e, 0);
+		barcodeModel->addToDataEntity(e, 1);
+	}
 }
 
 void PriceScaningWidget::handleScanButton()
@@ -82,7 +117,8 @@ void PriceScaningWidget::handleScanButton()
 	{
 		emit barcodeReceived(pendingBarcode);
 		barcodeInput->clear();
-		pendingBarcode.reset(new PricedBarcodeEntity());
+        pendingBarcode.clear();
+        pendingBarcode = PricedBarcode(new PricedBarcodeEntity());
 	}
 }
 
@@ -92,17 +128,37 @@ void PriceScaningWidget::barcodeReady()
 	pendingBarcode->discountPrice = discountPrice->getValue().toDouble();
 	if (pendingBarcode->isValid())
 	{
+		pendingBarcode->comment = barcodeInfo->toPlainText();
+		_pushToHistory(pendingBarcode);
 		emit barcodeReceived(pendingBarcode);
+        QString tname = pendingBarcode->barcode;
+        pendingBarcode.clear();
+        pendingBarcode = PricedBarcode(new PricedBarcodeEntity(tname));
 		generalPrice->setValue("0");
 		discountPrice->setValue("0");
+		if (AppSettings->clearScanBuffer)
+		{
+			pendingBarcode.clear();
+			pendingBarcode = PricedBarcode(new PricedBarcodeEntity());
+			barcodeInput->clear();
+			barcodeInfo->clear();
+			totalCounter->clear();
+			lengthCounter->clear();
+		}
+		else
+		{
+			setTotal(AppData->countAllIn(currentMode, pendingBarcode, TableNames::Scanned));
+		}
 	}
-	setTotal(AppData->countAllIn(currentMode, pendingBarcode, TableNames::Scanned));
+	
+
 }
 #ifdef CAMERA_SUPPORT
 void PriceScaningWidget::handleCameraBarcode(QString value)
 {
-	_emplaceBarcode(value);
-	_clearControls();
+    barcodeReady();
+    hideCurrent();
+    barcodeConfirmed(value);
 }
 #endif
 void PriceScaningWidget::setLen()
@@ -141,5 +197,7 @@ void PriceScaningWidget::handleValueFromKeyboard(QString val)
 void PriceScaningWidget::okPressed()
 //	submits data to connected widget
 {
-	emit backRequired();
+    barcodeReady();
+	if (AppSettings->clearScanBuffer)
+		emit backRequired();
 }

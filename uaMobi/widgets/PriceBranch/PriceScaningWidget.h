@@ -21,6 +21,7 @@ protected:
 	// Inherited via AbstractScaningWidget
 	virtual void _emplaceBarcode(QString barcode) override;
 	virtual void _clearControls() override;
+	virtual void _pushToHistory(Entity e) override;
 	virtual void handleValueFromKeyboard(QString value) override;
 	virtual void handleScanButton() override;
 	virtual void barcodeReady() override;

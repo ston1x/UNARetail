@@ -156,7 +156,11 @@ namespace detr_supply { // Holds enums for defining output method and priorities
 	};
 	// Defines priority level: everything that is lower than detrace starting priority
 	// will be printed.
-	enum class Actions { Flush, endl, ignore, nolimit};
+    enum
+        #ifdef QT_VERSION5X
+            class
+        #endif
+    Actions { Flush, endl, ignore, nolimit};
 }
 
 using namespace detr_supply;

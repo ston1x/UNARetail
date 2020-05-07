@@ -1,6 +1,8 @@
 #ifndef EXPANDED_ROW_H
 #define EXPANDED_ROW_H
-
+#ifndef Q_NULLPTR
+#define Q_NULLPTR nullptr
+#endif
 /*
  * Copyright (C) 2010 ZXing authors
  *
@@ -34,7 +36,7 @@ namespace zxing {
 			public:
 				ExpandedRow(std::vector<ExpandedPair> pairs, int rowNumber, bool wasReversed);
 
-				ExpandedRow(const ExpandedRow* other = nullptr);
+				ExpandedRow(const ExpandedRow* other = Q_NULLPTR);
 
 				std::vector<ExpandedPair>& getPairs();
 

@@ -10,8 +10,8 @@ class ScaningWidget :
 {
 	Q_OBJECT
 protected:
-	QLabel* lengthInfo;					//	length of barcode
-	QLabel* totalInfo;					//	how much quantity this barcode has already
+	TwoLevelCounterLabel* lengthInfo;					//	length of barcode
+	TwoLevelCounterLabel* totalInfo;					//	how much quantity this barcode has already
 	MegaIconButton* okButton;
 
 	QuantityControl* quantityControl;

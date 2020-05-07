@@ -67,7 +67,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;qzxing-master\src;qzxing-master\src\zxing;qzxing-master\src\zxing\win32\zxing;qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;qzxing-master\src;qzxing-master\src\zxing;qzxing-master\src\zxing\win32\zxing;qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>release\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -76,7 +76,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>QT_VERSION5X;_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;QZXING_LIBRARY;ZXING_ICONV_CONST;DISABLE_LIBRARY_FEATURES;QZXING_MULTIMEDIA;QZXING_QML;NOFMAXL;__STDC_LIMIT_MACROS;QT_DEPRECATED_WARNINGS;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_MULTIMEDIA_LIB;QT_QML_LIB;QT_SQL_LIB;QT_WIDGETS_LIB;QT_QUICK_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>QT_VERSION5X;_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;QZXING_LIBRARY;ZXING_ICONV_CONST;DISABLE_LIBRARY_FEATURES;QZXING_MULTIMEDIA;QZXING_QML;NOFMAXL;__STDC_LIMIT_MACROS;QT_DEPRECATED_WARNINGS;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_MULTIMEDIA_LIB;QT_QML_LIB;QT_SQL_LIB;QT_WIDGETS_LIB;QT_QUICK_LIB;QT_NETWORK_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -86,7 +86,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(QTDIR)\lib\Qt5MultimediaWidgets.lib;$(QTDIR)\lib\Qt5Multimedia.lib;$(QTDIR)\lib\Qt5QuickWidgets.lib;$(QTDIR)\lib\Qt5Widgets.lib;$(QTDIR)\lib\Qt5Quick.lib;$(QTDIR)\lib\Qt5Gui.lib;$(QTDIR)\lib\Qt5Sql.lib;$(QTDIR)\lib\Qt5Qml.lib;$(QTDIR)\lib\Qt5Network.lib;$(QTDIR)\lib\Qt5Xml.lib;$(QTDIR)\lib\Qt5Core.lib;$(QTDIR)\lib\qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Multimedia.lib;Qt5Qml.lib;Qt5Sql.lib;Qt5Widgets.lib;Qt5Quick.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(QTDIR)\lib\Qt5MultimediaWidgets.lib;$(QTDIR)\lib\Qt5Multimedia.lib;$(QTDIR)\lib\Qt5QuickWidgets.lib;$(QTDIR)\lib\Qt5Widgets.lib;$(QTDIR)\lib\Qt5Quick.lib;$(QTDIR)\lib\Qt5Gui.lib;$(QTDIR)\lib\Qt5Sql.lib;$(QTDIR)\lib\Qt5Qml.lib;$(QTDIR)\lib\Qt5Network.lib;$(QTDIR)\lib\Qt5Xml.lib;$(QTDIR)\lib\Qt5Core.lib;$(QTDIR)\lib\qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Multimedia.lib;Qt5Qml.lib;Qt5Sql.lib;Qt5Widgets.lib;Qt5Quick.lib;Qt5Network.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -109,13 +109,13 @@
     <QtMoc>
       <QTDIR>$(QTDIR)</QTDIR>
       <OutputFile>$(Configuration)\moc_%(Filename).cpp</OutputFile>
-      <Define>QT_VERSION5X;_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;QZXING_LIBRARY;ZXING_ICONV_CONST;DISABLE_LIBRARY_FEATURES;QZXING_MULTIMEDIA;QZXING_QML;NOFMAXL;__STDC_LIMIT_MACROS;QT_DEPRECATED_WARNINGS;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_MULTIMEDIA_LIB;QT_QML_LIB;QT_SQL_LIB;QT_WIDGETS_LIB;QT_QUICK_LIB;%(PreprocessorDefinitions)</Define>
+      <Define>QT_VERSION5X;_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;QZXING_LIBRARY;ZXING_ICONV_CONST;DISABLE_LIBRARY_FEATURES;QZXING_MULTIMEDIA;QZXING_QML;NOFMAXL;__STDC_LIMIT_MACROS;QT_DEPRECATED_WARNINGS;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_MULTIMEDIA_LIB;QT_QML_LIB;QT_SQL_LIB;QT_WIDGETS_LIB;QT_QUICK_LIB;QT_NETWORK_LIB;%(PreprocessorDefinitions)</Define>
       <CompilerFlavor>msvc</CompilerFlavor>
       <Include>./$(Configuration)/moc_predefs.h</Include>
       <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
       <InputFile>%(FullPath)</InputFile>
       <DynamicSource>output</DynamicSource>
-      <IncludePath>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;qzxing-master\src;qzxing-master\src\zxing;qzxing-master\src\zxing\win32\zxing;qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;qzxing-master\src;qzxing-master\src\zxing;qzxing-master\src\zxing\win32\zxing;qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtNetwork;%(AdditionalIncludeDirectories)</IncludePath>
     </QtMoc>
     <QtRcc>
       <OutputFile>$(Configuration)\qrc_%(Filename).cpp</OutputFile>
@@ -128,7 +128,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;qzxing-master\src;qzxing-master\src\zxing;qzxing-master\src\zxing\win32\zxing;qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;qzxing-master\src;qzxing-master\src\zxing;qzxing-master\src\zxing\win32\zxing;qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>debug\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -137,7 +137,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>QT_VERSION5X;_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;QZXING_LIBRARY;ZXING_ICONV_CONST;DISABLE_LIBRARY_FEATURES;QZXING_MULTIMEDIA;QZXING_QML;NOFMAXL;__STDC_LIMIT_MACROS;QT_DEPRECATED_WARNINGS;QT_CORE_LIB;QT_GUI_LIB;QT_MULTIMEDIA_LIB;QT_QML_LIB;QT_SQL_LIB;QT_WIDGETS_LIB;QT_QUICK_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;QT_VERSION5X;_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;QZXING_LIBRARY;ZXING_ICONV_CONST;DISABLE_LIBRARY_FEATURES;QZXING_MULTIMEDIA;QZXING_QML;NOFMAXL;__STDC_LIMIT_MACROS;QT_DEPRECATED_WARNINGS;QT_CORE_LIB;QT_GUI_LIB;QT_MULTIMEDIA_LIB;QT_QML_LIB;QT_SQL_LIB;QT_WIDGETS_LIB;QT_QUICK_LIB;QT_NETWORK_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -147,7 +147,7 @@
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(QTDIR)\lib\Qt5MultimediaWidgetsd.lib;$(QTDIR)\lib\Qt5Multimediad.lib;$(QTDIR)\lib\Qt5QuickWidgetsd.lib;$(QTDIR)\lib\Qt5Widgetsd.lib;$(QTDIR)\lib\Qt5Quickd.lib;$(QTDIR)\lib\Qt5Guid.lib;$(QTDIR)\lib\Qt5Sqld.lib;$(QTDIR)\lib\Qt5Qmld.lib;$(QTDIR)\lib\Qt5Networkd.lib;$(QTDIR)\lib\Qt5Xmld.lib;$(QTDIR)\lib\Qt5Cored.lib;$(QTDIR)\lib\qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Multimediad.lib;Qt5Qmld.lib;Qt5Sqld.lib;Qt5Widgetsd.lib;Qt5Quickd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(QTDIR)\lib\Qt5MultimediaWidgetsd.lib;$(QTDIR)\lib\Qt5Multimediad.lib;$(QTDIR)\lib\Qt5QuickWidgetsd.lib;$(QTDIR)\lib\Qt5Widgetsd.lib;$(QTDIR)\lib\Qt5Quickd.lib;$(QTDIR)\lib\Qt5Guid.lib;$(QTDIR)\lib\Qt5Sqld.lib;$(QTDIR)\lib\Qt5Qmld.lib;$(QTDIR)\lib\Qt5Networkd.lib;$(QTDIR)\lib\Qt5Xmld.lib;$(QTDIR)\lib\Qt5Cored.lib;$(QTDIR)\lib\qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Multimediad.lib;Qt5Qmld.lib;Qt5Sqld.lib;Qt5Widgetsd.lib;Qt5Quickd.lib;Qt5Networkd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -177,13 +177,13 @@
     <QtMoc>
       <QTDIR>$(QTDIR)</QTDIR>
       <OutputFile>$(Configuration)\moc_%(Filename).cpp</OutputFile>
-      <Define>QT_VERSION5X;_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;QZXING_LIBRARY;ZXING_ICONV_CONST;DISABLE_LIBRARY_FEATURES;QZXING_MULTIMEDIA;QZXING_QML;NOFMAXL;__STDC_LIMIT_MACROS;QT_DEPRECATED_WARNINGS;QT_CORE_LIB;QT_GUI_LIB;QT_MULTIMEDIA_LIB;QT_QML_LIB;QT_SQL_LIB;QT_WIDGETS_LIB;QT_QUICK_LIB;%(PreprocessorDefinitions)</Define>
+      <Define>DEBUG;QT_VERSION5X;_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;QZXING_LIBRARY;ZXING_ICONV_CONST;DISABLE_LIBRARY_FEATURES;QZXING_MULTIMEDIA;QZXING_QML;NOFMAXL;__STDC_LIMIT_MACROS;QT_DEPRECATED_WARNINGS;QT_CORE_LIB;QT_GUI_LIB;QT_MULTIMEDIA_LIB;QT_QML_LIB;QT_SQL_LIB;QT_WIDGETS_LIB;QT_QUICK_LIB;QT_NETWORK_LIB;%(PreprocessorDefinitions)</Define>
       <CompilerFlavor>msvc</CompilerFlavor>
       <Include>./$(Configuration)/moc_predefs.h</Include>
       <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
       <InputFile>%(FullPath)</InputFile>
       <DynamicSource>output</DynamicSource>
-      <IncludePath>.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;qzxing-master\src;qzxing-master\src\zxing;qzxing-master\src\zxing\win32\zxing;qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath>.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;qzxing-master\src;qzxing-master\src\zxing;qzxing-master\src\zxing\win32\zxing;qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtNetwork;%(AdditionalIncludeDirectories)</IncludePath>
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -192,10 +192,13 @@
     <ClCompile Include="Datacore\DataEntities.cpp" />
     <ClCompile Include="Datacore\PricedBarcodeEntity.cpp" />
     <ClCompile Include="Datacore\ShortBarcodeEntity.cpp" />
+    <ClCompile Include="Datacore\UtilityEntities.cpp" />
     <ClCompile Include="dataFormats\formats.cpp" />
     <ClCompile Include="dataproviders\BackupingEngine.cpp" />
     <ClCompile Include="dataproviders\DataAsyncLoader.cpp" />
+    <ClCompile Include="dataproviders\ModesDescriptions.cpp" />
     <ClCompile Include="dataproviders\TableHandlers.cpp" />
+    <ClCompile Include="externalCommunication\AsyncRequestEngine.cpp" />
     <ClCompile Include="qzxing-master\src\zxing\zxing\oned\rss\expanded\decoders\AI013103decoder.cpp" />
     <ClCompile Include="qzxing-master\src\zxing\zxing\oned\rss\expanded\decoders\AI01320xDecoder.cpp" />
     <ClCompile Include="qzxing-master\src\zxing\zxing\oned\rss\expanded\decoders\AI01392xDecoder.cpp" />
@@ -218,6 +221,8 @@
     <ClCompile Include="widgets\ControlsMiniwidgets\DateTimeControl.cpp" />
     <ClCompile Include="widgets\ControlsMiniwidgets\QuantityControl.cpp" />
     <ClCompile Include="widgets\ControlsMiniwidgets\StringControl.cpp" />
+    <ClCompile Include="widgets\ExtendedDelegates\ExtraSelectionDelegate.cpp" />
+    <ClCompile Include="widgets\InvoiceBranch\InvoiceBranchWidget.cpp" />
     <ClCompile Include="widgets\MultibranchWidgets\BarcodeRedactingWidget.cpp" />
     <ClCompile Include="qzxing-master\src\zxing\bigint\BigInteger.cc" />
     <ClCompile Include="qzxing-master\src\zxing\bigint\BigIntegerAlgorithms.cc" />
@@ -232,9 +237,14 @@
     <ClCompile Include="qzxing-master\src\zxing\zxing\common\BitMatrix.cpp" />
     <ClCompile Include="qzxing-master\src\zxing\zxing\common\BitSource.cpp" />
     <ClCompile Include="qzxing-master\src\zxing\zxing\oned\rss\expanded\decoders\BlockParsedResult.cpp" />
+    <ClCompile Include="widgets\MultibranchWidgets\Redactors\Abs_Redactor.cpp" />
+    <ClCompile Include="widgets\MultibranchWidgets\Redactors\BarcodeRedactorForm.cpp" />
+    <ClCompile Include="widgets\MultibranchWidgets\Redactors\PricedBarcodeRedactorForm.cpp" />
+    <ClCompile Include="widgets\MultibranchWidgets\RestScaningWidget.cpp" />
     <ClCompile Include="widgets\MultibranchWidgets\ScaningCameraWidget.cpp" />
     <ClCompile Include="widgets\MultibranchWidgets\SendingDataPickerWidget.cpp" />
     <ClCompile Include="widgets\MultibranchWidgets\SendSettings.cpp" />
+    <ClCompile Include="widgets\MultibranchWidgets\UpdateableScaningWidget.cpp" />
     <ClCompile Include="widgets\parents\AbstractCameraWidget.cpp" />
     <ClCompile Include="widgets\parents\abstractNodeInterface.cpp" />
     <ClCompile Include="widgets\parents\AbstractScaningWidget.cpp" />
@@ -300,15 +310,20 @@
     <ClCompile Include="qzxing-master\src\zxing\zxing\qrcode\encoder\MatrixUtil.cpp" />
     <ClCompile Include="widgets\parents\inframedWidget.cpp" />
     <ClCompile Include="widgets\PriceBranch\PriceBranchWidget.cpp" />
-    <ClCompile Include="widgets\PriceBranch\PricedBarcodeRedacting.cpp" />
     <ClCompile Include="widgets\PriceBranch\PriceScaningWidget.cpp" />
+    <ClCompile Include="widgets\SettingsWidgets\DatabaseLoadSettings.cpp" />
     <ClCompile Include="widgets\SettingsWidgets\DatabaseSettings.cpp" />
+    <ClCompile Include="widgets\SettingsWidgets\ExtraScaningSettings.cpp" />
+    <ClCompile Include="widgets\SettingsWidgets\ExtraSendSettings.cpp" />
     <ClCompile Include="widgets\SettingsWidgets\GeneralSettings.cpp" />
+    <ClCompile Include="widgets\SettingsWidgets\LoginSettings.cpp" />
     <ClCompile Include="widgets\SettingsWidgets\QuickSendSettings.cpp" />
     <ClCompile Include="widgets\SettingsWidgets\ScaningSettings.cpp" />
     <ClCompile Include="widgets\SettingsWidgets\SearchDatabaseSettings.cpp" />
     <ClCompile Include="widgets\SettingsWidgets\SerializationSettings.cpp" />
     <ClCompile Include="widgets\SettingsWidgets\ViewSettings.cpp" />
+    <ClCompile Include="widgets\UtilityElements\ExtendedDialogs.cpp" />
+    <ClCompile Include="widgets\UtilityElements\ExtendedLabels.cpp" />
     <ClCompile Include="widgets\utils\BarcodeObserver.cpp" />
     <ClCompile Include="widgets\utils\BigButtonsSpinbox.cpp" />
     <ClCompile Include="widgets\utils\ElementsStyles.cpp" />
@@ -405,10 +420,19 @@
     <QtMoc Include="Datacore\DataEntities.h" />
     <ClInclude Include="Datacore\PricedBarcodeEntity.h" />
     <ClInclude Include="Datacore\ShortBarcodeEntity.h" />
-    <ClInclude Include="dataFormats\formats.h" />
+    <ClInclude Include="Datacore\UtilityEntities.h" />
+    <ClInclude Include="dataFormats\formats.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+    </ClInclude>
     <ClInclude Include="dataproviders\BackupingEngine.h" />
     <QtMoc Include="dataproviders\DataAsyncLoader.h" />
+    <ClInclude Include="dataproviders\ModesDescriptions.h" />
     <ClInclude Include="dataproviders\TableHandlers.h" />
+    <QtMoc Include="externalCommunication\AsyncRequestEngine.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+    </QtMoc>
     <ClInclude Include="qzxing-master\src\zxing\zxing\oned\rss\expanded\decoders\AI013103decoder.h" />
     <ClInclude Include="qzxing-master\src\zxing\zxing\oned\rss\expanded\decoders\AI01320xDecoder.h" />
     <ClInclude Include="qzxing-master\src\zxing\zxing\oned\rss\expanded\decoders\AI01392xDecoder.h" />
@@ -430,7 +454,6 @@
     <QtMoc Include="widgets\MultibranchWidgets\SendingDataPickerWidget.h" />
     <QtMoc Include="widgets\PriceBranch\PriceBranchWidget.h" />
     <QtMoc Include="widgets\PriceBranch\PriceScaningWidget.h" />
-    <QtMoc Include="widgets\PriceBranch\PricedBarcodeRedacting.h" />
     <QtMoc Include="widgets\MultibranchWidgets\SendSettings.h" />
     <QtMoc Include="widgets\utils\BarcodeObserver.h" />
     <QtMoc Include="widgets\ControlsMiniwidgets\abs_control.h" />
@@ -438,6 +461,34 @@
     <QtMoc Include="widgets\ControlsMiniwidgets\ControlTranslator.h" />
     <ClInclude Include="widgets\ControlsMiniwidgets\QuantityControl.h" />
     <QtMoc Include="widgets\ControlsMiniwidgets\StringControl.h" />
+    <QtMoc Include="widgets\MultibranchWidgets\Redactors\BarcodeRedactorForm.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+    </QtMoc>
+    <QtMoc Include="widgets\MultibranchWidgets\Redactors\Abs_Redactor.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+    </QtMoc>
+    <QtMoc Include="widgets\MultibranchWidgets\Redactors\PricedBarcodeRedactorForm.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+    </QtMoc>
+    <QtMoc Include="widgets\ExtendedDelegates\ExtraSelectionDelegate.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+    </QtMoc>
+    <QtMoc Include="widgets\InvoiceBranch\InvoiceBranchWidget.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+    </QtMoc>
+    <QtMoc Include="widgets\MultibranchWidgets\UpdateableScaningWidget.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+    </QtMoc>
+    <QtMoc Include="widgets\MultibranchWidgets\RestScaningWidget.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtNetwork</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtNetwork</IncludePath>
+    </QtMoc>
     <ClInclude Include="widgets\parents\abstractNodeInterface.h" />
     <QtMoc Include="widgets\SettingsWidgets\ScaningSettings.h" />
     <QtMoc Include="widgets\SettingsWidgets\DatabaseSettings.h" />
@@ -532,6 +583,30 @@
     <ClInclude Include="qzxing-master\src\zxing\zxing\oned\EAN8Reader.h" />
     <ClInclude Include="qzxing-master\src\zxing\zxing\oned\EANManufacturerOrgSupport.h" />
     <QtMoc Include="widgets\utils\BigButtonsSpinbox.h" />
+    <QtMoc Include="widgets\SettingsWidgets\DatabaseLoadSettings.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+    </QtMoc>
+    <QtMoc Include="widgets\SettingsWidgets\ExtraSendSettings.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+    </QtMoc>
+    <QtMoc Include="widgets\SettingsWidgets\ExtraScaningSettings.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+    </QtMoc>
+    <QtMoc Include="widgets\SettingsWidgets\LoginSettings.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+    </QtMoc>
+    <QtMoc Include="widgets\UtilityElements\ExtendedLabels.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+    </QtMoc>
+    <QtMoc Include="widgets\UtilityElements\ExtendedDialogs.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtNetwork</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtNetwork</IncludePath>
+    </QtMoc>
     <ClInclude Include="widgets\utils\ElementsStyles.h" />
     <ClInclude Include="qzxing-master\src\zxing\zxing\EncodeHint.h" />
     <ClInclude Include="qzxing-master\src\zxing\zxing\qrcode\encoder\Encoder.h" />
@@ -643,6 +718,8 @@
     <ClInclude Include="qzxing-master\src\zxing\zxing\WriterException.h" />
     <ClInclude Include="qzxing-master\src\zxing\zxing\ZXing.h" />
     <QtMoc Include="externalCommunication\communicationCore.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.;D:\Lib\Qt\5.12.2\msvc2017\include\QtZlib;.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;.\qzxing-master\src;.\qzxing-master\src\zxing;.\qzxing-master\src\zxing\win32\zxing;.\qzxing-master\src\zxing\win32\zxing\msvc;$(QTDIR)\include;.\release;C:\VulkanSDK\1.0.51.0\include;$(QTDIR)\mkspecs\win32-msvc;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtQuick</IncludePath>
     </QtMoc>
     <ClInclude Include="dataFormats\dataformater.h" />
     <ClInclude Include="debugtrace.h" />

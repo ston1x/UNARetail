@@ -2,7 +2,7 @@
 #include "widgets/MultibranchWidgets/ReceiveWidget.h"
 #include "widgets/MultibranchWidgets/SendSettings.h"
 #include "widgets/parents/abstractNodeInterface.h"
-
+#include "widgets/UtilityElements/ExtendedLabels.h"
 /*
 	This class represents widget used to pick which data must be sent. It has a child ReceiveWidget,
 	so it represents one subbranch
@@ -17,13 +17,14 @@ protected:
 	QVBoxLayout* mainLayout;		//	view
 	inframedWidget* innerWidget;
 	QVBoxLayout* innerLayout;
+	SemaphorLabel* semaphor;
 	MegaIconButton* unsentButton;
 	MegaIconButton* sentButton;
 	MegaIconButton* allButton;
 	MegaIconButton* settingsButton;
-	QLabel* sentQuantityInfo;
-	QLabel* unsentQuantityInfo;
-	QLabel* totalQantityInfo;
+	CounterLabel* sentQuantityInfo;
+	CounterLabel* unsentQuantityInfo;
+	CounterLabel* totalQantityInfo;
 	MegaIconButton* backButton;
 
 	Modes currentMode;
@@ -36,8 +37,7 @@ public:
 	virtual void show() override;
 	virtual bool back() override;
 	virtual bool isExpectingControl(int) override;
-	virtual bool giveSettings() override;
-	void set_info();
+    virtual bool giveSettings() override;
 protected slots:
 	void unsentChosen();
 	void sentChosen();
@@ -45,6 +45,7 @@ protected slots:
 	void hideCurrent();
 	void sendingSuccess();
 	void showSettings();
+    void set_info();
 signals:
 	void sendingSuccesfull();
 };

@@ -1,19 +1,21 @@
 #include "formats.h"
+#ifdef QT_VERSION5X
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QJsonDocument>
+#endif
 #include <QtXml/QDomDocument>
 #include <QtSql/QSqlRecord>
-#include <QJsonDocument>
 #include <QtCore/QVariant>
-
-
-
+#include "widgets/utils/GlobalAppSettings.h"
+#include "widgets/utils/ElementsStyles.h"
+#include "widgets/UtilityElements/ExtendedDialogs.h"
 QDomElement _XML_sqlColumnNames(QSqlRecord record, QDomDocument & xml)
 {
-	QDomElement columns{ xml.createElement("columns") };
+    QDomElement columns( xml.createElement("columns") );
 	for (int i = 0; i < record.count(); i++)
 	{
-		QDomElement column{ xml.createElement("C" + QString::number(i)) };
+        QDomElement column(xml.createElement("C" + QString::number(i)) );
 		column.appendChild(xml.createTextNode(record.fieldName(i)));
 		columns.appendChild(column);
 	}
@@ -22,10 +24,10 @@ QDomElement _XML_sqlColumnNames(QSqlRecord record, QDomDocument & xml)
 
 QDomElement _XML_sqlRowValues(QSqlRecord record, QDomDocument & xml)
 {
-	QDomElement row{ xml.createElement("row") };
+    QDomElement row( xml.createElement("row") );
 	for (int i = 0; i < record.count(); i++)
 	{
-		QDomElement value{ xml.createElement("C" + QString::number(i)) };
+        QDomElement value(xml.createElement("C" + QString::number(i)) );
 		value.appendChild(xml.createTextNode(record.value(i).toString()));
 		row.appendChild(value);
 	}
@@ -34,14 +36,14 @@ QDomElement _XML_sqlRowValues(QSqlRecord record, QDomDocument & xml)
 
 QDomElement _XML_sqlAllRowsValues(QSqlQuery query, QDomDocument & xml)
 {
-	QDomElement rows{ xml.createElement("rows") };
+    QDomElement rows( xml.createElement("rows") );
 	while (query.next())
 	{
 		rows.appendChild(_XML_sqlRowValues(query.record(), xml));
 	}
 	return rows;
 }
-
+#ifdef QT_VERSION5X
 QJsonArray _JSON_sqlColumnNames(QSqlRecord record)
 {
 	QJsonArray array;
@@ -71,15 +73,15 @@ QJsonObject _JSON_sqlAllRowsValues(QSqlQuery query)
 	}
 	return rows;
 }
-
+#endif
 QString _CSV_sqlColumnNames(QSqlRecord record)
 {
-	QString columnsString{};
+    QString columnsString;
 	for (int i = 0; i < record.count(); i++)
 	{
 		if (!columnsString.isEmpty())
 		{
-			columnsString += ",";
+			columnsString += ";";
 		}
 		columnsString += record.fieldName(i);
 	}
@@ -90,14 +92,14 @@ QString _CSV_sqlRowValues(QSqlRecord record)
 {
 	//to do need encapsulate the string variables so that we cand send them with any symbols( neded for comments )
 	// record.value( i ).type() return the data type
-	QString rowValuesString{};
+    QString rowValuesString;
 	for (int i = 0; i < record.count(); i++)
 	{
 		if (!rowValuesString.isEmpty())
 		{
-			rowValuesString += ",";
+			rowValuesString += ";";
 		}
-		rowValuesString += record.value(i).toString();
+		rowValuesString += "\"" + record.value(i).toString() + "\"";
 	}
 	return rowValuesString;
 }
@@ -118,7 +120,7 @@ QString _TXT_fromSqlRecord(QSqlRecord rec)
 
 QString _CSV_sqlAllRowsValues(QSqlQuery query)
 {
-	QString rowsValuesString{};
+    QString rowsValuesString;
 	while (query.next())
 	{
 		if (!rowsValuesString.isEmpty())
@@ -131,17 +133,39 @@ QString _CSV_sqlAllRowsValues(QSqlQuery query)
 	return rowsValuesString;
 }
 
-QString getFormatedSqlAsXml(QSqlQuery query, QString dbname)
+QString getFormatedSqlAsXml(QSqlQuery query, QString dbname, int mode, Destinations destination)
 {
-	QDomDocument xml{ "file" };
-	QDomElement file{ xml.createElement(dbname) };
+    QDomDocument xml("file" );
+    QDomElement file( xml.createElement(dbname) );
+	if (destination == Destinations::NetworkDestination)
+	{
+		QDomElement place(xml.createElement("place"));
+		place.appendChild(xml.createTextNode(AppSettings->placeAsCode));
+		file.appendChild(place);
+		if (AppSettings->sysfeed.at(mode) > 0)
+		{
+			QDomElement sysfeed(xml.createElement("sysfid"));
+			sysfeed.appendChild(xml.createTextNode(QString::number(AppSettings->sysfeed.at(mode))));
+			file.appendChild(sysfeed);
+		}
+		if (AppSettings->sendLogin)
+		{
+
+			QDomElement login(xml.createElement("login"));
+			login.appendChild(xml.createTextNode(AppSettings->userLogin));
+			file.appendChild(login);
+			QDomElement pass(xml.createElement("password"));
+			pass.appendChild(xml.createTextNode(AppSettings->userPass));
+			file.appendChild(pass);
+		}
+	}
 	file.appendChild(_XML_sqlColumnNames(query.record(), xml));
 	file.appendChild(_XML_sqlAllRowsValues(query, xml));
 	xml.appendChild(file);
 	return xml.toString();
 }
-
-QString getFormatedSqlAsJson(QSqlQuery query, QString dbname)
+#ifdef QT_VERSION5X
+QString getFormatedSqlAsJson(QSqlQuery query, QString dbname, int mode, Destinations destination)
 {
 		QJsonObject json;
 
@@ -155,16 +179,16 @@ QString getFormatedSqlAsJson(QSqlQuery query, QString dbname)
 		QJsonDocument doc(json);
 		return doc.toJson();
 }
-
-QString getFormatedSqlAsCsv(QSqlQuery query, QString dbname)
+#endif
+QString getFormatedSqlAsCsv(QSqlQuery query, QString dbname, int mode, Destinations destination)
 {
-		QString csv(dbname);
-		csv += "\n" + _CSV_sqlColumnNames(query.record());
+		QString csv;
+		csv += _CSV_sqlColumnNames(query.record());
 		return csv + "\n" + _CSV_sqlAllRowsValues(query);
 	return "";
 }
 
-QString getFormatedSqlAsTxt(QSqlQuery query, QString dbname)
+QString getFormatedSqlAsTxt(QSqlQuery query, QString dbname, int mode, Destinations destination)
 {
 	QString txt;
 		while (query.next())

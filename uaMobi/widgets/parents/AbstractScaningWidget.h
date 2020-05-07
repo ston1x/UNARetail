@@ -1,7 +1,5 @@
 #pragma once
 #include "widgets/parents/inframedWidget.h"
-#include <QtWidgets/qlistwidget.h>
-#include <QtWidgets/qscrollbar.h>
 #include "widgets/MultibranchWidgets/BarcodeRedactingWidget.h"
 #include "widgets/utils/MegaIconButton.h"
 #include "widgets/utils/VirtualBarcodeKeyboard.h"
@@ -9,10 +7,10 @@
 #include "widgets/MultibranchWidgets/ScaningCameraWidget.h"
 #include "widgets/parents/abstractNodeInterface.h"
 #include <QtCore/QPointer>
-#include <chrono>
 #include "widgets/utils/BarcodeObserver.h"
-
-
+#include <QListView>
+#include <QTextEdit>
+#include "widgets/UtilityElements/ExtendedLabels.h"
 /*
 */
 //Performs check of barcode: not too long, not empty
@@ -30,18 +28,22 @@ protected:
 	QHBoxLayout* additionalInputLayout;	//	This layout is turned on if additional input
 		//	widgets requested - such as keyboard or camera
 	QLabel* modeName;
-	QLabel* barcodeInfo;
+	QTextEdit* barcodeInfo;
 	QLineEdit* barcodeInput;		//	field for manual barcode input
 	MegaIconButton* backButton;		//	emits backRequired
 	MegaIconButton* keyboardButton;	//	opens keyboard widget
 #ifdef CAMERA_SUPPORT
 	MegaIconButton* cameraButton;	//	opens camera widget
 #endif
+	DataEntityListModel* barcodeModel;
+	QListView* historyView;
 	Modes currentMode;
 
 	virtual void _emplaceBarcode(QString barcode) = 0;
 	virtual void _clearControls() = 0;
 	QString transformModeToString(Modes m);
+	virtual void _pushToHistory(Entity barcode);
+	virtual QString _extractionCheck(QString barcode);
 public:
 	AbstractScaningWidget(Modes mode, QWidget* parent = Q_NULLPTR);
 	

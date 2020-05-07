@@ -140,12 +140,10 @@ QString BETTER_CALENDAR_STYLESHEET()
 const QString COUNTERS_LABEL_STYLESHEET = "QLabel"
 "{"
 "border: 2px solid black;"
-"font-size: 32px;"
 "}";
 const QString ENABLED_COUNTERS_STYLESHEET = "QLabel"
 "{"
 "border: 4px solid #b8dedd;"
-"font-size: 32px;"
 "}";
 const QString DOWNLOAD_BUTTONS_STYLESHEET("QPushButton{ "
 	"background-color: #a0e899;"
@@ -225,7 +223,7 @@ const QFont* FontAdapter::general()
 
 const QFont FontAdapter::makeIndependentFont(int minheight, int maxheight, double minimumFontPercent)
 {
-	double currentHeight = qApp->screens().first()->availableGeometry().height();
+    double currentHeight = GEOMETRY_SOURCE->availableGeometry().height();
 	currentHeight *= minimumFontPercent;
 	if (currentHeight < minheight)
 		currentHeight = minheight;
@@ -237,7 +235,7 @@ const QFont FontAdapter::makeIndependentFont(int minheight, int maxheight, doubl
 
 QFont FontAdapter::makeFont(double extrapercents)
 {
-	double currentHeight = qApp->screens().first()->availableGeometry().height();
+    double currentHeight = GEOMETRY_SOURCE->availableGeometry().height();
 	currentHeight *= FontAdapter::instanse()->minimumFontPercent;
 	currentHeight *= extrapercents;
 	if (currentHeight < _instanse->minheight)

@@ -1,5 +1,7 @@
 #include "RSS14Reader.h"
-
+#ifndef Q_NULLPTR 
+#define Q_NULLPTR nullptr
+#endif
 namespace zxing {
 	namespace oned {
 		namespace rss {
@@ -117,7 +119,7 @@ namespace zxing {
 
 				return Ref<Result>(new Result(
 					Ref<String>(new String(buffer)),
-					nullptr,
+					Q_NULLPTR,
 					resultPoints,
 					BarcodeFormat::RSS_14));
 			}
@@ -133,7 +135,7 @@ namespace zxing {
 
 					Ref<ResultPointCallback> resultPointCallback = hints.getResultPointCallback();
 
-					if (resultPointCallback != nullptr) {
+					if (resultPointCallback != Q_NULLPTR) {
 						startEnd = pattern.getStartEnd();
 						float center = (startEnd[0] + startEnd[1] - 1) / 2.0f;
 						if (right) {

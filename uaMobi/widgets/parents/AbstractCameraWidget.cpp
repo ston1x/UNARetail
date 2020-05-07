@@ -1,4 +1,5 @@
 #include "AbstractCameraWidget.h"
+#ifdef CAMERA_SUPPORT
 #include <QQMLError>
 #include <QtQuick/qquickitem.h>
 #include <widgets/utils/ElementsStyles.h>
@@ -38,3 +39,4 @@ void AbstractCameraWidget::backRequire()
 {
 	emit backRequired();
 }
+#endif

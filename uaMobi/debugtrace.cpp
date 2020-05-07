@@ -40,14 +40,14 @@ struct detracestream
 		switch (mode)
 		{
 		case detr_supply::all:
-			ostream << endl;
-			sout << endl;
+            ostream << endl;
+            sout << endl;
 			break;
 		case detr_supply::file:
-			ostream << endl;
+            ostream << endl;
 			break;
 		case detr_supply::qStr:
-			sout << endl;
+            sout << endl;
 			break;
 		default:
 			return;

@@ -1,24 +1,29 @@
 #include "SendingDataPickerWidget.h"
 #include "widgets/utils/ElementsStyles.h"
-#include <QtWidgets/qmessagebox.h>
+#include <QMessageBox>
 #include <QtCore/QTimer>
+
+
 SendingDataPickerWidget::SendingDataPickerWidget(Modes mode, QWidget* parent)
 	:inframedWidget(parent), abstractNode(), mainLayout(new QVBoxLayout(this)),
 	innerWidget(new inframedWidget(this)), innerLayout(new QVBoxLayout(innerWidget)),
+	semaphor(new SemaphorLabel(this)),
 	unsentButton(new MegaIconButton(innerWidget)), sentButton(new MegaIconButton(innerWidget)),
 	allButton(new MegaIconButton(innerWidget)), settingsButton(new MegaIconButton(innerWidget)),
-	sentQuantityInfo(new QLabel(innerWidget)),
-	unsentQuantityInfo(new QLabel(innerWidget)), totalQantityInfo(new QLabel(innerWidget)),
+	sentQuantityInfo(new CounterLabel(innerWidget)),
+	unsentQuantityInfo(new CounterLabel(innerWidget)), 
+	totalQantityInfo(new CounterLabel(innerWidget)),
 	backButton(new MegaIconButton(innerWidget)),
 	currentMode(mode)
 	, sendWidget(new ReceiveWidget(mode, this)), 
-	settingsWidget(new SendSettings(modenamesLinker[mode], this))
+	settingsWidget(new SendSettings(mode, modenamesLinker[mode], this))
 {
 	this->setLayout(mainLayout);
 	main = this;
 	current = untouchable = innerWidget;
 	mainLayout->addWidget(innerWidget);
 	innerWidget->setLayout(innerLayout);
+	innerLayout->addWidget(semaphor);
 	innerLayout->addWidget(sentQuantityInfo);
 	innerLayout->addWidget(sentButton);
 	innerLayout->addWidget(unsentQuantityInfo);
@@ -34,6 +39,10 @@ SendingDataPickerWidget::SendingDataPickerWidget(Modes mode, QWidget* parent)
 	mainLayout->setContentsMargins(0, 0, 0, 0);
 	mainLayout->setSpacing(0);
 
+
+	semaphor->setFixedHeight(calculateAdaptiveButtonHeight(0.1));
+	semaphor->setText(tr("Sending state"));
+	
 	sendWidget->hide();
 	settingsWidget->hide();
 
@@ -44,16 +53,16 @@ SendingDataPickerWidget::SendingDataPickerWidget(Modes mode, QWidget* parent)
 	settingsButton->setIcon(QIcon(":/res/settings.png"));
 
 	backButton->setStyleSheet(BACK_BUTTONS_STYLESHEET);
-	sentQuantityInfo->setStyleSheet(COUNTERS_LABEL_STYLESHEET);
-	unsentQuantityInfo->setStyleSheet(COUNTERS_LABEL_STYLESHEET);
-	totalQantityInfo->setStyleSheet(COUNTERS_LABEL_STYLESHEET);
-
+	if (hasModifiableSysfeed(mode))
+	{
+		settingsWidget->showExtraSettings();
+	}
 
 	sentButton->setText(tr("send_sent_button"));
 	unsentButton->setText(tr("send_unsent_button"));
 	allButton->setText(tr("send_all_button"));
 	settingsButton->setText(tr("Settings"));
-
+#ifdef QT_VERSION5X
 	QObject::connect(unsentButton, &MegaIconButton::clicked, this, &SendingDataPickerWidget::unsentChosen);
 	QObject::connect(sentButton, &MegaIconButton::clicked, this, &SendingDataPickerWidget::sentChosen);
 	QObject::connect(allButton, &MegaIconButton::clicked, this, &SendingDataPickerWidget::allChosen);
@@ -62,6 +71,18 @@ SendingDataPickerWidget::SendingDataPickerWidget(Modes mode, QWidget* parent)
 	QObject::connect(sendWidget, &ReceiveWidget::sendingSuccess, this, &SendingDataPickerWidget::sendingSuccess);
 	QObject::connect(settingsWidget, &SendSettings::backRequired, this, &SendingDataPickerWidget::hideCurrent);
 	QObject::connect(settingsButton, &MegaIconButton::clicked, this, &SendingDataPickerWidget::showSettings);
+	QObject::connect(sendWidget, &ReceiveWidget::sendStateChanged, semaphor, &SemaphorLabel::setState);
+#else
+	QObject::connect(unsentButton, SIGNAL(clicked()), this, SLOT(unsentChosen()));
+	QObject::connect(sentButton, SIGNAL(clicked()), this, SLOT(sentChosen()));
+	QObject::connect(allButton, SIGNAL(clicked()), this, SLOT(allChosen()));
+	QObject::connect(backButton, SIGNAL(clicked()), this, SIGNAL(backRequired()));
+	QObject::connect(sendWidget, SIGNAL(backRequired()), this, SLOT(hideCurrent()));
+	QObject::connect(sendWidget, SIGNAL(sendingSuccess()), this, SLOT(sendingSuccess()));
+	QObject::connect(settingsWidget, SIGNAL(backRequired()), this, SLOT(hideCurrent()));
+	QObject::connect(settingsButton, SIGNAL(clicked()), this, SLOT(showSettings()));
+	QObject::connect(sendWidget, SIGNAL(sendStateChanged(int)), semaphor, SLOT(setState(int)));
+#endif
 }
 
 void SendingDataPickerWidget::show()
@@ -72,25 +93,15 @@ void SendingDataPickerWidget::show()
 
 bool SendingDataPickerWidget::back()
 {
-#ifdef DEBUG
-	detrace_METHCALL("SendingDataPickerWidget::back");
-#endif
 
 	if (current->back())
 		return true;
 	else if (current != innerWidget)
-	{
-#ifdef DEBUG
-		detrace_METHEXPL("SendingDataPicker returning true");
-#endif
-
+    {
 		hideCurrent();
 		return true;
 	}
 
-#ifdef DEBUG
-	detrace_METHEXPL("SendingDataPicker returning false");
-#endif
 
 	return false;
 }
@@ -142,13 +153,13 @@ bool SendingDataPickerWidget::giveSettings()
 
 void SendingDataPickerWidget::set_info()
 {
-	sentQuantityInfo->setText(tr("total_barcodes_quantity\n") +
-		QString::number(AppData->countAllIn(currentMode, TableNames::Uploaded)));
-	unsentQuantityInfo->setText(tr("total_barcodes_quantity\n") +
-			QString::number(AppData->countAllIn(currentMode, TableNames::Scanned)));
-	totalQantityInfo->setText(tr("total_barcodes_quantity\n") +
-			QString::number(AppData->countAllIn(currentMode, TableNames::Uploaded) +
-				AppData->countAllIn(currentMode, TableNames::Scanned)));
+	sentQuantityInfo->setText(tr("total_barcodes_quantity\n"));
+	sentQuantityInfo->setCounter(AppData->countAllIn(currentMode, TableNames::Uploaded));
+	unsentQuantityInfo->setText(tr("total_barcodes_quantity\n"));
+	unsentQuantityInfo->setCounter(AppData->countAllIn(currentMode, TableNames::Scanned));
+	totalQantityInfo->setText(tr("total_barcodes_quantity\n") );
+	totalQantityInfo->setCounter(AppData->countAllIn(currentMode, TableNames::Uploaded) +
+		AppData->countAllIn(currentMode, TableNames::Scanned));
 }
 
 void SendingDataPickerWidget::unsentChosen()
@@ -195,8 +206,8 @@ void SendingDataPickerWidget::hideCurrent()
 
 void SendingDataPickerWidget::sendingSuccess()
 {
-	emit sendingSuccesfull();
-	QTimer::singleShot(1000, this, &SendingDataPickerWidget::set_info);
+
+    QTimer::singleShot(500, this, SLOT(set_info()));
 }
 
 void SendingDataPickerWidget::showSettings()

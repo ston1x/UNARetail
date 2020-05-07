@@ -108,6 +108,9 @@
     <Filter Include="Source Files\widgets\SettingScreens">
       <UniqueIdentifier>{1062b1e9-0760-4e63-a606-d4f18ef02c7d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\widgets\ScaningRelated">
+      <UniqueIdentifier>{8773ca46-a2e4-473f-92d1-dbf488a6fe1b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -671,9 +674,6 @@
     <ClCompile Include="widgets\PriceBranch\PriceScaningWidget.cpp">
       <Filter>Source Files\widgets\Multibranch</Filter>
     </ClCompile>
-    <ClCompile Include="widgets\PriceBranch\PricedBarcodeRedacting.cpp">
-      <Filter>Source Files\widgets\Multibranch</Filter>
-    </ClCompile>
     <ClCompile Include="widgets\PriceBranch\PriceBranchWidget.cpp">
       <Filter>Source Files\widgets\Root</Filter>
     </ClCompile>
@@ -743,6 +743,54 @@
     <ClCompile Include="widgets\SettingsWidgets\ViewSettings.cpp">
       <Filter>Source Files\widgets\SettingScreens</Filter>
     </ClCompile>
+    <ClCompile Include="widgets\MultibranchWidgets\Redactors\BarcodeRedactorForm.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\MultibranchWidgets\Redactors\Abs_Redactor.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\MultibranchWidgets\Redactors\PricedBarcodeRedactorForm.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\SettingsWidgets\DatabaseLoadSettings.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\ExtendedDelegates\ExtraSelectionDelegate.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\SettingsWidgets\ExtraSendSettings.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Datacore\UtilityEntities.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\SettingsWidgets\ExtraScaningSettings.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\SettingsWidgets\LoginSettings.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\InvoiceBranch\InvoiceBranchWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="externalCommunication\AsyncRequestEngine.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\MultibranchWidgets\UpdateableScaningWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\UtilityElements\ExtendedLabels.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\MultibranchWidgets\RestScaningWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dataproviders\ModesDescriptions.cpp">
+      <Filter>Source Files\commcore</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\UtilityElements\ExtendedDialogs.cpp">
+      <Filter>Source Files\widgets\elements</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="qzxing-master\src\zxing\zxing\oned\rss\expanded\decoders\AbstractExpandedDecoder.h">
@@ -805,9 +853,6 @@
     <QtMoc Include="qzxing-master\src\QZXingFilter.h">
       <Filter>Header Files\QZXing</Filter>
     </QtMoc>
-    <QtMoc Include="externalCommunication\communicationCore.h">
-      <Filter>Header Files\commcore</Filter>
-    </QtMoc>
     <ClInclude Include="dataFormats\dataformater.h">
       <Filter>Header Files\commcore</Filter>
     </ClInclude>
@@ -821,9 +866,6 @@
       <Filter>Header Files\util</Filter>
     </ClInclude>
     <ClInclude Include="dataproviders\sqldataprovider.h">
-      <Filter>Header Files\commcore</Filter>
-    </ClInclude>
-    <ClInclude Include="dataFormats\formats.h">
       <Filter>Header Files\commcore</Filter>
     </ClInclude>
     <ClInclude Include="Datacore\AbsEntity.h">
@@ -845,6 +887,15 @@
       <Filter>Header Files\widgets\elements</Filter>
     </ClInclude>
     <ClInclude Include="dataproviders\BackupingEngine.h">
+      <Filter>Header Files\commcore</Filter>
+    </ClInclude>
+    <ClInclude Include="Datacore\UtilityEntities.h">
+      <Filter>Header Files\Datacore</Filter>
+    </ClInclude>
+    <ClInclude Include="dataproviders\ModesDescriptions.h">
+      <Filter>Header Files\commcore</Filter>
+    </ClInclude>
+    <ClInclude Include="dataFormats\formats.h">
       <Filter>Header Files\commcore</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1504,12 +1555,6 @@
     <QtMoc Include="widgets\InventoryBranch\InventoryWidget.h">
       <Filter>Header Files\widgets\Roots</Filter>
     </QtMoc>
-    <QtMoc Include="widgets\MultibranchWidgets\ScaningCameraWidget.h">
-      <Filter>Header Files\widgets\Multibranch</Filter>
-    </QtMoc>
-    <QtMoc Include="widgets\MultibranchWidgets\ScaningWidget.h">
-      <Filter>Header Files\widgets\Multibranch</Filter>
-    </QtMoc>
     <QtMoc Include="widgets\SimpleBranch\SimpleBranchWidget.h">
       <Filter>Header Files\widgets\Roots</Filter>
     </QtMoc>
@@ -1521,12 +1566,6 @@
     </QtMoc>
     <QtMoc Include="widgets\PriceBranch\PriceBranchWidget.h">
       <Filter>Header Files\widgets\Roots</Filter>
-    </QtMoc>
-    <QtMoc Include="widgets\PriceBranch\PriceScaningWidget.h">
-      <Filter>Header Files\widgets\Multibranch</Filter>
-    </QtMoc>
-    <QtMoc Include="widgets\PriceBranch\PricedBarcodeRedacting.h">
-      <Filter>Header Files\widgets\Multibranch</Filter>
     </QtMoc>
     <QtMoc Include="Datacore\DataEntities.h">
       <Filter>Header Files\Datacore</Filter>
@@ -1581,6 +1620,60 @@
     </QtMoc>
     <QtMoc Include="widgets\SettingsWidgets\ViewSettings.h">
       <Filter>Header Files\widgets\SettingsScreens</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\MultibranchWidgets\Redactors\BarcodeRedactorForm.h">
+      <Filter>Header Files\widgets\Multibranch</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\MultibranchWidgets\Redactors\Abs_Redactor.h">
+      <Filter>Header Files\widgets\Multibranch</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\MultibranchWidgets\Redactors\PricedBarcodeRedactorForm.h">
+      <Filter>Header Files\widgets\Multibranch</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\SettingsWidgets\DatabaseLoadSettings.h">
+      <Filter>Header Files\widgets\SettingsScreens</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\ExtendedDelegates\ExtraSelectionDelegate.h">
+      <Filter>Header Files\widgets\elements</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\SettingsWidgets\ExtraSendSettings.h">
+      <Filter>Header Files\widgets\SettingsScreens</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\SettingsWidgets\ExtraScaningSettings.h">
+      <Filter>Header Files\widgets\SettingsScreens</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\SettingsWidgets\LoginSettings.h">
+      <Filter>Header Files\widgets\SettingsScreens</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\InvoiceBranch\InvoiceBranchWidget.h">
+      <Filter>Header Files\widgets\Roots</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\PriceBranch\PriceScaningWidget.h">
+      <Filter>Header Files\widgets\ScaningRelated</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\MultibranchWidgets\ScaningWidget.h">
+      <Filter>Header Files\widgets\ScaningRelated</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\MultibranchWidgets\ScaningCameraWidget.h">
+      <Filter>Header Files\widgets\ScaningRelated</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\MultibranchWidgets\UpdateableScaningWidget.h">
+      <Filter>Header Files\widgets\ScaningRelated</Filter>
+    </QtMoc>
+    <QtMoc Include="externalCommunication\AsyncRequestEngine.h">
+      <Filter>Header Files\commcore</Filter>
+    </QtMoc>
+    <QtMoc Include="externalCommunication\communicationCore.h">
+      <Filter>Header Files\commcore</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\UtilityElements\ExtendedLabels.h">
+      <Filter>Header Files\widgets\elements</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\MultibranchWidgets\RestScaningWidget.h">
+      <Filter>Header Files\widgets\ScaningRelated</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\UtilityElements\ExtendedDialogs.h">
+      <Filter>Header Files\widgets\elements</Filter>
     </QtMoc>
   </ItemGroup>
 </Project>

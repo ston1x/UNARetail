@@ -3,77 +3,52 @@
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QHostInfo>
+#include "dataFormats/formats.h"
 
-communicationCore::communicationCore(Modes cmode)
-	: currentmode(cmode)
+
+
+communicationCore::communicationCore(QObject* parent)
+	: QObject(parent), deviceName(), manager(new QNetworkAccessManager(this)),
+	timeoutInterval(60000)
 {
-	getName();
+
 }
-
-void communicationCore::getName()
+communicationCore* communicationCore::_instanse = Q_NULLPTR;
+communicationCore* communicationCore::instanse()
 {
-#ifdef Q_OS_WIN32
-	deviceName = QHostInfo::localHostName();
-#endif
-#ifdef Q_OS_ANDROID
-	deviceName = "Android device" + QString::number(rand());
-#endif
-}
-
-bool communicationCore::checkAdress(QString& adress)
-{
-	if (adress == "")
+	if (_instanse == Q_NULLPTR)
 	{
-		emit addressInvalid();
-		return false;
+		_instanse = new communicationCore();
 	}
-	return true;
+	return _instanse;
 }
 
-bool communicationCore::checkFromAdress()
+QNetworkReply* communicationCore::get(QString url)
 {
-	return checkAdress(fromAdress);
+	return manager->get(QNetworkRequest(url));
 }
 
-bool communicationCore::checkToAdress()
+QNetworkReply* communicationCore::get(QUrl url)
 {
-	return checkAdress(toAdress);
+	return manager->get(QNetworkRequest(url));
 }
 
-void communicationCore::loadDataToSend(Modes mode, sendingMode sendmode, int format)
+QNetworkReply* communicationCore::post(QNetworkRequest& request, QByteArray& data)
 {
-	uploadList.clear();
-	uploadList.append(AppData->uploadFullList(mode, sendmode, tr("current_lang"), format).toStdString().c_str());
+	return manager->post(request, data);
 }
 
-bool communicationCore::checkLoadData()
+QNetworkReply* communicationCore::sendGETRequest(QString url)
 {
-	if (uploadList.isEmpty())
-	{
-		emit dataErrorOccured();
-		return false;
-	}
-	return true;
+	return instanse()->get(url);
 }
 
-QString communicationCore::sendingTo()
+QNetworkReply* communicationCore::sendGETRequest(QUrl url)
 {
-	return toAdress;
+	return instanse()->get(url);
 }
 
-void communicationCore::addressChanged(QString newAddress, bool isFrom)
+QNetworkReply* communicationCore::sendPOSTRequest(QNetworkRequest& request, QByteArray& data)
 {
-	if (isFrom)
-	{
-		fromAdress = newAddress;
-	}
-	else
-	{
-		toAdress = newAddress;
-	}
-}
-
-QString communicationCore::gettingFrom()
-{
-	return fromAdress;
+	return instanse()->post(request, data);
 }

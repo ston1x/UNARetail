@@ -1,25 +1,18 @@
 #pragma once
 #include <QtCore/QString>
 #include <QtCore/QStringList>
+#ifndef QT_VERSION5X
+#define noexcept
+#endif
 /*
-	This file is holding abstract table handler class and it's inheritors. main goal of this class
-	is to provide common interface for tables allowing polymorfic access to them. So, these handlers
-	are making queries filled with corresponding data - which fields must be selected, how many columns
-	must exist etc. General example is using this with Scaned and Downloaded table: their queries are similar
-	so you can call select all with same code but it will be expanded in different queries.
+	This file is holding templated table handler. main goal of this class
+	is to provide common interface for tables allowing polymorthic access to them. these handlers
+	are making queries filled with corresponding data. You must create an object for each table you 
+	want to represent or to create one prototype and provide table name in each query.
 
 */
 
-enum class TableNames
-{
-	Scanned,		//	Here are stored barcodes which was not uploaded
-	Uploaded,		//	Here are stored barcodes marked as sent
-	TempScan
-};
-inline uint qHash(TableNames t)
-{
-	return uint(t);
-}
+
 
 class TemplatedTableHandler
 	// encapsulates table, automatizing query creation

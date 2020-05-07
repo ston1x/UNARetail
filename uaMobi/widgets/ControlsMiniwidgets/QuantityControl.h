@@ -26,6 +26,8 @@ public:
 	virtual void show() override;
 	virtual void hide() override;
 	virtual void setFocus() const override;
+	void setMinimum(double min);
+	double getPureValue()const;
     virtual ~QuantityControl()
 #ifdef QT_VERSION5X
     override

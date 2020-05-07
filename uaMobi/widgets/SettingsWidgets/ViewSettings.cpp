@@ -22,9 +22,15 @@ ViewSettings::ViewSettings(QWidget* parent)
 	fontPercent->setMinimum(1);
 	fontPercent->setMaximum(100);
 	fontPercent->setValue(int(AppFonts->getFontPercent() * 100));
+#ifdef QT_VERSION5X
 	QObject::connect(fontMax, QOverload<int>::of(&QSpinBox::valueChanged), this, &ViewSettings::refreshExample);
 	QObject::connect(fontMin, QOverload<int>::of(&QSpinBox::valueChanged), this, &ViewSettings::refreshExample);
 	QObject::connect(fontPercent, QOverload<int>::of(&QSpinBox::valueChanged), this, &ViewSettings::refreshExample);
+#else
+    QObject::connect(fontMax, SIGNAL(valueChanged(int)), this, SLOT(refreshExample()));
+    QObject::connect(fontMin, SIGNAL(valueChanged(int)), this, SLOT(refreshExample()));
+    QObject::connect(fontPercent,SIGNAL(valueChanged(int)), this, SLOT(refreshExample()));
+#endif
 }
 
 void ViewSettings::extractAndSave()

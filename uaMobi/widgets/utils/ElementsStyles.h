@@ -1,12 +1,20 @@
 #pragma once
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QDesktopWidget.h>
-#include <QtGui/QScreen>
+#include <QApplication>
+#include <QDesktopWidget.h>
+#include <QScreen>
 #include <QString>
 
 #define AppGenFont *FontAdapter::general()
 #define AppFonts FontAdapter::instanse()
+#ifdef QT_VERSION5X
+#include <QtWidgets/QApplication>
+#include <QtWidgets/qdesktopwidget.h>
 #define GEOMETRY_SOURCE qApp->screens().first()
+#else
+#include <QtGui/QApplication>
+#include <QtGui/QDesktopWidget>
+#define GEOMETRY_SOURCE qApp->desktop()
+#endif
 /*
 	This file contains constants which are defining buttons stylesheets as a C-strings. all
 	new styles must be added ONLY here to allow quick change if necessary.
@@ -29,7 +37,7 @@ inline static int calculateAdaptiveButtonHeight(double percent = 0.125)
 	percent /= 2;
 #endif
 #endif
-	return qApp->screens().first()->availableGeometry().height() * percent;
+    return GEOMETRY_SOURCE->availableGeometry().height() * percent;
 }
 
 inline static int calculateAdaptiveWidth(double percent = 0.5)
@@ -40,7 +48,7 @@ inline static int calculateAdaptiveWidth(double percent = 0.5)
 	percent /= 4;
 #endif
 #endif
-	return qApp->screens().first()->availableGeometry().width() * percent;
+    return GEOMETRY_SOURCE->availableGeometry().width() * percent;
 }
 inline static QSize calculateAdaptiveSize(double percent = 0.3)
 //Calculates square size, by default is giving 30% of screen dimensions
@@ -51,8 +59,8 @@ inline static QSize calculateAdaptiveSize(double percent = 0.3)
 #endif
 #endif
 	return QSize(
-		qApp->screens().first()->availableGeometry().width() * percent,
-		qApp->screens().first()->availableGeometry().height() * percent
+        GEOMETRY_SOURCE->availableGeometry().width() * percent,
+        GEOMETRY_SOURCE->availableGeometry().height() * percent
 	);
 }
 inline static QSize calculateAdaptiveSize(double Hpercent, double Wpercent)
@@ -65,8 +73,8 @@ inline static QSize calculateAdaptiveSize(double Hpercent, double Wpercent)
 #endif
 #endif
 	return QSize(
-		qApp->screens().first()->availableGeometry().width() * Wpercent,
-		qApp->screens().first()->availableGeometry().height() * Hpercent
+        GEOMETRY_SOURCE->availableGeometry().width() * Wpercent,
+        GEOMETRY_SOURCE->availableGeometry().height() * Hpercent
 	);
 }
 

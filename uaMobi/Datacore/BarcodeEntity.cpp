@@ -4,30 +4,40 @@
 #include <QVariant>
 #include "widgets/utils/ElementsStyles.h"
 #include <cmath>
-static QString tableDefinition ( QStringLiteral( "( barcode TEXT,"
+
+
+static QString tableDefinition ( QStringLiteral( "("
+		"id number PRIMARY KEY NOT NULL,"
+		"barcode TEXT,"
 		"scanedtime datetime,"
 		"quantity number,"
 		"uploaded number,"
 		"expDateTime datetime,"
 		"expComment TEXT"
 	")"));
-
-static QStringList tableFields
+QStringList _initTBF()
 {
-		QStringLiteral("barcode"),
-		QStringLiteral("scanedtime"),
-		QStringLiteral("quantity"),
-		QStringLiteral("uploaded"),
-		QStringLiteral("expDateTime"),
-		QStringLiteral("expComment")
-};
+    QStringList t;
+    t<<
+    QStringLiteral("id")<<
+    QStringLiteral("barcode")<<
+    QStringLiteral("scanedtime")<<
+    QStringLiteral("quantity")<<
+    QStringLiteral("uploaded")<<
+    QStringLiteral("expDateTime")<<
+    QStringLiteral("expComment");
+    return t;
+}
+
+static QStringList tableFields(_initTBF());
 
 
 static TemplatedTableHandler* barcodeTableHandler(
 	new TemplatedTableHandler(
 		"barcodes",
 		tableDefinition,
-		tableFields
+		tableFields,
+		0
 	)
 );
 
@@ -35,10 +45,10 @@ static TemplatedTableHandler* barcodeTableHandler(
 
 QString BarcodeEntity::_toSql() const
 {
-	return "('" + barcode + "' , '" + addDate.toString(datetimeDBEncoding) 
+	return "(" + serializeId() + ",'" + barcode + "' , '" + addDate.toString(datetimeDBEncoding) 
 		+ "', " + QString::number(quantity)  + " , " + QString::number(isUploaded) + " , '" 
 		+ expDate.toString(datetimeDBEncoding)
-		 + "' , '" + comment + "')";
+		 + "' , '" + QString(comment).replace("'", "''").replace("\"", "\"\"") + "')";
 }
 
 const TemplatedTableHandler* BarcodeEntity::_assocTable() const
@@ -49,23 +59,13 @@ const TemplatedTableHandler* BarcodeEntity::_assocTable() const
 QString BarcodeEntity::_formatedView(QString sep, QString dform) const
 {
 	QString formated;
-	if (dform.isEmpty())
+	if (!comment.isEmpty())
 	{
-		formated = barcode + sep + QString::number(quantity) + sep
-			+ expDate.time().toString();
-		if (!comment.isEmpty())
-		{
-			formated += "\n" + comment.chopped((comment.length() > 20) ? 20 : comment.length());
-		}
+		formated = comment.leftJustified(15) + sep + QString::number(quantity);
 	}
 	else
 	{
-		formated = barcode + sep + QString::number(quantity) + sep
-			+ expDate.time().toString(dform);
-		if (!comment.isEmpty())
-		{
-			formated += "\n" + comment.leftJustified(((comment.length() > 20) ? 20 : comment.length()), QChar(' '), true);
-		}
+		formated = barcode.leftJustified(15) + sep + QString::number(quantity);
 	}
 	return formated;
 }
@@ -98,9 +98,17 @@ BarcodeEntity::BarcodeEntity(QString Barcode, QDateTime adddt, int isupl,
 {
 }
 
+BarcodeEntity::BarcodeEntity(QString bc, QString comm)
+: AbsEntity(int(barcodeUtil::barcodetypes::uniformBc)),
+barcode(bc), addDate(QDateTime::currentDateTime()), isUploaded(0),
+expDate(QDateTime::currentDateTime()), comment(comm), quantity(0)
+{
+
+}
+
 unsigned int BarcodeEntity::getEnumerableFieldIndex()
 {
-	return 2;
+	return 3;
 }
 
 QString BarcodeEntity::_getName() const
@@ -108,13 +116,13 @@ QString BarcodeEntity::_getName() const
 	return barcode;
 }
 
-int BarcodeEntity::_getEnumerable(int role) const
+double BarcodeEntity::_getEnumerable(int role) const
 {
 	switch (role)
 	{
 	case -1:
 	case int(barcodeUtil::barcodeenumerables::quantity):
-		return int(quantity);
+		return double(quantity);
 	default:
 		return 0;
 	}
@@ -129,7 +137,7 @@ int BarcodeEntity::_getHeight() const
 {
 	return (std::ceil(double(barcode.count() + comment.count() 
 		+ datetimeDBEncoding.count() 
-		)  / double(AppFonts->howMuchCharacterFitsIntoScreen())) + comment.count("\n") + 1);
+		)  / double(AppFonts->howMuchCharacterFitsIntoScreen())) + comment.count("\n") + 2);
 }
 
 const QStringList& BarcodeEntity::_getFields() const
@@ -137,18 +145,32 @@ const QStringList& BarcodeEntity::_getFields() const
 	return tableFields;
 }
 
+QString BarcodeEntity::_fullComparationQuery() const
+{
+	return "barcode = '" + barcode + "' and quantity = " + QString::number(quantity);
+}
+
+void BarcodeEntity::_setEnumerable(int role, double value)
+{
+	if (role == 0)
+	{
+		quantity = value;
+	}
+}
+
 bool BarcodeEntity::_fromSql(QSqlQuery* q)
 {
 	if (!q->next())
 		return false;
-	barcode = q->value(0).toString();
+	GUID = q->value(0).toLongLong();
+	barcode = q->value(1).toString();
 	addDate =
-		QDateTime::fromString(q->value(1).toString(), datetimeDBEncoding);
-	quantity = q->value(2).toDouble();
-	isUploaded = q->value(3).toInt();
+		QDateTime::fromString(q->value(2).toString(), datetimeDBEncoding);
+	quantity = q->value(3).toDouble();
+	isUploaded = q->value(4).toInt();
 	expDate =
-		QDateTime::fromString(q->value(4).toString(), datetimeDBEncoding);
-	comment = q->value(5).toString();
+		QDateTime::fromString(q->value(5).toString(), datetimeDBEncoding);
+	comment = q->value(6).toString();
 	return true;
 }
 

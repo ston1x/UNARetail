@@ -1,5 +1,4 @@
 #include "BackupingEngine.h"
-#include "qexception.h"
 #include <QtCore/QFile>
 #include <QtCore/QDate>
 #ifdef Q_OS_ANDROID
@@ -10,16 +9,27 @@
 
 
 const QString directoryTemplate("Logs");
-const QStringList OperationNames{ "SCAN", "EDIT", "BACK", "REPL", "DELE", "UPLD", "DESC" , "SAVE", "WIPE"};
-const QStringList ModeNames{ "INVENTORY", "SUPPLIES", "SIMPLE", "PRICES" };
-
-class nodirException : public QException
+QStringList _initOpNames()
 {
-public:
-	void raise() const override { throw *this; }
-	nodirException* clone() const override { return new nodirException(*this); };
-	QString what() { return "no dir exists!"; };
-};
+    QStringList t;
+    t << "SCAN" <<  "EDIT" << "BACK" << "REPL" << "DELE" << "UPLD" << "DESC"  << "SAVE" << "WIPE";
+    return t;
+}
+
+const QStringList OperationNames
+    (_initOpNames());
+
+
+
+QStringList _initMNames()
+{
+    QStringList t;
+    t << "INVENTORY" << "SUPPLIES" <<"SIMPLE" << "SEARCH"<< "PRICES" << "INVOICES";
+	
+    return t;
+}
+
+const QStringList ModeNames(_initMNames());
 
 BackupingEngine::BackupingEngine()
 {
@@ -50,9 +60,11 @@ bool BackupingEngine::pushString(QString&str)
 	return true;
 }
 
-bool BackupingEngine::pushOperation(OpType opt, ModType mode, Entity barcode)
+bool BackupingEngine::pushOperation(OpType opt, int mode, Entity barcode)
 {
 	using barcodeUtil::CSV_BARCODE_HEADER;
+	if (!_assertOptMode(opt, mode))
+		return false;
 	if (!verify_file())
 		next_file();
 	++stringCounter;
@@ -62,9 +74,11 @@ bool BackupingEngine::pushOperation(OpType opt, ModType mode, Entity barcode)
 	return true;
 }
 
-bool BackupingEngine::pushOperation(OpType o, ModType m, QString sup, QString sec)
+bool BackupingEngine::pushOperation(OpType o, int m, QString sup, QString sec)
 {
 	using barcodeUtil::CSV_STRING_TEMPLATE;
+	if (!_assertOptMode(o, m))
+		return false;
 	if (!verify_file())
 		next_file();
 	++stringCounter;
@@ -78,8 +92,8 @@ bool BackupingEngine::wipeOld()
 	QDir tempdir(mainDir.absolutePath());
 	if (tempdir.count() > 0)
 	{
-		auto sublist = tempdir.entryList(QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot);
-		auto start = sublist.begin();
+		QStringList sublist = tempdir.entryList(QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot);
+		QStringList::iterator start = sublist.begin();
 		bool ok;
 		int year;
 		while (start != sublist.end())
@@ -90,14 +104,14 @@ bool BackupingEngine::wipeOld()
 				if (QDate::currentDate().year() - year > 0)
 				{
 					tempdir.cd(*start);
-					tempdir.removeRecursively();
+
 					tempdir.setPath(mainDir.absolutePath());
 				}
 				else
 				{
 					tempdir.cd(*start);
-					auto sublistlvl2 = tempdir.entryList(QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot);
-					auto startlvl2 = sublistlvl2.begin();
+					QStringList sublistlvl2 = tempdir.entryList(QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot);
+					QStringList::iterator startlvl2 = sublistlvl2.begin();
 					int month;
 					while (startlvl2 != sublistlvl2.end())
 					{
@@ -106,8 +120,7 @@ bool BackupingEngine::wipeOld()
 						{
 							if (QDate::currentDate().month() - month > 2)
 							{
-								tempdir.cd(*start);
-								tempdir.removeRecursively();
+                                tempdir.cd(*start);
 								tempdir.setPath(mainDir.absolutePath());
 							}
 						}
@@ -147,7 +160,7 @@ bool BackupingEngine::next_file()
 	QString fileName = make_filename();
 	if (currentDir.count() > 0)
 	{
-		auto entrys = currentDir.entryList(QDir::Filter::Files);
+		QStringList entrys = currentDir.entryList(QDir::Filter::Files);
 		int mod = 0;
 		while (entrys.contains(fileName))
 		{
@@ -221,6 +234,11 @@ void BackupingEngine::first_launch()
 	make_directory();
 }
 
+bool BackupingEngine::_assertOptMode(OpType opt, int mode)
+{
+	return ((int(opt) < OperationNames.count()) && (mode < ModeNames.count()));
+}
+
 ModType databaseToMode(int db)
 {
 	switch (db)
@@ -233,6 +251,8 @@ ModType databaseToMode(int db)
 		return ModType::SIM;
 	case 4:
 		return ModType::PRI;
+	case 5:
+		return ModType::INVC;
 	default:
 		return ModType::INV;
 	}

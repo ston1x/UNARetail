@@ -1,7 +1,7 @@
 #pragma once
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/qgridlayout.h>
-#include <QtWidgets/QLineEdit>
+#include <QPushButton>
+#include <qgridlayout.h>
+#include <QLineEdit>
 #include "widgets/parents/inframedWidget.h"
 
 /*
@@ -36,7 +36,7 @@ private:
 	inputphases phase;
 
 public:
-	explicit VirtualBarcodeKeyboard(QWidget* parent = nullptr);
+	explicit VirtualBarcodeKeyboard(QWidget* parent = Q_NULLPTR);
 
 	virtual bool isExpectingControl(int) override;
 

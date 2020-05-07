@@ -1,5 +1,7 @@
 #include "FinderPattern.h"
-
+#ifndef Q_NULLPTR
+#define Q_NULLPTR nullptr
+#endif
 namespace zxing {
 	namespace oned {
 		namespace rss {
@@ -15,9 +17,9 @@ namespace zxing {
 
 			FinderPattern::FinderPattern(const FinderPattern* other)
 			{
-				m_value = other != nullptr ? other->m_value : 0;
-				m_startEnd = other != nullptr ? other->m_startEnd : std::vector<int>();
-				m_resultPoints = other != nullptr ? other->m_resultPoints : nullptr;
+				m_value = other != Q_NULLPTR ? other->m_value : 0;
+				m_startEnd = other != Q_NULLPTR ? other->m_startEnd : std::vector<int>();
+				m_resultPoints = other != Q_NULLPTR ? other->m_resultPoints : Q_NULLPTR;
 			}
 
 			int FinderPattern::getValue() const

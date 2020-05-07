@@ -1,6 +1,6 @@
 #include "MegaIconButton.h"
 #include "widgets/utils/ElementsStyles.h"
-#include <QtWidgets/qstyle.h>
+#include <QStyle>
 #include <qstyleoption.h>
 #include <qstylepainter.h>
 

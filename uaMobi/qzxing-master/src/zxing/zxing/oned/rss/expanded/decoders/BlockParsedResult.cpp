@@ -1,10 +1,12 @@
 #include "BlockParsedResult.h"
-
+#ifndef Q_NULLPTR
+#define Q_NULLPTR nullptr
+#endif
 namespace zxing {
 	namespace oned {
 		namespace rss {
 			BlockParsedResult::BlockParsedResult(bool finished)
-				: m_decodedInformation(nullptr), m_finished(finished)
+				: m_decodedInformation(Q_NULLPTR), m_finished(finished)
 			{
 			}
 

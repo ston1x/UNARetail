@@ -1,5 +1,5 @@
 #pragma once
-#include <QtWidgets/qpushbutton.h>
+#include <qpushbutton.h>
 
 /*
 	This class is overriding paintEvent to make icons very big. Usefull for mobile dev.
@@ -21,8 +21,8 @@ private:
 protected:
 	void paintEvent(QPaintEvent*);	//	Draws button
 public:
-	explicit MegaIconButton(QWidget* parent = nullptr);
-	MegaIconButton(QIcon  ico, const double imageCoef = 0.7, const QString txt = QString(), QWidget* parent = nullptr);
+	explicit MegaIconButton(QWidget* parent = Q_NULLPTR);
+	MegaIconButton(QIcon  ico, const double imageCoef = 0.7, const QString txt = QString(), QWidget* parent = Q_NULLPTR);
 	void setIcon(QIcon ico); // sets icon
 	void setScaleCoefficient(double coe);	//	sets scale coefficient. Warning: does not redrawing button immidiately
 }
@@ -34,5 +34,5 @@ protected:
 	void keyPressEvent(QKeyEvent*) {};
 	void keyReleaseEvent(QKeyEvent*) {};
 public:
-	explicit IgnorantButton(QWidget* parent = nullptr) : MegaIconButton(parent) {};
+	explicit IgnorantButton(QWidget* parent = Q_NULLPTR) : MegaIconButton(parent) {};
 };

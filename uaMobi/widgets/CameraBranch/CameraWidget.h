@@ -1,4 +1,5 @@
 #pragma once
+#ifdef CAMERA_SUPPORT
 #include "widgets/parents/AbstractCameraWidget.h"
 
 /*
@@ -39,3 +40,4 @@ private slots:
 	void makeImage();
 	void backRequire();
 };
+#endif

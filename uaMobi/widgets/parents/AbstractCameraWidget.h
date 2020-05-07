@@ -1,8 +1,10 @@
 #pragma once
+#ifdef CAMERA_SUPPORT
 #include "widgets/utils/MegaIconButton.h"
 #include "widgets/parents/inframedWidget.h"
 #include "widgets/utils/GlobalAppSettings.h"
-#include <QtWidgets/QBoxLayout>
+#include <QBoxLayout>
+
 #include <QQuickView>
 
 /*
@@ -39,3 +41,4 @@ public:
 private slots:
 	void backRequire();
 };
+#endif

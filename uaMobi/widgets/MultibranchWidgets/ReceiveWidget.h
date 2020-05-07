@@ -1,13 +1,13 @@
 #pragma once
-#include <QtWidgets/qlabel.h>
-#include <QtWidgets/QBoxLayout>
+#include <qlabel.h>
+#include <QBoxLayout>
 #include "widgets/parents/inframedWidget.h"
 #include "widgets/utils/GlobalAppSettings.h"
 #include "externalCommunication/tohttp.h"
 #include "externalCommunication/tolocalmemory.h"
 #include "widgets/utils/MegaIconButton.h"
-
-
+#include <QTimer>
+#include "widgets/UtilityElements/ExtendedLabels.h"
 /*
 		This widget is made to be connected to totcp\tohttp connections, but no functional is provided now
 
@@ -34,6 +34,7 @@ class ReceiveWidget : public inframedWidget
 	Q_OBJECT
 private:
 	QVBoxLayout* mainLayout;
+	SemaphorLabel* semaphor;
 	QHBoxLayout* infoLayout;
 	QLabel* totalQuantity;
 	QLabel* uniqueBarcodes;
@@ -49,7 +50,7 @@ private:
 	bool awaiting;
 	Modes currentMode;
 	sendingMode mode;
-
+	QTimer* timeoutTimer;
 public:
 	ReceiveWidget(Modes mode, QWidget* parent);
 
@@ -62,8 +63,11 @@ public:
 private slots:
 	void httpChosen();
 	void localChosen();
-	void requestEnd(bool);
-	void addressFail();
+	void requestEnd(QString data = QString());
+	void requestFail(QString stack = QString(),QString message = QString(), int code = 0);
+	void requestTimeout();
+	void localFail(QString msg);
 signals:
 	void sendingSuccess();
+	void sendStateChanged(int state);
 };

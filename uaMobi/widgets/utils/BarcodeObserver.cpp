@@ -57,7 +57,7 @@ bool BarcodeObserver::eventFilter(QObject* object, QEvent* event)
 			}
 			else if (scanButton.matches( temp->key()))
 			{
-				auto a = scanButton.toString();
+                QString a = scanButton.toString();
 				emit scanButtonPress();
 			}
 			else

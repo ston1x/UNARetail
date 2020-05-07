@@ -21,27 +21,23 @@ Capturer::Capturer(QWidget* parent)
 
 ScaningSettings::ScaningSettings(QWidget* parent)
 	: QWidget(parent), mainLayout(new QFormLayout(this)),
-	prefixSymbol(new QLabel(this)),
 	prefixCapturer(new QSpinBox(this)), 
-	suffixSymbol(new QLabel(this)),
 	suffixCapturer(new QSpinBox(this)),
 	scanButtonCapturer(new Capturer(this)),
 	additionInputElements(new MegaIconButton(this)),
-	navigationElements(new MegaIconButton(this))
+	navigationElements(new MegaIconButton(this)),
+	historyButton(new MegaIconButton(this))
 {
-	mainLayout->addRow(tr("Prefix symbol"), prefixSymbol);
 	mainLayout->addRow(tr("Enter prefix code"), prefixCapturer);
-	mainLayout->addRow(tr("Suffix symbol"), suffixSymbol);
 	mainLayout->addRow(tr("Enter suffix code"), suffixCapturer);
 	mainLayout->addRow(tr("Scan key setter"), scanButtonCapturer);
 	mainLayout->addRow(tr("More input"), additionInputElements);
 	mainLayout->addRow(tr("Navigation elements"), navigationElements);
+	mainLayout->addRow(tr("Scan history"), historyButton);
 	mainLayout->setContentsMargins(0, 0, 0, 0);
 	mainLayout->setSpacing(0);
 
 	this->setFont(AppGenFont);
-	prefixSymbol->setText(QChar(AppSettings->scanPrefix));
-	suffixSymbol->setText(QChar(AppSettings->scanSuffix));
 	scanButtonCapturer->setText(QString::number(AppSettings->scanButtonCode));
 	suffixCapturer->setValue(AppSettings->scanSuffix);
 	prefixCapturer->setValue(AppSettings->scanPrefix);
@@ -55,11 +51,17 @@ ScaningSettings::ScaningSettings(QWidget* parent)
 	navigationElements->setStyleSheet(CHECKED_BUTTONS_STYLESHEET);
 	navigationElements->setIcon(QIcon(":/res/forward.png"));
 
-	QObject::connect(suffixCapturer, QOverload<int>::of(&QSpinBox::valueChanged),
-		this, &ScaningSettings::updateSymbols);
-	QObject::connect(prefixCapturer, QOverload<int>::of(&QSpinBox::valueChanged),
-		this, &ScaningSettings::updateSymbols);
+	historyButton->setCheckable(true);
+	historyButton->setChecked(AppSettings->showHistory);
+	historyButton->setStyleSheet(CHECKED_BUTTONS_STYLESHEET);
+	historyButton->setIcon(QIcon(":/res/pen2.png"));
+
+
+#ifdef QT_VERSION5X
 	QObject::connect(scanButtonCapturer, &Capturer::keyCaptured, this, &ScaningSettings::scanKeyPressed);
+#else
+	QObject::connect(scanButtonCapturer, SIGNAL(keyCaptured(int)), this, SLOT(scanKeyPressed(int)));
+#endif
 }
 
 void ScaningSettings::extractAndSave()
@@ -68,6 +70,7 @@ void ScaningSettings::extractAndSave()
 	AppSettings->navigationElements = navigationElements->isChecked();
 	AppSettings->scanPrefix = prefixCapturer->value();
 	AppSettings->scanSuffix = suffixCapturer->value();
+	AppSettings->showHistory = historyButton->isChecked();
 	BarcodeObs->resetCapture(AppSettings->scanPrefix, AppSettings->scanSuffix, AppSettings->scanButtonCode);
 }
 
@@ -77,8 +80,3 @@ void ScaningSettings::scanKeyPressed(int keycode)
 	BarcodeObs->resetCapture(AppSettings->scanPrefix, AppSettings->scanSuffix, AppSettings->scanButtonCode);
 }
 
-void ScaningSettings::updateSymbols(int)
-{
-	suffixSymbol->setText(QChar(suffixCapturer->value()));
-	prefixSymbol->setText(QChar(prefixCapturer->value()));
-}

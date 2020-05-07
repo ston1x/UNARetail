@@ -1,15 +1,17 @@
 #include "DecodedInformation.h"
-
+#ifndef Q_NULLPTR
+#define Q_NULLPTR nullptr
+#endif
 namespace zxing {
 	namespace oned {
 		namespace rss {
 			DecodedInformation::DecodedInformation(const DecodedInformation* other)
-				: DecodedObject(other == nullptr ? 0 : other->m_newPosition),
-				m_newString(other == nullptr ? String("") : other->m_newString)
+				: DecodedObject(other == Q_NULLPTR ? 0 : other->m_newPosition),
+				m_newString(other == Q_NULLPTR ? String("") : other->m_newString)
 			{
-				m_newString = other == nullptr ? String("") : other->m_newString;
-				m_remaining = other == nullptr ? false : other->m_remaining;
-				m_remainingValue = other == nullptr ? 0 : other->m_remainingValue;
+				m_newString = other == Q_NULLPTR ? String("") : other->m_newString;
+				m_remaining = other == Q_NULLPTR ? false : other->m_remaining;
+				m_remainingValue = other == Q_NULLPTR ? 0 : other->m_remainingValue;
 			}
 
 			DecodedInformation::DecodedInformation(int newPosition, String newString)

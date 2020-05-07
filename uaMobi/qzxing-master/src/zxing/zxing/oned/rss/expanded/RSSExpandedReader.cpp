@@ -1,4 +1,7 @@
 #include "RSSExpandedReader.h"
+#ifndef  Q_NULLPTR
+#define Q_NULLPTR nullptr
+#endif // ! Q_NULLPTR
 
 namespace zxing {
 	namespace oned {
@@ -333,7 +336,7 @@ namespace zxing {
 
 				return Ref<Result>(new Result(
 					Ref<String>(new String(resultingString)),
-					nullptr,
+					Q_NULLPTR,
 					resultPoints,
 					BarcodeFormat::RSS_EXPANDED
 				));
@@ -420,7 +423,7 @@ namespace zxing {
 					rightChar = decodeDataCharacter(row, pattern, isOddPattern, false);
 				}
 				catch (NotFoundException const& /*e*/) {
-					//rightChar = nullptr;
+					//rightChar = Q_NULLPTR;
 				}
 				return ExpandedPair(leftChar, rightChar, pattern);
 			}

@@ -1,6 +1,8 @@
 #ifndef DECODED_INFORMATION_H
 #define DECODED_INFORMATION_H
-
+#ifndef Q_NULLPTR
+#define Q_NULLPTR nullptr
+#endif
 /*
  * Copyright (C) 2010 ZXing authors
  *
@@ -39,7 +41,7 @@ namespace zxing {
 			{
 			public:
 
-				DecodedInformation(const DecodedInformation* other = nullptr);
+				DecodedInformation(const DecodedInformation* other = Q_NULLPTR);
 
 				DecodedInformation(int newPosition, String newString);
 

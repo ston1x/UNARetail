@@ -1,6 +1,8 @@
 #ifndef DECODED_NUMERIC_H
 #define DECODED_NUMERIC_H
-
+#ifndef Q_NULLPTR
+#define Q_NULLPTR nullptr
+#endif
 /*
  * Copyright (C) 2010 ZXing authors
  *
@@ -42,7 +44,7 @@ namespace zxing {
 				static const int FNC1 = 10;
 				DecodedNumeric(int newPosition, int firstDigit, int secondDigit);
 
-				DecodedNumeric(const DecodedNumeric* other = nullptr);
+				DecodedNumeric(const DecodedNumeric* other = Q_NULLPTR);
 
 				int getFirstDigit() const;
 

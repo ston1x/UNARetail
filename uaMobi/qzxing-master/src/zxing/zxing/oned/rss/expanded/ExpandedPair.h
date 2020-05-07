@@ -1,6 +1,8 @@
 #ifndef EXPANDED_PAIR_H
 #define EXPANDED_PAIR_H
-
+#ifndef Q_NULLPTR
+#define Q_NULLPTR nullptr
+#endif
 /*
  * Copyright (C) 2010 ZXing authors
  *
@@ -43,7 +45,7 @@ namespace zxing {
 					DataCharacter rightChar,
 					FinderPattern finderPattern);
 
-				ExpandedPair(const ExpandedPair* other = nullptr);
+				ExpandedPair(const ExpandedPair* other = Q_NULLPTR);
 
 				DataCharacter& getLeftChar();
 

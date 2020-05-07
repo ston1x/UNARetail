@@ -13,17 +13,33 @@
 												Written by Ovidiu, modified by Anke
 */
 
-class toLocalMemory : public communicationCore	//	Stores data into file
+class toLocalMemory : public QObject
 {
 	Q_OBJECT
-public:
-	toLocalMemory(Modes cmode);
+protected:
+	QByteArray uploadList;					//	this buffer is holding info inside the application
+	QString toAdress;
+	Modes currentmode;
 
-	virtual bool send(sendingMode, int) override;	//	commcore interface
-	virtual void get() override;
+	virtual bool checkAdress(QString& adress); // checks address
+	virtual bool checkToAdress();
+	void loadDataToSend(Modes mode, sendingMode sendmode, int format = -1);	//	calls dataprovider and obtains from there list of entries
+	virtual bool checkLoadData();				//	simple check if data size > 0
+
+public:
+	toLocalMemory(Modes cmode, QObject* parent = Q_NULLPTR);
+	QString sendingTo();
+
+	bool send(sendingMode, int);	//	commcore interface
 private:
 	void saveToFile();			//	utility function which is saving data to file
 	void applyAddressFix();
+
 public slots:
-	void addressChanged(QString address, bool isFrom) override;
+	void addressChanged(QString address);
+
+signals:
+	void addressInvalid(QString data = QString());					//	emitted when adress is wrong
+	void dataErrorOccured();				//	emitted when no data to send
+	void operationDone(QString);
 };

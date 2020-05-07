@@ -1,4 +1,5 @@
 #pragma once
+#ifdef CAMERA_SUPPORT
 #include "widgets/parents/AbstractCameraWidget.h"
 
 /*
@@ -25,3 +26,4 @@ private slots:
 signals:
 	void hasBarcode(QString);
 };
+#endif

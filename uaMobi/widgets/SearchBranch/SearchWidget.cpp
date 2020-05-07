@@ -1,5 +1,4 @@
 #include "SearchWidget.h"
-#define DEBUG
 #ifdef DEBUG
 #include "debugtrace.h"
 #endif
@@ -8,6 +7,8 @@
 SearchWidget::SearchWidget(QWidget* parent)
 	: AbstractScaningWidget( Modes::Search, parent)
 {
+	if (historyView != Q_NULLPTR)
+		historyView->hide();
 }
 
 void SearchWidget::handleScanButton()
@@ -29,7 +30,9 @@ void SearchWidget::_emplaceBarcode(QString barcode)
 {
 	if (barcode.isEmpty())
 		return;
-	barcodeInfo->setText(AppData->barcodeInfo(barcode));
+	Entity e = AppData->barcodeInfo(barcode);
+	if (e != Q_NULLPTR)
+		barcodeInfo->setText(e->maximizedView("|", dateDBEncoding));
 }
 #ifdef CAMERA_SUPPORT
 void SearchWidget::handleCameraBarcode(QString value)

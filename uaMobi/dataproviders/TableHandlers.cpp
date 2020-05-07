@@ -1,6 +1,8 @@
 #include "TableHandlers.h"
 
-
+#ifndef QStringLiteral
+#define QStringLiteral(A) QString::fromUtf8("" A "" , sizeof(A) - 1)
+#endif
 
 //-----------------------------------------------------------------------------------------//
 
@@ -87,7 +89,7 @@ QString TemplatedTableHandler::select_some_fields_filtered(const QString& filter
 	{
 		if (*index >= 0 && *index < table_fields.count())
 		{
-			fields += table_fields.at(*index) + " ";
+			fields += table_fields.at(*index) + ",";
 		}
 		++index;
 	}
@@ -138,8 +140,16 @@ QString TemplatedTableHandler::allFieldsDeclaration() const noexcept
 QString TemplatedTableHandler::insert(const QString& values, const QString another_name) const noexcept
 {
 	const QString& name = assertAnotherName(another_name);
-	return QStringLiteral("insert into ") + name + QStringLiteral(" (")
-		+ allFieldsDeclaration() + QStringLiteral(") values ") + values ;
+	if (values.startsWith("select"))
+	{
+		return QStringLiteral("insert into ") + name + QStringLiteral(" (")
+			+ allFieldsDeclaration() + QStringLiteral(") ") + values;
+	}
+	else
+	{
+		return QStringLiteral("insert into ") + name + QStringLiteral(" (")
+			+ allFieldsDeclaration() + QStringLiteral(") values ") + values;
+	}
 }
 
 QString TemplatedTableHandler::makeIndex(const QString& another_name) const noexcept
@@ -187,8 +197,8 @@ QString TemplatedTableHandler::sumFieldFiltered(unsigned int index, const QStrin
 {
 	const QString& name = assertAnotherName(newName);
 	if (index >= table_fields.count())
-		return "SELECT sum(" + table_fields.at(0) + ") from " + name + " where " + table_fields.at(0) + " = " + value;
-	return "SELECT sum(" + table_fields.at(index) + ") from " + name + " where " + table_fields.at(0) + " = " + value;
+		return "SELECT sum(" + table_fields.at(0) + ") from " + name + " where " + table_fields.at(1) + " = " + value;
+	return "SELECT sum(" + table_fields.at(index) + ") from " + name + " where " + table_fields.at(1) + " = " + value;
 }
 
 QString TemplatedTableHandler::countUnique(const QString field, const QString& newName) const noexcept

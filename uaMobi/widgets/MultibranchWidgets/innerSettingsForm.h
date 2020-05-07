@@ -1,13 +1,14 @@
 #pragma once
 #include "widgets/parents/inframedWidget.h"
 #include <QTabWidget>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/qpushbutton.h>
-#include <QtWidgets/qlineedit.h>
-#include <QtWidgets/qboxlayout.h>
+#include <QLabel>
+#include <qpushbutton.h>
+#include <qlineedit.h>
+#include <qboxlayout.h>
 #include "widgets/utils/MegaIconButton.h"
 #include "widgets/SettingsWidgets/ScaningSettings.h"
 #include "widgets/SettingsWidgets/DatabaseSettings.h"
+#include "widgets/SettingsWidgets/ExtraScaningSettings.h"
 #include "dataproviders/sqldataprovider.h"
 /*
 
@@ -33,6 +34,7 @@ private:
 	QTabWidget* innerWidget;
 	ScaningSettings* scaningSettings;
 	DatabaseSettings* databaseSettings;
+	ExtraScaningSettings* extrascanSettings;
 	MegaIconButton* backButton;
 public:
 	innerSettingsForm(Modes mode, QWidget* parent);

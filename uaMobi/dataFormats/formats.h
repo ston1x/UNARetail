@@ -1,6 +1,6 @@
 #pragma once
 #include <QtSql/QSqlQuery>
-
+#include "dataproviders/ModesDescriptions.h"
 /*
 		This file is replacing renundant classes dedicated to formatting because
 		these classes did nothing simple fuction can not do.
@@ -10,7 +10,13 @@
 */
 
 
-QString getFormatedSqlAsXml(QSqlQuery query, QString dbname);
-QString getFormatedSqlAsJson(QSqlQuery query, QString dbname);
-QString getFormatedSqlAsCsv(QSqlQuery query, QString dbname);
-QString getFormatedSqlAsTxt(QSqlQuery query, QString dbname);
+
+
+
+QString getFormatedSqlAsXml(QSqlQuery query, QString dbname, int mode, Destinations destination);
+QString getFormatedSqlAsJson(QSqlQuery query, QString dbname, int mode, Destinations destination);
+QString getFormatedSqlAsCsv(QSqlQuery query, QString dbname, int mode, Destinations destination);
+QString getFormatedSqlAsTxt(QSqlQuery query, QString dbname, int mode, Destinations destination);
+
+
+void _verifyLoginPass();

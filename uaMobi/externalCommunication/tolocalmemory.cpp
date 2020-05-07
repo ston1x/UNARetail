@@ -4,47 +4,67 @@
 #ifdef DEBUG
 #include "debugtrace.h"
 #endif
+#include "dataFormats/formats.h"
 
-toLocalMemory::toLocalMemory(Modes cmode)
-	: communicationCore(cmode)
+bool toLocalMemory::checkAdress(QString& adress)
+{
+	if (adress.isEmpty())
+	{
+		return false;
+	}
+	return true;
+}
+
+bool toLocalMemory::checkToAdress()
+{
+	return checkAdress(toAdress);
+}
+
+void toLocalMemory::loadDataToSend(Modes mode, sendingMode sendmode, int format)
+{
+	uploadList.clear();
+	uploadList.append(AppData->uploadFullList(mode, sendmode, tr("current_lang"), format, int(Destinations::FileDestination)));
+}
+
+bool toLocalMemory::checkLoadData()
+{
+	if (uploadList.isEmpty())
+	{
+		emit dataErrorOccured();
+		return false;
+	}
+	return true;
+}
+
+toLocalMemory::toLocalMemory(Modes cmode, QObject * parent)
+	:QObject(parent), uploadList(), toAdress(),currentmode(cmode)
 {
 	//detrace_DCONSTR("toLocalMemory")
-	// Android black magic to make output path
 
 #ifdef Q_OS_WIN32
 	toAdress = "D:/";
 #endif
 	applyAddressFix();
 }
+QString toLocalMemory::sendingTo()
+{
+	return toAdress;
+}
 
 bool toLocalMemory::send(sendingMode mode, int format)
 {
-#ifdef DEBUG
-
-	detrace_METHCALL("toLocalMemory::send")
-		detrace_METHINVOK("toLocalMemory", "send", "loadDataToSend", "commcore")
-#endif
 
 		loadDataToSend(currentmode, mode, format);
 
-#ifdef DEBUG
-	detrace_METHINVOK("toLocalMemory", "send", "checkLoadData", "commcore")
-#endif
 
 		if (!checkLoadData())
-		{
-#ifdef DEBUG
-			detrace_METHPERROR("toLocalMemory::send", "load data failed")
-#endif
+        {
 
 				return false;
 		};
 
 	if (!checkToAdress())
-	{
-#ifdef DEBUG
-		detrace_METHPERROR("toLocalmemory::send", "checkToAddress failed")
-#endif
+    {
 
 			return false;
 	};
@@ -53,18 +73,10 @@ bool toLocalMemory::send(sendingMode mode, int format)
 	return true;
 }
 
-void toLocalMemory::get()
-{
-	//detrace_METHCALL("toLocalMemory::get")
-	emit operationDone(false);
-}
 
 void toLocalMemory::saveToFile()
 //	This method is saving data to text file on sendingTo() path
 {
-#ifdef DEBUG
-	detrace_METHCALL("toLocalMemory::saveToFile");
-#endif
 
 	if (!sendingTo().contains("UamobiExport"))
 	{
@@ -78,15 +90,14 @@ void toLocalMemory::saveToFile()
 	{
 		QTextStream stream(&file);
 		stream << uploadList;
-		emit operationDone(true);
+        stream.flush();
+        file.close();
+		emit operationDone("true");
 	}
 	else
-	{
-#ifdef DEBUG
-		detrace_METHPERROR("toLocalMemory::saveTofile", "file was not open")
-#endif
+    {
 
-			emit operationDone(false);
+			emit operationDone("false");
 	}
 }
 
@@ -95,16 +106,14 @@ void toLocalMemory::applyAddressFix()
 	if (!(toAdress.endsWith(".txt") || toAdress.endsWith(".xml")
 		|| toAdress.endsWith(".json" || toAdress.endsWith(".csv"))))
 	{
-		toAdress += "UamobiExport_" + QString::number(int(currentmode))
+		toAdress += "/UamobiExport_" + QString::number(int(currentmode))
 			+ "_" + QDate::currentDate().toString() + ".txt";
 	}
 }
 
-void toLocalMemory::addressChanged(QString address, bool isFrom)
+void toLocalMemory::addressChanged(QString address)
 {
-	if (!isFrom) {
-		toAdress = address + "UamobiExport_" + QString::number(int(currentmode))
+		toAdress = address + "/UamobiExport_" + QString::number(int(currentmode))
 			+ "_" + QDate::currentDate().toString() + ".txt";
 		applyAddressFix();
-	}
 }

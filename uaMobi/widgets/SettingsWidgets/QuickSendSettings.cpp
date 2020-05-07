@@ -20,13 +20,20 @@ QuickSendSettings::QuickSendSettings(QWidget* parent)
 
 	aboutWidget->setText(tr("send_settings_about"));
 	aboutWidget->setAlignment(Qt::AlignCenter);
-
-	protocolPicker->addItems(QStringList{ "Http", "Local" });
+    QStringList t;
+    t << "Http" << "Local" ;
+    protocolPicker->addItems(t);
+    t.clear();
 	protocolPicker->setCurrentIndex((AppSettings->sendingDirection >= 0 && AppSettings->sendingDirection < 2) ? AppSettings->sendingDirection : 0);
 	protocolPicker->setEditable(false);
-
-	sendingFormatPicker->addItems(QStringList{ "Xml", "json", "csv", "txt" });
-	sendingFormatPicker->setCurrentIndex((AppSettings->sendingFormat >= 0 && AppSettings->sendingFormat < 3) ? AppSettings->sendingFormat : 0);
+    t <<  "Xml"<< "txt" << "csv"
+       #ifdef QT_VERSION5X
+       << "Json"
+      #endif
+          ;
+    sendingFormatPicker->addItems(t);
+    t.clear();
+	sendingFormatPicker->setCurrentIndex((AppSettings->sendingFormat >= 0 && AppSettings->sendingFormat < 4) ? AppSettings->sendingFormat : 0);
 	sendingFormatPicker->setEditable(false);
 
 	simpleSendingButton->setIcon(QIcon(":/res/icn-cloud-blocked-512.png"));

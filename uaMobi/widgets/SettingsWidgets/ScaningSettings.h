@@ -7,7 +7,7 @@
 #include <QSpinBox>
 #include <QFormLayout>
 #include <QLabel>
-
+#include <dataproviders/sqldataprovider.h>
 
 class Capturer : public QLineEdit
 {
@@ -26,17 +26,15 @@ class ScaningSettings : public QWidget
 	Q_OBJECT
 protected:
 	QFormLayout* mainLayout;
-	QLabel* prefixSymbol;
 	QSpinBox* prefixCapturer;
-	QLabel* suffixSymbol;
 	QSpinBox* suffixCapturer;
 	Capturer* scanButtonCapturer;
 	MegaIconButton* additionInputElements;
 	MegaIconButton* navigationElements;
+	MegaIconButton* historyButton;
 public:
-	ScaningSettings(QWidget* parent);
+	ScaningSettings( QWidget* parent);
 	void extractAndSave();
 protected slots:
 	void scanKeyPressed(int keycode);
-	void updateSymbols(int);
 };

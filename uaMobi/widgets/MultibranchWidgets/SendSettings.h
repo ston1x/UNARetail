@@ -1,7 +1,7 @@
 #pragma once
-#include <QtWidgets/QBoxLayout>
-#include <QtWidgets/QComboBox>
-#include <QtWidgets/QLabel>
+#include <QBoxLayout>
+#include <QComboBox>
+#include <QLabel>
 
 
 #include "widgets/utils/MegaIconButton.h"
@@ -10,8 +10,8 @@
 #include "widgets/utils/GlobalAppSettings.h"
 #include "widgets/SettingsWidgets/QuickSendSettings.h"
 #include "widgets/SettingsWidgets/SerializationSettings.h"
-
-
+#include "widgets/SettingsWidgets/ExtraSendSettings.h"
+#include "widgets/SettingsWidgets/LoginSettings.h"
 class SendSettings : public inframedWidget
 {
 	Q_OBJECT
@@ -20,12 +20,15 @@ private:
 	QTabWidget* innerWidget;
 	QuickSendSettings* quickSendSettings;
 	SerializationSettings* serializationSettings;
+	ExtraSendSettings* extraSettings;
+	LoginSettings* loginSettings;
 	MegaIconButton* backButton;
-
+	Modes currentMode;
 
 
 public:
-	SendSettings(Entity prototype, QWidget* parent);
-private slots:;
+	SendSettings(Modes cmode, Entity prototype, QWidget* parent);
+	void showExtraSettings();
+private slots:
 	void saveAndExit();
 };

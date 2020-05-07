@@ -27,7 +27,7 @@ signals:
 	void iclicked(int index);
 };
 namespace mpw {
-	enum mainPageWidgets { Inventory, Supplies, Search, Simple, Camera, Prices };
+	enum mainPageWidgets { Inventory, Supplies, Search, Simple, Invoice, Prices };
 }
 
 class CoreWidget : public QWidget, abstractDynamicNode
@@ -39,16 +39,14 @@ private:
 	IndexedButton* supplies;
 	IndexedButton* search;
 	IndexedButton* simple;
-#ifdef CAMERA_SUPPORT
-	IndexedButton* camera;
-#endif
+	IndexedButton* invoice;
 	IndexedButton* prices;
-	QHBoxLayout* controlPanel;			//	This overlay is always enabled on any widget
+	QHBoxLayout* controlPanel;			
 	IgnorantButton* exitButton;			//	quits app
-	MegaIconButton* settingsButton;		//	opens settings screen of current child branch
+	MegaIconButton* settingsButton;		//	opens settings screen 
 	bool lock;
 public:
-	CoreWidget(QWidget* parent = nullptr);
+	CoreWidget(QWidget* parent = Q_NULLPTR);
 
 public slots:
 	void settingsPressed();
@@ -64,25 +62,3 @@ signals:
 	void requestSettings();
 };
 
-/*
-
-		HOW TO USE CURRENT
-
-		assign new current widget with it's address::
-				current = &mainPage
-		access current widget by * operator:
-				(*current)->hide()
-		check inner pointer for null:
-				(*current).isNull()
-		when creating a new widget - check if it is not already created by isNull.
-		when you need to access child signals: make three steps casting:
-			if (!mainPage.isNull())
-			{
-				auto temp = qobject_cast<MainPageWidget*> (mainPage);
-				if (temp != nullptr)
-				{
-					connect(temp, signal etc...
-				}
-			}
-
-*/

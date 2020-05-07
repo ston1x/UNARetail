@@ -4,43 +4,36 @@
 #include <QtSql/QSqlRecord>
 #include <QtCore/QFile>
 #include <QtCore/QMap>
-#define DEBUG
-
+#include <qlinkedlist.h>
 #ifdef DEBUG
 #include "debugtrace.h"
+#endif
+#ifndef QStringLiteral
+#define QStringLiteral(A) QString::fromUtf8("" A "", sizeof(A) - 1)
 #endif
 #include "widgets/utils/GlobalAppSettings.h"
 
 
-static const QString ModePrefixes[5]{
-	QStringLiteral("src"), 
-	QStringLiteral("inv"), 
-	QStringLiteral("sup"), 
-	QStringLiteral("sim"), 
-	QStringLiteral("pri")
-};
 
-static const QString TableSuffixes[4]
-{
-	QStringLiteral("scan"),
-	QStringLiteral("upld"),
-	QStringLiteral("bckp")
-};
 
 QString formatTableName(Modes mode, Entity prototype, TableNames tab)
 {
 	return ModePrefixes[int(mode)]
 		+ prototype->getAssociatedTable()->declaration() + TableSuffixes[int(tab)];
 }
-
-const QHash<Modes, Entity> modenamesLinker
+QHash<Modes, Entity> _initModenamesLinker()
 {
-	{Modes::Inventory, entityLinker[barcodeUtil::barcodetypes::uniformBc]},
-	{Modes::Search, entityLinker[barcodeUtil::barcodetypes::uniformBc]},
-	{Modes::Simple, entityLinker[barcodeUtil::barcodetypes::uniformBc]},
-	{Modes::Supplies, entityLinker[barcodeUtil::barcodetypes::uniformBc]},
-	{Modes::Prices, entityLinker[barcodeUtil::barcodetypes::pricedBc]}
+	QHash<Modes, Entity> temp;
+	temp.insert(Modes::Inventory, entityLinker[barcodeUtil::barcodetypes::uniformBc]);
+	temp.insert(Modes::Search, entityLinker[barcodeUtil::barcodetypes::uniformBc]);
+	temp.insert(Modes::Simple, entityLinker[barcodeUtil::barcodetypes::uniformBc]);
+	temp.insert(Modes::Supplies, entityLinker[barcodeUtil::barcodetypes::uniformBc]);
+	temp.insert(Modes::Prices, entityLinker[barcodeUtil::barcodetypes::pricedBc]);
+	temp.insert(Modes::Invoices, entityLinker[barcodeUtil::barcodetypes::uniformBc]);
+	return temp;
 };
+const QHash<Modes, Entity> modenamesLinker(_initModenamesLinker());
+
 
 QString dbnameToMode(Modes dbnm)
 {
@@ -66,19 +59,19 @@ void SqlDataProvider::_assertAndCloseSession()
 	}
 }
 
-std::shared_ptr<QSqlQuery> SqlDataProvider::runQuery(QString sql)
+QueryPtr SqlDataProvider::runQuery(QString sql)
 {
 	_assertAndOpenSession();
-	std::shared_ptr<QSqlQuery> q(new QSqlQuery(mainDb));
+    QueryPtr q(new QSqlQuery(mainDb));
 	q->exec(sql);
 #ifdef DEBUG
 	detrace_METHFRECALL("execing query: " << sql);
 #endif
 	if (q->lastError().isValid()) {
 #ifdef DEBUG
-		detrace_METHPERROR("DBEXECUTE", " : " + q->lastError().text());
+		detrace_METHPERROR("DBEXECUTE: " << sql << "\n", " : " + q->lastError().text());
 #endif
-		q.reset();
+        q.clear();
 		_assertAndCloseSession();
 		return q;
 	}
@@ -88,8 +81,9 @@ std::shared_ptr<QSqlQuery> SqlDataProvider::runQuery(QString sql)
 SqlDataProvider::SqlDataProvider()		//	Must not be called twice - ensure that exists only one SqlDataProv
 {
 	//detrace_DCONSTR("SqlDataProvider")
-	mainDb = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), QStringLiteral("maindb.db"));
-	mainDb.setDatabaseName(QStringLiteral("MAIN.db"));
+    mainDb = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), QStringLiteral("maindb.db"));
+    mainDb.setDatabaseName(QStringLiteral("MAIN.db"));
+
 	createDefaultTables();
 }
 
@@ -98,10 +92,10 @@ bool SqlDataProvider::createTablesOf(const QList<Modes> modes, Entity proto, con
 {
 	_assertAndOpenSession();
 	QString formatedTablename;
-	auto prefix = modes.begin();
+	QList<Modes>::const_iterator prefix = modes.begin();
 	while (prefix != modes.end())
 	{
-		auto suffix = tabs.begin();
+		QList<TableNames>::const_iterator suffix = tabs.begin();
 		while (suffix != tabs.end())
 		{
 			formatedTablename = ModePrefixes[int(*prefix)] + 
@@ -122,20 +116,63 @@ bool SqlDataProvider::createTablesOf(const QList<Modes> modes, Entity proto, con
 	_assertAndCloseSession();
 	return true;
 }
+bool SqlDataProvider::deleteEntity(Modes mode, Entity toDelete, TableNames tab)
+{
+	QString fname = formatTableName(mode, toDelete, tab);
+	return DBexecute(toDelete->getAssociatedTable()->delete_by_primary_key(
+		toDelete->serializeId(),
+		fname
+	));
+}
+bool SqlDataProvider::replaceEntityIn(Modes mode, Entity oldOne, Entity newOne, TableNames tab)
+{
+	QString fname = formatTableName(mode, oldOne, tab);
+	DBexecute(oldOne->getAssociatedTable()->delete_by_primary_key(oldOne->serializeId(), fname));
+	return DBexecute(newOne->getAssociatedTable()->insert(newOne->asSqlInsertion(), fname));
+	
+}
 bool SqlDataProvider::wipeAll()
 {
-	return false;
+	_assertAndOpenSession();
+	QList<Modes> modes;
+	modes << Modes::Inventory << Modes::Simple << Modes::Supplies;
+	QList<TableNames> tabs;
+	tabs << TableNames::Scanned << TableNames::Uploaded;
+	QList<Modes>::iterator mode = modes.begin();
+	while (mode != modes.end())
+	{
+		QList<TableNames>::iterator tabname = tabs.begin();
+		while (tabname != tabs.end())
+		{
+			dropTableOf(*tabname, *mode);
+			createTableOf(*tabname, *mode);
+			++tabname;
+		}
+		++mode;
+	}
+	QList<TableNames>::iterator tabname = tabs.begin();
+	while (tabname != tabs.end())
+	{
+		dropTableOf(*tabname, Modes::Prices);
+		createTableOf(*tabname, Modes::Prices);
+		++tabname;
+	}
+	mainDb.commit();
+	_assertAndCloseSession();
+	return true;
 }
 bool SqlDataProvider::createDefaultTables()
 // creates lists of default tables and databases and initiates it's creation
 {
 	_assertAndOpenSession();
-	QList<Modes> modes{ Modes::Inventory, Modes::Simple, Modes::Supplies};
-	QList<TableNames> tabs{ TableNames::Scanned, TableNames::Uploaded };
-	auto mode = modes.begin();
+    QList<Modes> modes;
+    modes << Modes::Inventory << Modes::Simple << Modes::Supplies << Modes::Invoices;
+    QList<TableNames> tabs;
+    tabs << TableNames::Scanned << TableNames::Uploaded;
+	QList<Modes>::iterator mode = modes.begin();
 	while (mode != modes.end())
 	{
-		auto tabname = tabs.begin();
+		QList<TableNames>::iterator tabname = tabs.begin();
 		while (tabname != tabs.end())
 		{
 			checkAndRefreshTable(*tabname, entityLinker[barcodeUtil::barcodetypes::uniformBc], *mode);
@@ -143,7 +180,7 @@ bool SqlDataProvider::createDefaultTables()
 		}
 		++mode;
 	}
-	auto tabname = tabs.begin();
+	QList<TableNames>::iterator tabname = tabs.begin();
 	while (tabname != tabs.end())
 	{
 		checkAndRefreshTable(*tabname, entityLinker[barcodeUtil::barcodetypes::pricedBc], Modes::Prices);
@@ -186,21 +223,21 @@ bool SqlDataProvider::checkAndRefreshTable(TableNames tab, Entity prototype, Mod
 	}
 	else
 	{
-		auto q = runQuery(
+		QueryPtr q = runQuery(
 			QStringLiteral("PRAGMA TABLE_INFO(") +
 			formatedName +
 			QStringLiteral(")")
 		);
-		if (q == nullptr)
+		if (q == Q_NULLPTR)
 		{
 			return false;
 		}
 		QStringList temp;
 		while (q->next())
-		{
-			temp << q->value(QStringLiteral("name")).toString();
+        {
+            temp << q->value(0).toString();
 		}
-		if (prototype->getAssociatedTable()->getFields() == temp)
+        if (prototype->getAssociatedTable()->getFields().count() == temp.count())
 			return true;
 		else
 		{
@@ -223,7 +260,7 @@ bool SqlDataProvider::pushEntityList(EntityList& scanned, Modes mode, TableNames
 	if (scanned.isEmpty())
 		return false;
 	_assertAndOpenSession();
-	auto start = scanned.begin();
+	EntityList::iterator start = scanned.begin();
 	while (start != scanned.end())
 	{
 		if (!postEntityInto(tab, *start, mode))
@@ -243,15 +280,30 @@ bool SqlDataProvider::pushSendingBarcodesToSent(Modes mode, Entity prototype)
 		+ TableSuffixes[int(TableNames::Scanned)];
 	QString uploadedTableName = ModePrefixes[int(mode)] + prototype->getAssociatedTable()->declaration()
 		+ TableSuffixes[int(TableNames::Uploaded)];
-	if (!DBexecute(prototype->getAssociatedTable()->insert(
+	_assertAndOpenSession();
+	mainDb.transaction();
+
+	if (!execInSession(prototype->getAssociatedTable()->insert(
 		prototype->getAssociatedTable()->select_filtered(" uploaded = 2", scanedTableName),
-			uploadedTableName)))
+		uploadedTableName)))
+	{
+		mainDb.commit();
+		_assertAndCloseSession();
 		return false;
-	if (!DBexecute(prototype->getAssociatedTable()
-		->delete_filtered(" where uploaded = 2 ", uploadedTableName)))
+	}
+	if (!execInSession(prototype->getAssociatedTable()
+		->delete_filtered(" uploaded = 2 ", scanedTableName)))
+	{
+		mainDb.commit();
+		_assertAndCloseSession();
 		return false;
+	}
 	else
+	{
+		mainDb.commit();
+		_assertAndCloseSession();
 		return true;
+	}
 }
 bool SqlDataProvider::clearSendingSelector(Modes mode, Entity prototype)
 {
@@ -265,28 +317,33 @@ bool SqlDataProvider::pushIntoDownloaded(ShortBarcodeEntity& shb)
 {
 	return DBexecute(shb.getAssociatedTable()->insert(shb.asSqlInsertion()));
 }
-QString SqlDataProvider::barcodeInfo(QString code)
+bool SqlDataProvider::pushIntoDownloaded(QLinkedList<QSharedPointer<ShortBarcodeEntity>>& l)
+{
+	_assertAndOpenSession();
+	mainDb.transaction();
+	QLinkedList<QSharedPointer<ShortBarcodeEntity>>::iterator begin = l.begin();
+	while (begin != l.end())
+	{
+		execInSession((*begin)->getAssociatedTable()->insert((*begin)->asSqlInsertion()));
+		++begin;
+	}
+	mainDb.commit();
+	_assertAndCloseSession();
+	return true;
+}
+Entity SqlDataProvider::barcodeInfo(QString code)
 //This method is searching for barcode in downLoadedDB
 {
-	QString result;
 	_assertAndOpenSession();
-	auto q = runQuery(ShortBarcodeEntity::getTableHandler()->select_filtered("barcode = '" + code + "'"));
+	QueryPtr q = runQuery(ShortBarcodeEntity::getTableHandler()->select_filtered("barcode = '" + code + "'"));
 	if (q == Q_NULLPTR)
-		return result;
-	while (q->next())
-	{
-		for (int i = 0; i < q->record().count(); i++)
-		{
-			if (i)
-			{
-				result += "\n";
-			}
-			result += q->record().fieldName(i) + " : " + q->value(i).toString();
-		}
-	}
+		return Entity();
+	Entity proto(new ShortBarcodeEntity);
+	if (!proto->fromSql(&(*(q))))
+		return Entity();
 	q->finish();
 	_assertAndCloseSession();
-	return result;
+	return proto;
 }
 
 EntityList SqlDataProvider::extractEntitiesForMode(Modes mode, TableNames tab, Entity prototype)
@@ -294,7 +351,7 @@ EntityList SqlDataProvider::extractEntitiesForMode(Modes mode, TableNames tab, E
 	EntityList Entities;
 	_assertAndOpenSession();
 	QString formatedName = formatTableName(mode, prototype, tab);
-	auto q = runQuery(
+	QueryPtr q = runQuery(
 			prototype->getAssociatedTable()->select_all(formatedName)
 		);
 	if (q == Q_NULLPTR)
@@ -310,13 +367,13 @@ EntityList SqlDataProvider::extractEntitiesForMode(Modes mode, TableNames tab)
 {
 	return extractEntitiesForMode(mode, tab, modenamesLinker[mode]);
 }
-QString SqlDataProvider::uploadFullList(Modes mode, Entity prototype, sendingMode sendmode, QString lang, int format)
+QString SqlDataProvider::uploadFullList(Modes mode, Entity prototype, sendingMode sendmode, QString lang, int format, int dest)
 //This method is selecting from dbname all barcodes that are ready to upload
 {
 	_assertAndOpenSession();
 	QString scanedTableName = ModePrefixes[int(mode)] + prototype->getAssociatedTable()->declaration()
 		+ TableSuffixes[int(TableNames::Scanned)];
-	std::shared_ptr<QSqlQuery> sql;
+    QueryPtr sql;
 	switch (sendmode)
 	{
 	case sendSent:
@@ -330,7 +387,7 @@ QString SqlDataProvider::uploadFullList(Modes mode, Entity prototype, sendingMod
 		sql = runQuery
 		(
 			prototype->getAssociatedTable()->select_some_fields_filtered(
-				" uploaded = 1"
+                " uploaded != 2"
 				" order by scanedtime desc", AppSettings->serializationOrder
 				[prototype->myType()], scanedTableName)
 		);
@@ -349,14 +406,14 @@ QString SqlDataProvider::uploadFullList(Modes mode, Entity prototype, sendingMod
 	}
 	if (sql == Q_NULLPTR)
 		return "";
-	QString formatedResponce{ DataFormater::getFormatedSql(*sql, dbnameToMode(mode), lang, format) };
+    QString formatedResponce(DataFormater::getFormatedSql(*sql, dbnameToMode(mode), lang, format, dest, int(mode)) );
 	switch (sendmode)
 	{
 	case sendUnsent:
 		sql = runQuery
 		(
 			prototype->getAssociatedTable()->select_filtered(
-				" uploaded = 1"
+                " uploaded != 2"
 				" order by scanedtime desc", scanedTableName)
 		);
 		break;
@@ -377,6 +434,7 @@ QString SqlDataProvider::uploadFullList(Modes mode, Entity prototype, sendingMod
 	{
 		return QString();
 	}
+	mainDb.transaction();
 	switch (sendmode)
 	{
 	case sendUnsent:
@@ -385,21 +443,22 @@ QString SqlDataProvider::uploadFullList(Modes mode, Entity prototype, sendingMod
 		while (sql->next())
 		{
 			execInSession(
-				prototype->getAssociatedTable()->update(" set uploaded = 2 where barcode = '" 
-					+ sql->value(0).toString() + "'", scanedTableName
+				prototype->getAssociatedTable()->update(" set uploaded = 2 where id = " 
+					+ sql->value(0).toString() , scanedTableName
 				));
 		}
 	}
 	Q_FALLTHROUGH();
 	default:
+		mainDb.commit();
 		_assertAndCloseSession();
 		return formatedResponce;
 	}
 }
 
-QString SqlDataProvider::uploadFullList(Modes mode, sendingMode sendmode, QString lang, int format)
+QString SqlDataProvider::uploadFullList(Modes mode, sendingMode sendmode, QString lang, int format, int destination)
 {
-	return uploadFullList(mode, modenamesLinker[mode], sendmode, lang, format);
+	return uploadFullList(mode, modenamesLinker[mode], sendmode, lang, format, destination);
 }
 
 bool SqlDataProvider::DBexecute( QString sql)
@@ -414,7 +473,7 @@ bool SqlDataProvider::DBexecute( QString sql)
 	q.exec(sql);
 	if (q.lastError().isValid()) {
 #ifdef DEBUG
-		detrace_METHPERROR("DBEXECUTE" , q.lastError().text());
+		detrace_METHPERROR("DBEXECUTE: " << sql << "\n", " : " + q.lastError().text());
 #endif
 		q.clear();
 		_assertAndCloseSession();
@@ -434,7 +493,7 @@ bool SqlDataProvider::execInSession(QString sql)
 	q.exec(sql);
 	if (q.lastError().isValid()) {
 #ifdef DEBUG
-		detrace_METHPERROR("DBEXECUTE", q.lastError().text());
+		detrace_METHPERROR("DBEXECUTE: " << sql << "\n", " : " + q.lastError().text());
 #endif
 		q.clear();
 		return false;
@@ -481,9 +540,13 @@ bool SqlDataProvider::dropTableOf(TableNames tab, Modes mode)
 int SqlDataProvider::countAllIn(Modes mode, Entity prototype, TableNames tab)
 {
 	_assertAndOpenSession();
+	mainDb.commit();
+	mainDb.transaction();
 	QString fname = formatTableName(mode, prototype, tab);
-	auto q = runQuery(prototype->getAssociatedTable()->count(fname));
+	QueryPtr q = runQuery(prototype->getAssociatedTable()->count(fname));
 	int quantity = 0;
+    if (q == Q_NULLPTR)
+        return 0;
 	if (q->next())
 	{
 		bool ok = false;
@@ -491,6 +554,7 @@ int SqlDataProvider::countAllIn(Modes mode, Entity prototype, TableNames tab)
 		if (!ok)
 			quantity = 0;
 	}
+	mainDb.commit();
 	_assertAndCloseSession();
 	return quantity;
 
@@ -505,7 +569,7 @@ int SqlDataProvider::sumAllIn(Modes mode, unsigned int field, Entity prototype, 
 {
 	_assertAndOpenSession();
 	QString fname = formatTableName(mode, prototype, tab);
-	std::shared_ptr<QSqlQuery> q = runQuery(prototype->getAssociatedTable()->sum(field, fname));
+    QueryPtr q = runQuery(prototype->getAssociatedTable()->sum(field, fname));
 	int quantity = 0;
 	if (q->next())
 	{
@@ -522,7 +586,9 @@ int SqlDataProvider::sumAllFilteredIn(Modes mode, const QString value, unsigned 
 {
 	_assertAndOpenSession();
 	QString fname = formatTableName(mode, prototype, tab);
-	std::shared_ptr<QSqlQuery> q = runQuery(prototype->getAssociatedTable()->sumFieldFiltered(field, value, fname));
+    QueryPtr q = runQuery(prototype->getAssociatedTable()->sumFieldFiltered(field, value, fname));
+    if (q == Q_NULLPTR)
+        return 0;
 	int quantity = 0;
 	if (q->next())
 	{
@@ -629,7 +695,7 @@ bool SqlDataProvider::updateEntityIn(Entity entity, Modes mode, TableNames tab)
 SqlDataProvider* SqlDataProvider::_instanse = Q_NULLPTR;
 QSqlDatabase SqlDataProvider::cloneConnection()
 {
-	return QSqlDatabase::cloneDatabase(mainDb, "connect" + QString::number(QTime::currentTime().msecsSinceStartOfDay()));
+    return QSqlDatabase::cloneDatabase(mainDb, "connect" + QString::number(QTime::currentTime().msec()));
 }
 SqlDataProvider* SqlDataProvider::instanse()
 {

@@ -2,9 +2,14 @@
 #include "BarcodeEntity.h"
 #include "PricedBarcodeEntity.h"
 #include "ShortBarcodeEntity.h"
+#include "UtilityEntities.h"
 #include <QAbstractListModel>
 
+/*
+	This file contains all entities includes and polymorthic model. Also here are stored some 
+	utility templates.
 
+*/
 
 
 class DataEntityListModel : public QAbstractListModel
@@ -22,11 +27,12 @@ public:
 		SearchRole = Qt::UserRole + 1,
 		// DataCopyRole returns full copy of an object to avoid changing model
 		DataCopyRole,
-		DirectAccessRole
+		DirectAccessRole,
+		ReversedDARole
 	};
 
-	using QAbstractListModel::QAbstractListModel;
-	DataEntityListModel(const QVector<Entity>& ents, QWidget* parent = nullptr);
+    DataEntityListModel(QObject* parent = Q_NULLPTR) : QAbstractListModel(parent){}
+	DataEntityListModel(const QVector<Entity>& ents, QWidget* parent = Q_NULLPTR);
 	// Inherited from QAbstractListModel
 	int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 	QVariant data(const QModelIndex& index, int role) const override;
@@ -39,7 +45,7 @@ public:
 	void removeDataEntity(Entity);
 	// replaces data entity by it's id. This method is used only if you have a copy with the same id and other data.
 	void replaceDataEntity(Entity);
-
+	void addToDataEntity(Entity, int role);
 	void appendDataEntity(Entity);
 	// empties model
 	void reset();
@@ -54,14 +60,29 @@ signals:
 extern const QHash<barcodeUtil::barcodetypes, Entity> entityLinker;
 
 
-
 template <class DataEntity>
-std::shared_ptr<DataEntity> upcastEntity(std::shared_ptr<AbsEntity> e)
+QSharedPointer<DataEntity> upcastEntity(QSharedPointer<AbsEntity> e)
 {
-	DataEntity te;
-	if (e->myType() == te.myType())
+	if (e != Q_NULLPTR)
 	{
-		return std::static_pointer_cast<DataEntity>(e);
+		DataEntity te;
+		if (e->myType() == te.myType())
+		{
+			return e.staticCast<DataEntity>();
+		}
 	}
-	return std::shared_ptr<DataEntity>();
+	return QSharedPointer<DataEntity>();
+}
+template <class DataEntity>
+DataEntity* upcastEntity(AbsEntity* e)
+{
+	if (e != Q_NULLPTR)
+	{
+		DataEntity te;
+		if (e->myType() == te.myType())
+		{
+			return static_cast<DataEntity*>(e);
+		}
+	}
+	return Q_NULLPTR;
 }

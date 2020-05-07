@@ -1,4 +1,5 @@
 #include "CameraWidget.h"
+#ifdef CAMERA_SUPPORT
 #include "widgets/utils/ElementsStyles.h"
 #include <QtQuick/QQuickView>
 #include <QtQuick/QQuickItem>
@@ -30,3 +31,4 @@ void CameraWidget::backRequire()
 {
 	emit backRequired();
 }
+#endif

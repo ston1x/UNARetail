@@ -1,5 +1,5 @@
 #pragma once
-#include <QtWidgets/QWidget>
+#include <QWidget>
 #include <QtGui/QKeyEvent>
 #include "widgets/utils/EventsAndFilters.h"
 /*

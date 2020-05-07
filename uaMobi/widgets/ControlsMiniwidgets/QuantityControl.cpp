@@ -1,6 +1,9 @@
 #include "QuantityControl.h"
 #include "widgets/utils/ElementsStyles.h"
 //#define DEBUG
+#ifdef Q_OS_ANDROID
+#include <QInputMethod>
+#endif
 #ifdef DEBUG
 #include "debugtrace.h"
 #endif
@@ -70,6 +73,19 @@ void QuantityControl::setFocus() const
 {
 	innerSpinbox->setFocus();
 	innerSpinbox->selectAll();
+#ifdef Q_OS_ANDROID
+    qApp->inputMethod()->show();
+#endif
+}
+
+void QuantityControl::setMinimum(double min)
+{
+	innerSpinbox->setMinimum(min);
+}
+
+double QuantityControl::getPureValue()const
+{
+	return innerSpinbox->dvalue();
 }
 
 void QuantityControl::show()

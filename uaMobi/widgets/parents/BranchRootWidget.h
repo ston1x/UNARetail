@@ -62,6 +62,6 @@ protected slots:					//	button slots
 	void receivePressed();
 	void settingsPressed();
 public slots:					//	newBarcodesArrived is collecting barcodes into Vector
-	void backRequire();
+	virtual void backRequire();
 	void newBarcodeArrived(Entity);	//	This slot is hiding current and opens widget same as Expecting control
 };

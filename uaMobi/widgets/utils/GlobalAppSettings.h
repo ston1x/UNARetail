@@ -1,9 +1,10 @@
 #pragma once
 #include <QtCore/QString>
 #include <QtCore/qurl.h>
-#include "dataproviders/sqldataprovider.h"
 #include <QtCore/QTranslator>
 #include <QtCore/QTextStream>
+#include <QVector>
+#include "dataproviders/ModesDescriptions.h"
 /*
 		This class is responsible for global settings.
 */
@@ -20,7 +21,6 @@ private:
 	explicit GlobalAppSettings();		//	Explicit default constructor. All data is obtained automatically via file
 public:
 	QString localfile;		//	file for tolocalmemory
-	QUrl httpOut;				//	address for tohttp upload
 	QUrl httpIn;			//	address for tohttp download
 	QString localDatabase;
 	bool additionalControlElements;	//	controls panel with camera\ keyboard shortcuts
@@ -40,6 +40,28 @@ public:
 	int	fontMinHeight;
 	int fontMaxHeight;
 	double fontPercent;
+
+	bool showHistory;
+
+	QChar separatorCode;
+
+	QList<int> deserializationOrder;
+	QList<int> deserializationPoints;
+
+	QString placeAsItem;
+	QString placeAsCode;
+
+	QList<int> sysfeed;
+
+	QList<bool> floatControl;
+	QString extrasearchPrefix;
+	bool clearScanBuffer;
+
+	bool sendLogin;
+	QString userLogin;
+	QString userPass;
+
+	QVector<ModeDescription> modes;
 
 	void SetTranslator();				//	Sets translator. Can be used any time
 	void Save();						//	Forse save

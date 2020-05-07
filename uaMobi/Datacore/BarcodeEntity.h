@@ -2,6 +2,11 @@
 #include "AbsEntity.h"
 #include <QDateTime>
 
+/*
+	this entity describes default barcode type used for most modes - barcode and it's quantity and 
+	supportive values.
+*/
+
 
 
 class BarcodeEntity : public AbsEntity
@@ -18,10 +23,12 @@ protected:
 	virtual AbsEntity* _clone() const override;
 	virtual bool deepCompare(AbsEntity*) const override;
 	virtual QString _getName() const override;
-	virtual int _getEnumerable(int role) const override;
+	virtual double _getEnumerable(int role) const override;
 	virtual void _invalidate() override;
 	virtual int _getHeight() const override;
 	virtual const QStringList& _getFields() const override;
+	virtual QString _fullComparationQuery() const override;
+	virtual void _setEnumerable(int role, double value) override;
 public:
 	QString barcode;			//	String representation of barcode. Is used to distinct one barcode from another.
 	QDateTime addDate;		//	datetime when barcode was scanned. If it was scanned multiple times - only first stays
@@ -32,11 +39,12 @@ public:
 
 	explicit BarcodeEntity(QString barcode = QString(),
 		QDateTime adddt = QDateTime::currentDateTime(),
-		int scsess = 0,
+		int isUpl = 0,
 		QDateTime expdt = QDateTime::currentDateTime(),
 		QString comm = "", double Qty = 0);
+	explicit BarcodeEntity(QString bc, QString comm);
 	static unsigned int getEnumerableFieldIndex();
 };
 
-typedef std::shared_ptr<BarcodeEntity> Barcode;
+typedef QSharedPointer<BarcodeEntity> Barcode;
 typedef QVector<Barcode> BarcodeList;

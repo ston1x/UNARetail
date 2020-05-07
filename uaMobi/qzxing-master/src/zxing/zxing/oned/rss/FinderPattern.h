@@ -1,6 +1,8 @@
 #ifndef FINDER_PATTERN_H
 #define FINDER_PATTERN_H
-
+#ifndef Q_NULLPTR
+#define Q_NULLPTR nullptr
+#endif
 /*
  * Copyright 2009 ZXing authors
  *
@@ -35,7 +37,7 @@ namespace zxing {
 			public:
 				FinderPattern(int value, std::vector<int> startEnd, int start, int end, int rowNumber);
 
-				FinderPattern(const FinderPattern* other = nullptr);
+				FinderPattern(const FinderPattern* other = Q_NULLPTR);
 
 				int getValue() const;
 

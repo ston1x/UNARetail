@@ -39,7 +39,7 @@ protected:
     abstractNode(inframedWidget* c, inframedWidget* u, inframedWidget* m) : current(c), untouchable(u), main(m) {}
 public:
     virtual ~abstractNode(){}
-public slots:
+public:
 	virtual bool _hideCurrent(inframedWidget* replacement);
 	virtual void _hideAny(inframedWidget* replacement);
 };

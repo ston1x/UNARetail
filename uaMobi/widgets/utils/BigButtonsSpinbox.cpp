@@ -129,6 +129,7 @@ BigButtonsSpinbox::BigButtonsSpinbox(spintype type, QWidget* parent, double adap
 		{
 			dsp->setSpecialValueText("");
             dsp->setDecimals(3);
+			dsp->setLocale(QLocale::c());
 #ifdef QT_VERSION5X
 			QObject::connect(dsp, QOverload<double>::of(&ReturnReactingDoubleSpinBox::valueChanged), this, &BigButtonsSpinbox::doubleValueChanged);
 			QObject::connect(dsp, &ReturnReactingDoubleSpinBox::returnPressed, this, &BigButtonsSpinbox::returnPressed);
