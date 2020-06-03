@@ -9,9 +9,13 @@
 #include "widgets/utils/MegaIconButton.h"
 #include "widgets/utils/GlobalAppSettings.h"
 #include "widgets/utils/ElementsStyles.h"
+#include "widgets/UtilityElements/ExtendedLabels.h"
+#include <QPaintEvent>
+#include <QPainter>
+
 
 LoginPassDialog::LoginPassDialog(QWidget* parent)
-	:QDialog(parent), mainLayout(new QFormLayout(this)),
+	:QDialog(parent, Qt::FramelessWindowHint), mainLayout(new QFormLayout(this)),
 	loginField(new QLineEdit(this)),
 	passField(new QLineEdit(this)),
 	buttonPanel(new QHBoxLayout(this)),
@@ -24,7 +28,8 @@ LoginPassDialog::LoginPassDialog(QWidget* parent)
 	mainLayout->addItem(buttonPanel);
 	mainLayout->setRowWrapPolicy(QFormLayout::WrapAllRows);
 	mainLayout->setSpacing(0);
-	mainLayout->setContentsMargins(0, 0, 0, 0);
+	mainLayout->setContentsMargins(1, 1, 1, 1);
+	mainLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
 	buttonPanel->addWidget(cancelButton);
 	buttonPanel->addWidget(okButton);
 	buttonPanel->setSpacing(0);
@@ -32,11 +37,13 @@ LoginPassDialog::LoginPassDialog(QWidget* parent)
 	loginField->setText(AppSettings->userLogin);
 	passField->setText(AppSettings->userPass);
 	passField->setEchoMode(QLineEdit::Password);
-	okButton->setIcon(QIcon(":/res/forward.png"));
+	okButton->setIcon(QIcon(":/res/submit.png"));
 	okButton->setStyleSheet(COMMIT_BUTTONS_STYLESHEET);
+	okButton->setFixedHeight(calculateAdaptiveButtonHeight(0.08));
+	cancelButton->setFixedHeight(calculateAdaptiveButtonHeight(0.08));
 	cancelButton->setStyleSheet(BACK_BUTTONS_STYLESHEET);
 	cancelButton->setIcon(QIcon(":/res/back.png"));
-	setStyleSheet("QDialog {border: 2px solid black;}");
+	setStyleSheet("QDialog {border: 1px solid black;}");
 #ifdef Q_OS_ANDROID
 	setFixedWidth(calculateAdaptiveWidth(0.9));
 #endif
@@ -82,12 +89,12 @@ void ErrorMessageDialog::okPressed()
 
 ErrorMessageDialog::ErrorMessageDialog(const QString header,
 	const QString text, const QString stack, QWidget* parent, const QIcon icon)
-    :QDialog(parent), mainLayout(new QVBoxLayout(this)),
+    :QDialog(parent, Qt::WindowType::FramelessWindowHint), mainLayout(new QVBoxLayout(this)),
       topLayout(new QHBoxLayout(this)),
 	topic(new QLabel(this)),
 	quitButton(new QToolButton(this)),
     middleLayout(new QHBoxLayout(this)),
-	errorMessage(new QLabel(this)),
+	errorMessage(new ClickableLabel(this)),
 	errorImage(new QLabel(this)),
     bottomLayout(new QHBoxLayout(this)),
 	okButton(new MegaIconButton(this)),
@@ -107,8 +114,16 @@ ErrorMessageDialog::ErrorMessageDialog(const QString header,
     bottomLayout->addWidget(okButton);
     bottomLayout->addWidget(infoButton);
     mainLayout->setSpacing(0);
-    mainLayout->setContentsMargins(0,0,0,0);
-
+    mainLayout->setContentsMargins(1,1,1,1);
+	QPalette temp = topic->palette();
+	temp.setColor(QPalette::Base, quitButton->palette().color(QPalette::Base));
+	topic->setPalette(temp);
+	topic->setStyleSheet("QLabel { background-color: white; border-left: 1px solid black;"
+		"border-top: 1px solid black;"
+		"border-bottom: 1px solid black;}");
+	quitButton->setStyleSheet("QToolButton { background-color: white; border-right: 1px solid black;"
+		"border-top: 1px solid black;"
+		"border-bottom: 1px solid black;}");
     topLayout->setSpacing(0);
     topLayout->setContentsMargins(0,0,0,0);
 
@@ -122,8 +137,10 @@ ErrorMessageDialog::ErrorMessageDialog(const QString header,
 	topic->setText(header);
 	quitButton->setIcon(style()->standardIcon(QStyle::StandardPixmap::SP_DialogCloseButton));
     quitButton->setFixedSize(calculateAdaptiveSize(0.06, 0.2));
+	topic->setFixedHeight(quitButton->height());
 
 	errorMessage->setText(text);
+	
 	if (icon.isNull())
 	{
         errorImage->setPixmap(style()->standardIcon(
@@ -135,21 +152,27 @@ ErrorMessageDialog::ErrorMessageDialog(const QString header,
         errorImage->setPixmap(icon.pixmap(calculateAdaptiveSize(0.1, 0.3)));
 	}
     errorImage->setFixedHeight(calculateAdaptiveButtonHeight(0.1));
+	errorImage->setFixedWidth(errorImage->pixmap()->width());
 	okButton->setIcon(QIcon(":/res/submit.png"));
 	okButton->setText(tr("OK"));
     okButton->setFixedHeight(calculateAdaptiveButtonHeight(0.06));
+	okButton->setStyleSheet(OK_BUTTONS_STYLESHEET);
     infoButton->setFixedHeight(calculateAdaptiveButtonHeight(0.06));
 	infoButton->setIcon(QIcon(":/downarrow.png"));
 	infoButton->setText(tr("info"));
 	stackTrace->setText(stack);
     stackTrace->setWordWrap(true);
+	stackTrace->setAlignment(Qt::AlignHCenter);
+	stackTrace->setMargin(3);
+	stackTrace->setStyleSheet("QLabel {border-top: 1px solid black;}");
 	stackTrace->hide();
 	infoButton->setCheckable(true);
 	infoButton->setChecked(false);
 	infoButton->setStyleSheet(CHECKED_BUTTONS_STYLESHEET);
-	QObject::connect(infoButton, &MegaIconButton::clicked, this, &ErrorMessageDialog::infoToggled);
+	QObject::connect(infoButton, &MegaIconButton::toggled, this, &ErrorMessageDialog::infoToggled);
 	QObject::connect(okButton, &MegaIconButton::clicked, this, &ErrorMessageDialog::okPressed);
 	QObject::connect(quitButton, &MegaIconButton::clicked, this, &ErrorMessageDialog::okPressed);
+	QObject::connect(errorMessage, &ClickableLabel::clicked, infoButton, &QPushButton::toggle);
 }
 
 void ErrorMessageDialog::showErrorInfo(const QString& header, const QString& message, bool showStack, const QString stack, const QIcon& errorIcon)
@@ -166,7 +189,7 @@ void ErrorMessageDialog::showErrorInfo(const QString& header, const QString& mes
 
 void ErrorMessageDialog::infoToggled()
 {
-	if (infoButton->isChecked())
+	if (stackTrace->isHidden())
 	{
 		stackTrace->show();
 	}

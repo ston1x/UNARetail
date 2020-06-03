@@ -18,6 +18,8 @@ class GlobalAppSettings	//	Holds main settings for data exchange. DO NOT MAKE MU
 {
 private:
 	static GlobalAppSettings* _instanse;
+	QVector<ModeDescription> modes;
+	QByteArray netEncoding;
 	explicit GlobalAppSettings();		//	Explicit default constructor. All data is obtained automatically via file
 public:
 	QString localfile;		//	file for tolocalmemory
@@ -34,7 +36,7 @@ public:
 	int scanPrefix;
 	int scanSuffix;
 	int scanButtonCode;
-	QList<QList<int>> serializationOrder;
+//	QList<QList<int>> serializationOrder;
 	QString language;					//	language of the application
 	QTranslator qt_translator;			//	global translator is stored here
 	int	fontMinHeight;
@@ -51,9 +53,9 @@ public:
 	QString placeAsItem;
 	QString placeAsCode;
 
-	QList<int> sysfeed;
+//	QList<int> sysfeed;
 
-	QList<bool> floatControl;
+//	QList<bool> floatControl;
 	QString extrasearchPrefix;
 	bool clearScanBuffer;
 
@@ -61,10 +63,16 @@ public:
 	QString userLogin;
 	QString userPass;
 
-	QVector<ModeDescription> modes;
-
+	bool autoFillQuantity;
+	QString taxInvoiceTemporary;
 	void SetTranslator();				//	Sets translator. Can be used any time
 	void Save();						//	Forse save
+	ModeDescription& getModeDescription(Modes m);
+	ModeDescription& getModeDescription(int m);
+	const QByteArray& getNetworkEncoding();
+	void setNetworkEncoding(const QString&);
+	ModeDescription& operator[](Modes m);
+	ModeDescription& operator[](int m);
 	~GlobalAppSettings();				//	Dumping destructor. Saves state before exit
 	static GlobalAppSettings* instanse();
 };

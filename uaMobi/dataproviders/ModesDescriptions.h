@@ -40,6 +40,11 @@ private:
 	int sysfeed;
 	QList<int> serializationOrder;
 	bool floatControl;
+	long long int previousDocument;
+	bool attachNewDataToPrevious;
+	bool clearBeforeAttachingNewData;
+	bool allowInsertingTaxInvoiceNumber;
+	bool newBCMustHaveTaxInvoiceNumber;
 protected:
 	virtual bool _deserialize(const QString&);
 	virtual QString _serialize() const;
@@ -47,17 +52,31 @@ public:
 	explicit ModeDescription();
 	explicit ModeDescription(Modes md);
 	explicit ModeDescription(QString& serialized);
-	ModeDescription(Modes m, int sf, QList<int>& sO, bool fc);
+	ModeDescription(Modes m, int sf, QList<int>& sO, bool fc,long long int pvd, bool andtp, bool cband,
+	bool aITIN,
+	bool NBMHTIN
+	);
 	bool deserialize(const QString&);
 	QString serialize() const;
 	Modes getMode() const;
 	int getSysfeed() const;
-	QList<int> getSerializationOrder() const;
+	const QList<int>& getSerializationOrder() const;
 	bool requiresFloatControl() const;
+	bool requiresAttachingToPreviousDoc() const;
+	bool mustClearBeforeAttaching() const;
+	long long int getPreviousDocNumber() const;
+	bool isInsertingTaxInvoiceNumAllowed() const;
+	bool isForbiddenInsertingWithoutTaxInvoice() const;
+
+
 	void setSysfeed(int);
 	void setSerializationOrder(QList<int>&);
 	void setFloatControl(bool);
-
+	void setAttachingToPrevDoc(bool);
+	void setCleanBeforeAttaching(bool);
+	void setPreviousDocument(long long int);
+	void setInsertingTaxNumber(bool);
+	void setForbiddingInsertingWithoutTaxInvoice(bool);
 };
 
 enum

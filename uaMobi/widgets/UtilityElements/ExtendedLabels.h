@@ -36,7 +36,16 @@ public:
 signals:
 	void clicked(bool left = true);
 };
-
+class ClickableLabel : public QLabel
+{
+	Q_OBJECT
+protected:
+	virtual void mouseReleaseEvent(QMouseEvent* mev) override { emit clicked(); QLabel::mouseReleaseEvent(mev); }
+public:
+	ClickableLabel(QWidget* parent = Q_NULLPTR) :QLabel(parent) {}
+signals:
+	void clicked();
+};
 
 class CounterLabel : public QLabel
 {

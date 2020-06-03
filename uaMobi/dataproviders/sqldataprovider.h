@@ -113,7 +113,8 @@ public:
 	bool deleteEntity(Modes mode, Entity toDelete, TableNames tab);    // deletes entity by hard binding to it's guid. Use this in most cases
 	bool replaceEntityIn(Modes mode, Entity oldOne, Entity newOne, TableNames tab); // replaces entity by id binding. Prefer this over updateEntity
 	bool wipeAll(); // deprecated
-
+	bool wipeMode(Modes mode);
+	int countDownloaded();
 	QSqlDatabase cloneConnection(); // deprecated
 	static SqlDataProvider* instanse();
 	~SqlDataProvider();

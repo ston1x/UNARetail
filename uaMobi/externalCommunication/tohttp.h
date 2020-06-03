@@ -17,6 +17,8 @@
 
 																Written by Ovidiu, modified by Anke
 */
+class QTextDecoder;
+class QTextCodec;
 class toHttp : public QObject
 {
 	Q_OBJECT
@@ -31,7 +33,10 @@ private:
 	QLinkedList<ShortBarcode> loaded;
 
 	int currentlyAwaiting;
-
+	QTextDecoder * decoder;
+	int page;
+	int sessionCounter;
+	QString stored_place_code;
 	enum {
 		notAwaiting,
 		awaitingPlaces,
@@ -42,9 +47,13 @@ private:
 	void _parseProductList();
 	bool _checkAddress();
 	bool _setReply(QNetworkReply*);
+	bool _product_list_receiving_start();
+	bool _product_list_receiving_block(QString);
+	bool _product_list_receiving_end();
+	bool _send_get_products();
 public:
 	toHttp(Modes mode);
-
+	~toHttp();
 	void setAddress(QString newAddress);
 
 	bool send(sendingMode, int); // interface override
@@ -53,6 +62,7 @@ public:
 	bool getPlacelist();
 	bool getProductList( QString place_code);
 	void clear();
+	int count();
 private slots:
 	void uploadResponce();	//	is triggered when upload responce came
 	void downloadResponce();	//	receives downoad response and stores it in input
@@ -61,7 +71,7 @@ signals:
 	void readNL();									//	emitted when block is partially arrived
 	void progressLeap(int);							//	emmited when part of the process is passed
 
-	void productlistReceived(QLinkedList<ShortBarcode>&);
+	void downloadStateChanged(QString state);
 	void placelistReceived(QStringList names, QStringList codes);
 	void errorReceived(QString stack = QString(),QString message = QString(), int code = 404);
 	void sendSuccesfull(QString);

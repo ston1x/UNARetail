@@ -4,14 +4,15 @@ SendSettings::SendSettings(Modes cmode, Entity prototype, QWidget* parent)
 	: inframedWidget(parent), 
 	mainLayout(new QVBoxLayout(this)),
 	innerWidget(new QTabWidget(this)),
-	quickSendSettings(new QuickSendSettings(this)),
-	serializationSettings(new SerializationSettings(prototype, this)),
+	quickSendSettings(new QuickSendSettings(cmode,this)),
+	serializationSettings(new SerializationSettings(cmode,prototype, this)),
 	loginSettings(new LoginSettings(this)),
 	extraSettings(Q_NULLPTR),
 	backButton(new MegaIconButton(this)),
 	currentMode(cmode)
 {
 	mainLayout->addWidget(innerWidget);
+
 	innerWidget->addTab(quickSendSettings, tr("QuickSend"));
 	innerWidget->addTab(serializationSettings, tr("Serialization"));
 	innerWidget->addTab(loginSettings, tr("Login"));

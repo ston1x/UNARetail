@@ -2,6 +2,16 @@
 #include "widgets/utils/ElementsStyles.h"
 #include <qmessagebox.h>
 #include "widgets/utils/GlobalAppSettings.h"
+#include "widgets/utils/MegaIconButton.h"
+#include "widgets/SettingsWidgets/ScaningSettings.h"
+#include "widgets/SettingsWidgets/DatabaseSettings.h"
+#include "widgets/SettingsWidgets/ExtraScaningSettings.h"
+#include "widgets/SettingsWidgets/TaxInvoiceSettings.h"
+#include <QTabWidget>
+#include <QLabel>
+#include <qpushbutton.h>
+#include <qlineedit.h>
+#include <qboxlayout.h>
 
 
 
@@ -10,6 +20,7 @@ innerSettingsForm::innerSettingsForm(Modes mode, QWidget* parent)
 	innerWidget(new QTabWidget(this)), scaningSettings(new ScaningSettings(this)),
 	databaseSettings(new DatabaseSettings(mode, this)),
 	extrascanSettings(new ExtraScaningSettings(mode, this)),
+	taxInvoiceSettings(new TaxInvoiceSettings(mode,this)),
 	backButton(new MegaIconButton(this))
 {
 	this->setLayout(mainLayout);
@@ -17,6 +28,7 @@ innerSettingsForm::innerSettingsForm(Modes mode, QWidget* parent)
 	innerWidget->addTab(scaningSettings, tr("Scaning"));
 	innerWidget->addTab(databaseSettings, tr("Database"));
 	innerWidget->addTab(extrascanSettings, tr("Extra"));
+	innerWidget->addTab(taxInvoiceSettings, tr("TaxInv"));
 	mainLayout->addWidget(backButton);
 	mainLayout->setContentsMargins(0, 0, 0, 0);
 	mainLayout->setSpacing(0);
@@ -38,6 +50,7 @@ void innerSettingsForm::dumpAndReturn()
 	databaseSettings->extractAndSave();
 	scaningSettings->extractAndSave();
 	extrascanSettings->extractAndSave();
+	taxInvoiceSettings->extractAndSave();
 	AppSettings->Save();
 	emit backRequired();
 }

@@ -4,7 +4,7 @@
 #include <QLabel>
 #include <QComboBox>
 #include "widgets/utils/MegaIconButton.h"
-
+#include "dataproviders/ModesDescriptions.h"
 
 
 class QuickSendSettings : public QWidget
@@ -16,7 +16,12 @@ protected:
 	QComboBox* protocolPicker;
 	QComboBox* sendingFormatPicker;
 	MegaIconButton* simpleSendingButton;
+	MegaIconButton* attachLastDoc;
+	MegaIconButton* cleanLastDoc;
+	QLineEdit* docField;
+	Modes currentMode;
 public:
-	QuickSendSettings(QWidget * parent);
+	QuickSendSettings(Modes mode, QWidget * parent);
 	void extractAndSave();
+	void attachClicked();
 };

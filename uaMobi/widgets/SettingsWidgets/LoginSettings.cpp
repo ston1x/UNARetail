@@ -39,6 +39,7 @@ void LoginSettings::extractAndSave()
 	AppSettings->sendLogin = enableLoginSend->isChecked();
 	AppSettings->userLogin = loginField->text();
 	AppSettings->userPass = passwordField->text();
+	
 }
 
 void LoginSettings::loginEnableToggled()

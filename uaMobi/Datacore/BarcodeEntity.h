@@ -36,12 +36,12 @@ public:
 	QDateTime expDate;		//	datetime of expiration. Is needed only for sending - no modifications after user input
 	QString comment;		//	comment to barcode
 	double quantity;
-
+	QString taxInvoiceNumber;
 	explicit BarcodeEntity(QString barcode = QString(),
 		QDateTime adddt = QDateTime::currentDateTime(),
 		int isUpl = 0,
 		QDateTime expdt = QDateTime::currentDateTime(),
-		QString comm = "", double Qty = 0);
+		QString comm = QString(), double Qty = 0, QString tIN = QString());
 	explicit BarcodeEntity(QString bc, QString comm);
 	static unsigned int getEnumerableFieldIndex();
 };

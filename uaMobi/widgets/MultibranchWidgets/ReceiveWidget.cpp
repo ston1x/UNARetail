@@ -22,6 +22,9 @@ ReceiveWidget::ReceiveWidget(Modes mode, QWidget* parent)
 	semaphor(new SemaphorLabel(this)),
 	infoLayout(new QHBoxLayout(this)),
 	totalQuantity(new QLabel(this)), uniqueBarcodes(new QLabel(this)),
+	previousDocumentLayout(new QHBoxLayout(this)),
+	numberOfPreviousDocument(new QLabel(this)),
+	cleanPreviousDocument(new MegaIconButton(this)),
 	HttpAddress(new QLabel(this)),
 	LocalAddress(new QLabel(this)),
 	useHttpButton(new MegaIconButton(this)), useLocalButton(new MegaIconButton(this)),
@@ -34,6 +37,11 @@ ReceiveWidget::ReceiveWidget(Modes mode, QWidget* parent)
 	mainLayout->addLayout(infoLayout);
 	infoLayout->addWidget(uniqueBarcodes);
 	infoLayout->addWidget(totalQuantity);
+	mainLayout->addLayout(previousDocumentLayout);
+	previousDocumentLayout->addWidget(numberOfPreviousDocument);
+	previousDocumentLayout->addWidget(cleanPreviousDocument);
+
+	
 	mainLayout->addWidget(useHttpButton);
 	mainLayout->addWidget(HttpAddress);
 	mainLayout->addWidget(useLocalButton);
@@ -67,7 +75,7 @@ ReceiveWidget::ReceiveWidget(Modes mode, QWidget* parent)
 	totalQuantity->setStyleSheet(COUNTERS_LABEL_STYLESHEET);
 	uniqueBarcodes->setStyleSheet(COUNTERS_LABEL_STYLESHEET);
 	backButton->setStyleSheet(BACK_BUTTONS_STYLESHEET);
-
+	cleanPreviousDocument->setIcon(QIcon(":/res/deleteData.png"));
 #ifdef QT_VERSION5X
 	QObject::connect(useHttpButton, &QPushButton::pressed, this, &ReceiveWidget::httpChosen);
 	QObject::connect(useLocalButton, &QPushButton::pressed, this, &ReceiveWidget::localChosen);
@@ -78,6 +86,7 @@ ReceiveWidget::ReceiveWidget(Modes mode, QWidget* parent)
 	QObject::connect(backButton, &MegaIconButton::clicked, this, &ReceiveWidget::backRequired);
 	QObject::connect(timeoutTimer, &QTimer::timeout, this, &ReceiveWidget::requestTimeout);
 	QObject::connect(this, &ReceiveWidget::sendStateChanged, semaphor, &SemaphorLabel::setState);
+	QObject::connect(cleanPreviousDocument, &MegaIconButton::clicked, this, &ReceiveWidget::cleanPrevDoc);
 #else
 	QObject::connect(useHttpButton, SIGNAL(clicked()), this, SLOT(httpChosen()));
 	QObject::connect(useLocalButton, SIGNAL(clicked()),this, SLOT(localChosen()));
@@ -88,7 +97,8 @@ ReceiveWidget::ReceiveWidget(Modes mode, QWidget* parent)
 	QObject::connect(backButton, SIGNAL(clicked()), this, SIGNAL(backRequired()));
 	throw;
 #endif
-	timeoutTimer->setInterval(1200000);
+	timeoutTimer->setInterval(120000);
+	showPrevDoc();
 }
 
 void ReceiveWidget::show()
@@ -96,7 +106,8 @@ void ReceiveWidget::show()
     HttpAddress->setText(AppSettings->httpIn.toString());
 	LocalAddress->setText(AppSettings->localfile);
 	show_info();
-
+	showPrevDoc();
+	
 	inframedWidget::show();
 }
 
@@ -176,14 +187,29 @@ bool ReceiveWidget::sendBySetup()
 	return true;
 }
 
+void ReceiveWidget::showPrevDoc()
+{
+	if (AppSettings->getModeDescription(currentMode).requiresAttachingToPreviousDoc())
+	{
+		numberOfPreviousDocument->setText(tr("Previous document: ") +
+			QString::number(AppSettings->getModeDescription(currentMode).getPreviousDocNumber()));
+		numberOfPreviousDocument->show();
+		cleanPreviousDocument->show();
+	}
+	else
+	{
+		numberOfPreviousDocument->hide();
+		cleanPreviousDocument->hide();
+	}
+}
+
 void ReceiveWidget::httpChosen()
 {
 	if (AppSettings->sendLogin)
 		if (!_verifyLoginPass())
 			return;
-	if (!awaiting) {
-		awaiting = http.send(mode, AppSettings->sendingFormat);
-	}
+	if (!http.send(mode, AppSettings->sendingFormat))
+		return;
 	timeoutTimer->start();
 	emit sendStateChanged(SemaphorLabel::awaiting);
 }
@@ -202,6 +228,7 @@ void ReceiveWidget::requestEnd(QString data)
 	AppData->pushSendingBarcodesToSent(currentMode, modenamesLinker[currentMode]);
 	emit sendingSuccess();
 	emit sendStateChanged(SemaphorLabel::opsuccess);
+	show_info();
 	QMessageBox::information(this, tr("send_widget_dialog_title_Success"), tr("send_widget_dialog_text_Operation complete : success") + "\n" + data);
 
 }
@@ -213,6 +240,10 @@ void ReceiveWidget::requestFail(QString stack,QString message, int code)
 #ifdef DEBUG
 	detrace_NETERROR(message, stack);
 #endif
+	if (code == 401)
+	{
+		AppSettings->userPass.clear();
+	}
 	ErrorMessageDialog::showErrorInfo(tr("send error"), message, false, stack);
 }
 
@@ -224,4 +255,11 @@ void ReceiveWidget::requestTimeout()
 void ReceiveWidget::localFail(QString msg)
 {
 	QMessageBox::critical(this, tr("error saving to file"), msg);
+}
+
+void ReceiveWidget::cleanPrevDoc()
+{
+	AppSettings->getModeDescription(currentMode).setPreviousDocument(0);
+	numberOfPreviousDocument->setText(tr("Previous document: ") +
+		QString::number(AppSettings->getModeDescription(mode).getPreviousDocNumber()));
 }

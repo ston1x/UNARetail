@@ -17,7 +17,7 @@ protected:
 	QLineEdit* localPath;
 	MegaIconButton* langButton;
 	QLabel* versionControl;
-
+	QComboBox* encodingPicker;
 	int currlang;
 
 	QVector<QIcon> langicons;
@@ -27,6 +27,7 @@ public:
 
 protected slots:
 	void langChangePressed();
+	void encodingPicked(const QString &);
 signals:
 	void retranslated();
 };

@@ -86,3 +86,15 @@ DataEntity* upcastEntity(AbsEntity* e)
 	}
 	return Q_NULLPTR;
 }
+template <class DataEntity>
+DataEntity* upcastEntity(QSharedPointer<DataEntity>& prototype, AbsEntity* e)
+{
+	if (e != Q_NULLPTR && !(prototype.isNull()))
+	{
+		if (e->myType() == prototype->myType())
+		{
+			return static_cast<DataEntity*>(e);
+		}
+	}
+	return Q_NULLPTR;
+}

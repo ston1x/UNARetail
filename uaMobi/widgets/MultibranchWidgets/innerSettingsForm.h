@@ -1,15 +1,6 @@
 #pragma once
 #include "widgets/parents/inframedWidget.h"
-#include <QTabWidget>
-#include <QLabel>
-#include <qpushbutton.h>
-#include <qlineedit.h>
-#include <qboxlayout.h>
-#include "widgets/utils/MegaIconButton.h"
-#include "widgets/SettingsWidgets/ScaningSettings.h"
-#include "widgets/SettingsWidgets/DatabaseSettings.h"
-#include "widgets/SettingsWidgets/ExtraScaningSettings.h"
-#include "dataproviders/sqldataprovider.h"
+#include "dataproviders/ModesDescriptions.h"
 /*
 
 		This class is providing special settings form for currentrly available branches.
@@ -24,7 +15,13 @@
 		Update: keyfilter now applied to catch line-edits back key while keeping their original
 		reactions.
 */
-
+class QVBoxLayout;
+class QTabWidget;
+class ScaningSettings;
+class DatabaseSettings;
+class ExtraScaningSettings;
+class MegaIconButton;
+class TaxInvoiceSettings;
 class innerSettingsForm :
 	public inframedWidget
 {
@@ -35,6 +32,8 @@ private:
 	ScaningSettings* scaningSettings;
 	DatabaseSettings* databaseSettings;
 	ExtraScaningSettings* extrascanSettings;
+	TaxInvoiceSettings* taxInvoiceSettings;
+
 	MegaIconButton* backButton;
 public:
 	innerSettingsForm(Modes mode, QWidget* parent);

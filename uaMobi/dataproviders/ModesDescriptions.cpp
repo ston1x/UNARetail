@@ -1,6 +1,7 @@
 #include "ModesDescriptions.h"
 #include <QTextStream>
-
+#include "Datacore/PricedBarcodeEntity.h"
+#include "Datacore/BarcodeEntity.h"
 bool hasModifiableSysfeed(Modes m)
 {
 	switch (m)
@@ -38,19 +39,33 @@ bool ModeDescription::_deserialize(const QString& str)
 	switch (temp.count())
 	{
 	default:
+	case 9:
+		newBCMustHaveTaxInvoiceNumber = temp.at(8).startsWith("t");
+	case 8:
+		allowInsertingTaxInvoiceNumber = temp.at(7).startsWith("t");
+	case 7:
+		clearBeforeAttachingNewData = temp.at(6).startsWith("t");
+	case 6:
+		attachNewDataToPrevious = (temp.at(5).startsWith("t"));
+	case 5:
+		previousDocument = temp.at(4).toLongLong(&ok);
+		if (!ok) previousDocument = 0;
 	case (4):
 		floatControl = (temp.at(3) == "true");
 	case (3):
 	{
 		serializationOrder.clear();
 		QStringList sLevelSplit = temp.at(2).split(",");
-		for (int i = 0; i < sLevelSplit.count(); ++i)
+		if (!sLevelSplit.isEmpty())
 		{
-			intBuffer = sLevelSplit.at(i).toInt(&ok);
-			if (ok)
-				serializationOrder << intBuffer;
-			else
-				return false;
+			for (int i = 0; i < sLevelSplit.count(); ++i)
+			{
+				intBuffer = sLevelSplit.at(i).toInt(&ok);
+				if (ok)
+					serializationOrder << intBuffer;
+				else
+					break;
+			}
 		}
 	}
 	case (2):
@@ -69,7 +84,7 @@ bool ModeDescription::_deserialize(const QString& str)
 	case (0):
 		return false;
 	}
-	return false;
+	return true;
 }
 
 QString ModeDescription::_serialize() const
@@ -84,28 +99,55 @@ QString ModeDescription::_serialize() const
 	if (serializationOrder.count() > 0)
 		txt << QString::number(serializationOrder.last());
 	txt << QChar(30) << (((floatControl) ? "true" : "false"));
+	txt << QChar(30) << QString::number(previousDocument);
+	txt << QChar(30) << ((attachNewDataToPrevious) ? "true" : "false");
+	txt << QChar(30) << ((clearBeforeAttachingNewData) ? "true" : "false");
+	txt << QChar(30) << ((allowInsertingTaxInvoiceNumber) ? "true" : "false");
+	txt << QChar(30) << ((newBCMustHaveTaxInvoiceNumber) ? "true" : "false");
 	txt.flush();
 	return buffer;
 }
 
 ModeDescription::ModeDescription()
-	:mode(Modes::Search), sysfeed(-1), serializationOrder(), floatControl(false)
+	:mode(Modes::Search), sysfeed(-1), serializationOrder(), floatControl(false),
+	previousDocument(0), attachNewDataToPrevious(false), clearBeforeAttachingNewData(false),
+	allowInsertingTaxInvoiceNumber(false), newBCMustHaveTaxInvoiceNumber(false)
 {
 }
 
 ModeDescription::ModeDescription(Modes md)
-	: mode(md), sysfeed(-1), serializationOrder(), floatControl(false)
+	: mode(md), sysfeed(-1), serializationOrder(), floatControl(false),
+	previousDocument(0), attachNewDataToPrevious(false), clearBeforeAttachingNewData(false),
+	allowInsertingTaxInvoiceNumber(false), newBCMustHaveTaxInvoiceNumber(false)
 {
+	switch (md)
+	{
+		case Modes::Invoices:
+		{
+			sysfeed = 1233;
+		}
+		break;
+		case Modes::Simple:
+		{
+			sysfeed = 12095;
+		}
+		break;
+	}
 }
 
 ModeDescription::ModeDescription(QString& serialized)
-	: mode(Modes::Search), sysfeed(-1), serializationOrder(), floatControl(false)
+	: mode(Modes::Search), sysfeed(-1), serializationOrder(), floatControl(false),
+	previousDocument(0), attachNewDataToPrevious(false), clearBeforeAttachingNewData(false),
+	allowInsertingTaxInvoiceNumber(false), newBCMustHaveTaxInvoiceNumber(false)
 {
 	deserialize(serialized);
 }
 
-ModeDescription::ModeDescription(Modes m, int sf, QList<int>& sO, bool fc)
-	: mode(m), sysfeed(sf), serializationOrder(sO), floatControl(fc)
+ModeDescription::ModeDescription(Modes m, int sf, QList<int>& sO, bool fc, long long int prevdoc, 
+	bool andtp, bool cband, bool aITIN, bool NBMHTIN)
+	: mode(m), sysfeed(sf), serializationOrder(sO), floatControl(fc), previousDocument(prevdoc),
+	attachNewDataToPrevious(andtp), clearBeforeAttachingNewData(cband),
+	allowInsertingTaxInvoiceNumber(aITIN), newBCMustHaveTaxInvoiceNumber(NBMHTIN)
 {
 }
 
@@ -129,7 +171,7 @@ int ModeDescription::getSysfeed() const
 	return sysfeed;
 }
 
-QList<int> ModeDescription::getSerializationOrder() const
+const QList<int> & ModeDescription::getSerializationOrder() const
 {
 	return serializationOrder;
 }
@@ -137,6 +179,31 @@ QList<int> ModeDescription::getSerializationOrder() const
 bool ModeDescription::requiresFloatControl() const
 {
 	return floatControl;
+}
+
+bool ModeDescription::requiresAttachingToPreviousDoc() const
+{
+	return attachNewDataToPrevious;
+}
+
+bool ModeDescription::mustClearBeforeAttaching() const
+{
+	return clearBeforeAttachingNewData;
+}
+
+long long int ModeDescription::getPreviousDocNumber() const
+{
+	return previousDocument;
+}
+
+bool ModeDescription::isInsertingTaxInvoiceNumAllowed() const
+{
+	return allowInsertingTaxInvoiceNumber;
+}
+
+bool ModeDescription::isForbiddenInsertingWithoutTaxInvoice() const
+{
+	return newBCMustHaveTaxInvoiceNumber;
 }
 
 void ModeDescription::setSysfeed(int sf)
@@ -152,4 +219,29 @@ void ModeDescription::setSerializationOrder(QList<int>& so)
 void ModeDescription::setFloatControl(bool fc)
 {
 	floatControl = fc;
+}
+
+void ModeDescription::setAttachingToPrevDoc(bool v)
+{
+	attachNewDataToPrevious = v;
+}
+
+void ModeDescription::setCleanBeforeAttaching(bool v)
+{
+	clearBeforeAttachingNewData = v;
+}
+
+void ModeDescription::setPreviousDocument(long long int nrdoc)
+{
+	previousDocument = nrdoc;
+}
+
+void ModeDescription::setInsertingTaxNumber(bool aITIN)
+{
+	allowInsertingTaxInvoiceNumber = aITIN;
+}
+
+void ModeDescription::setForbiddingInsertingWithoutTaxInvoice(bool nBCNHTIN)
+{
+	newBCMustHaveTaxInvoiceNumber = nBCNHTIN;
 }

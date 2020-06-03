@@ -5,6 +5,9 @@
 #include <QApplication>
 #include <QtNetwork/QNetworkReply>
 #include "dataFormats/formats.h"
+#include <QTextDecoder>
+#include <QTextCodec>
+#include "widgets/utils/GlobalAppSettings.h"
 const char separator[] = { 30, 0 };
 
 QPair<QStringList, QStringList> toHttp::_parsePlaceList()
@@ -39,7 +42,7 @@ void toHttp::_parseProductList()
 	{
 		emit progressLeap(i * 100 / splitted.count());
 		loaded.push_back(ShortBarcodeEntity::extractFromLine(splitted.at(i)));
-		loaded.last()->GUID = i + 1LL;
+		loaded.last()->GUID = sessionCounter + i + 1LL;
 		QApplication::instance()->processEvents();
 	}
 	AppData->pushIntoDownloaded(loaded);
@@ -61,10 +64,58 @@ bool toHttp::_setReply(QNetworkReply* reply)
 	return reply != Q_NULLPTR;
 }
 
+bool toHttp::_product_list_receiving_start()
+{
+	AppData->recreateDownloadTable();
+	++page;
+	sessionCounter = 0;
+	emit downloadStateChanged(tr("Server response ok, receiving"));
+	_send_get_products();
+	return true;
+}
+
+bool toHttp::_product_list_receiving_block(QString input)
+{
+	emit downloadStateChanged(tr("Receiving block ") + QString::number(page));
+	_parseProductList();
+	++page;
+	sessionCounter += loaded.count();
+	return _send_get_products();
+}
+
+bool toHttp::_product_list_receiving_end()
+{
+	page = 0;
+	currentlyAwaiting = notAwaiting;
+	emit progressLeap(100);
+	emit downloadStateChanged(QString());
+	return true;
+}
+
+bool toHttp::_send_get_products()
+{
+	if (!_checkAddress())
+	{
+		return false;
+	}
+	QString furl = address + ((stored_place_code.isEmpty()) ? "?c=download" : "?c=list_products" + stored_place_code);
+	furl += "&page=" + QString::number(page);
+	if (!_setReply(communicationCore::sendGETRequest(furl)))
+		return false;
+	QObject::connect(awaitedReply, &QNetworkReply::finished, this, &toHttp::downloadResponce);
+	return true;
+}
+
 toHttp::toHttp(Modes mode)
 	: address(), currentMode(mode),  awaitedReply(Q_NULLPTR), li(0), lip(0), input(),
-	loaded(), currentlyAwaiting(0)
+	loaded(), currentlyAwaiting(0),
+	decoder(new QTextDecoder(QTextCodec::codecForName(AppSettings->getNetworkEncoding())))
 {
+}
+
+toHttp::~toHttp()
+{
+	delete decoder;
 }
 
 void toHttp::setAddress(QString newAddress)
@@ -95,14 +146,9 @@ bool toHttp::getPlacelist()
 
 bool toHttp::getProductList(QString place_code)
 {
-	if (!_checkAddress())
-	{
-		return false;
-	}
-	QString furl = address + ((place_code.isEmpty()) ? "?c=download" : "?c=list_products" + place_code);
-	if (!_setReply(communicationCore::sendGETRequest(furl)))
-		return false;
-	QObject::connect(awaitedReply, &QNetworkReply::finished, this, &toHttp::downloadResponce);
+	stored_place_code = place_code;
+	page = 0;
+	_send_get_products();
 	currentlyAwaiting = awaitingProducts;
 	return true;
 }
@@ -119,6 +165,11 @@ void toHttp::clear()
 	currentlyAwaiting = notAwaiting;
 }
 
+int toHttp::count()
+{
+	return sessionCounter;
+}
+
 void toHttp::downloadResponce()
 // This slot is receiving data blocks
 {
@@ -133,35 +184,36 @@ void toHttp::downloadResponce()
 
 			li = awaitedReply->size();
 			lip = 0;
-
+			input.clear();
+			input = decoder->toUnicode(awaitedReply->readAll());
+#ifdef DEBUG
+			detrace_NETRESPARR(input, "", "searchDatabaseLoad");
+#endif
 			switch (currentlyAwaiting)
 			{
 			case awaitingPlaces:
-				break;
-			case awaitingProducts:
-				AppData->recreateDownloadTable();
-				break;
+			{
+				QPair<QStringList, QStringList> data = _parsePlaceList();
+				emit placelistReceived(data.first, data.second);
 			}
-			input.clear();
+			break;
+			case awaitingProducts:
+			{
+				switch (input.at(0).toLatin1())
+				{
+				case 0x06:
+					_product_list_receiving_start();
+					break;
+				case 0x017:
+					_product_list_receiving_end();
+					break;
+				default:
+					_product_list_receiving_block(input);
+				}
+			}
+			break;
+			}
 		}
-		input = QString::fromUtf8(awaitedReply->readAll());
-		switch (currentlyAwaiting)
-		{
-		case awaitingPlaces:
-		{
-			QPair<QStringList, QStringList> data = _parsePlaceList();
-			emit placelistReceived(data.first, data.second);
-		}
-		break;
-		case awaitingProducts:
-		{
-			_parseProductList();
-			emit productlistReceived(loaded);
-			emit progressLeap(100);
-		}
-		break;
-		}
-		currentlyAwaiting = notAwaiting;
 	}
 }
 
@@ -177,13 +229,13 @@ bool toHttp::send(sendingMode mode, int fileFormat)
 		return false;
 	};
 
-
+	QTextEncoder enc(QTextCodec::codecForName(AppSettings->getNetworkEncoding()));
     QByteArray boundary;
 	QByteArray datas(QString("--" + boundary + "\r\n").toLatin1());
 	datas += "Content-Disposition: multipart/form-data; name=\"file\"; filename=\"UNARetailExport"
-		+ QDateTime::currentDateTime().toString()  + "\"\r\n";
+		+ enc.fromUnicode(QDateTime::currentDateTime().toString())  + "\"\r\n";
 	datas += "Content-Type: multipart/form-data\r\n\r\n";
-	datas += dataToSend;
+	datas += enc.fromUnicode(dataToSend);
 	datas += "\r\n";
 	datas += QString("--" + boundary + "\r\n\r\n").toLatin1();
 	datas += "Content-Disposition: form-data; name=\"upload\"\r\n\r\n";
@@ -205,7 +257,8 @@ bool toHttp::send(sendingMode mode, int fileFormat)
 void toHttp::uploadResponce()
 //	This slot is responding to upload reply. It clears everything and then emits operationDone
 {
-	QString data = QString::fromUtf8(awaitedReply->readAll());
+	currentlyAwaiting = notAwaiting;
+	QString data = decoder->toUnicode(awaitedReply->readAll());
 	if (data.isEmpty())
 	{
 #ifdef DEBUG
@@ -222,8 +275,17 @@ void toHttp::uploadResponce()
 		switch (state.count())
 		{
 		default:
+		case 3:
+		{
+			bool ok;
+			long long int pDoc = state.at(2).toLongLong(&ok);
+			if (ok)
+				AppSettings->getModeDescription(currentMode).setPreviousDocument(pDoc);
+		}
 		case 2:
 			stack = state.at(1);
+			if (state.count() > 2)
+				stack += state.at(2);
 		case 1:
 			if (state.first().startsWith("status") && !state.first().isEmpty())
 			{
@@ -241,6 +303,7 @@ void toHttp::uploadResponce()
 						return;
 					case 405:
 						emit errorReceived(stack, tr("server timeout"), code);
+						return;
 					case 401:
 						emit errorReceived(stack, tr("login failure"), code);
 						return;
@@ -252,5 +315,4 @@ void toHttp::uploadResponce()
 		}
 	}
 	emit errorReceived(data, tr("error response"), 404);
-
 }

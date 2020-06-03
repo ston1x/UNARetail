@@ -16,6 +16,32 @@
 //Performs check of barcode: not too long, not empty
 extern bool checkBarcodeIntegrity(const QString& bc);
 
+
+class ReturnableTextEdit :public QTextEdit
+{
+	Q_OBJECT
+private:
+	virtual void focusInEvent(QFocusEvent* fev) override;
+	virtual void keyPressEvent(QKeyEvent* kev) override;
+	virtual void keyReleaseEvent(QKeyEvent* kev) override;
+public:
+	ReturnableTextEdit(QWidget* parent = Q_NULLPTR);
+	QString debugLine;
+signals:
+	void returnPressed();
+};
+class ReturnEatingLineEdit : public QLineEdit
+{
+	Q_OBJECT
+private:
+	virtual void keyPressEvent(QKeyEvent* kev) override;
+	virtual void keyReleaseEvent(QKeyEvent* kev) override;
+public:
+	ReturnEatingLineEdit(QWidget* parent = Q_NULLPTR) : QLineEdit(parent) {}
+
+};
+
+
 class AbstractScaningWidget : public inframedWidget, abstractDynamicNode
 {
 	Q_OBJECT
@@ -28,8 +54,11 @@ protected:
 	QHBoxLayout* additionalInputLayout;	//	This layout is turned on if additional input
 		//	widgets requested - such as keyboard or camera
 	QLabel* modeName;
-	QTextEdit* barcodeInfo;
-	QLineEdit* barcodeInput;		//	field for manual barcode input
+#ifdef DEBUG
+	QLabel* debugInfo;
+#endif
+	ReturnableTextEdit* barcodeInfo;
+	ReturnEatingLineEdit* barcodeInput;		//	field for manual barcode input
 	MegaIconButton* backButton;		//	emits backRequired
 	MegaIconButton* keyboardButton;	//	opens keyboard widget
 #ifdef CAMERA_SUPPORT
@@ -39,11 +68,13 @@ protected:
 	QListView* historyView;
 	Modes currentMode;
 
-	virtual void _emplaceBarcode(QString barcode) = 0;
+	virtual void _emplaceBarcode(QString barcode, ShortBarcode info) = 0;
 	virtual void _clearControls() = 0;
 	QString transformModeToString(Modes m);
 	virtual void _pushToHistory(Entity barcode);
+	virtual bool _validateBarcode(QString barcode);
 	virtual QString _extractionCheck(QString barcode);
+	virtual ShortBarcode _barcodeSearch(QString barcode);
 public:
 	AbstractScaningWidget(Modes mode, QWidget* parent = Q_NULLPTR);
 	
@@ -57,6 +88,9 @@ protected slots:					//	Slots for inner usage. To submit barcodes etc use tree i
 #ifdef CAMERA_SUPPORT
 	void cameraRequired();					//	shows camera widget
 	virtual void handleCameraBarcode(QString value) = 0;
+#endif
+#ifdef DEBUG
+	void refreshDebugState();
 #endif
 	void keyboardRequired();				//	shows keyboard
 	void hideCurrent();

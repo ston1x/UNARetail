@@ -7,7 +7,9 @@ static QString tableDefinition(QStringLiteral("("
 	"barcode TEXT,"
 	"code number,"
 	"info TEXT,"
-	"count TEXT"
+	"count TEXT,"
+	"price number,"
+	"discprice number"
 	")"));
 
 QStringList _initTSBF()
@@ -18,7 +20,9 @@ t<<
         QStringLiteral("barcode")<<
         QStringLiteral("code")<<
         QStringLiteral("info")<<
-        QStringLiteral("count");
+        QStringLiteral("count")<<
+	QStringLiteral("price")<<
+	QStringLiteral("discprice");
 return t;
 }
 static QStringList tableFields(_initTSBF());
@@ -34,9 +38,9 @@ static TemplatedTableHandler* barcodeTableHandler(
 );
 
 
-ShortBarcodeEntity::ShortBarcodeEntity(QString Barcode, int cod, QString Info, QString Count)
+ShortBarcodeEntity::ShortBarcodeEntity(QString Barcode, int cod, QString Info, QString Count, double Price, double Discount)
 	: AbsEntity(int(barcodeUtil::barcodetypes::shortBc)), barcode(Barcode), code(cod),
-	info(Info), count(Count)
+	info(Info), count(Count), price(Price), discount(Discount)
 {
 }
 
@@ -47,6 +51,7 @@ void ShortBarcodeEntity::clear()
 	info.clear();
 	count.clear();
 	GUID = makeGUID();
+	price = 0.0;
 }
 
 const TemplatedTableHandler* ShortBarcodeEntity::getTableHandler()
@@ -71,6 +76,12 @@ QSharedPointer<ShortBarcodeEntity> ShortBarcodeEntity::extractFromLine(QString l
 	QStringList split2lvl = line.split(",");
 	switch (split2lvl.count())
 	{
+	case 6:
+		toReturn->discount = split2lvl.at(5).toDouble();
+		Q_FALLTHROUGH();
+	case 5:
+		toReturn->price = split2lvl.at(4).toDouble();
+		Q_FALLTHROUGH();
 	case 4:
 		toReturn->count = split2lvl.at(3);
 		Q_FALLTHROUGH();
@@ -104,6 +115,10 @@ double ShortBarcodeEntity::_getEnumerable(int role) const
 	{
 	case -1:
 		return code;
+	case 1:
+		return price;
+	case 2:
+		return discount;
 	default:
 		return 0;
 	}
@@ -132,7 +147,7 @@ QString ShortBarcodeEntity::_fullComparationQuery() const
 QString ShortBarcodeEntity::_toSql() const
 {
 	return "( " + serializeId() + ",'" + barcode + "'," + QString::number(code) + ",'" + info + "','"
-		+ count + "')";
+		+ count +"'," + QString::number(price)+  + "," + QString::number(discount) + ")";
 }
 
 const TemplatedTableHandler* ShortBarcodeEntity::_assocTable() const
@@ -142,18 +157,19 @@ const TemplatedTableHandler* ShortBarcodeEntity::_assocTable() const
 
 QString ShortBarcodeEntity::_formatedView(QString sep, QString dform) const
 {
-	return barcode + sep + info;
+	return barcode + sep + info + sep + code;
 }
 
 QString ShortBarcodeEntity::_maximumInfoView(QString sep, QString dform) const
 {
-	return info + sep  + "\n" + barcode + sep + QString::number(code) + sep + count;
+	return QString::number(price) + sep + QString::number(discount)
+		+ sep + info;
 }
 
 QString ShortBarcodeEntity::_normalizedCsvView() const
 {
 	return barcodeUtil::CSV_BARCODE_STR_TEMPLATE.arg(barcode).arg("").arg(
-		count).arg(QString()).arg(
+		count).arg(QString()).arg(QString::number(price) + " " +
 			info).arg("").arg("").arg(
 				"").arg("").arg(code);
 }
@@ -172,6 +188,8 @@ bool ShortBarcodeEntity::_fromSql(QSqlQuery* q)
 	code = q->value(2).toInt();
 	info = q->value(3).toString();
 	count = q->value(4).toString();
+	price = q->value(5).toDouble();
+	discount = q->value(6).toDouble();
 	return true;
 }
 

@@ -15,13 +15,15 @@ protected:
 	MegaIconButton* okButton;
 
 	QuantityControl* quantityControl;
-
+	QLabel* taxInvoiceInfo;
+	QLineEdit* taxInvoiceField;
 	Barcode pendingBarcode;
 
-	virtual void _emplaceBarcode(QString barcode) override;
+	virtual void _emplaceBarcode(QString barcode, ShortBarcode info) override;
 	virtual void _clearControls() override;
 	virtual void handleValueFromKeyboard(QString value) override;
 	virtual void barcodeReady() override;
+	virtual bool _validateBarcode(QString) override;
 #ifdef CAMERA_SUPPORT
 	virtual void handleCameraBarcode(QString value) override;
 #endif

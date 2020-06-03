@@ -38,6 +38,9 @@ private:
 	QHBoxLayout* infoLayout;
 	QLabel* totalQuantity;
 	QLabel* uniqueBarcodes;
+	QHBoxLayout* previousDocumentLayout;
+	QLabel* numberOfPreviousDocument;
+	MegaIconButton* cleanPreviousDocument;
 	QLabel* HttpAddress;
 	QLabel* LocalAddress;
 	MegaIconButton* useHttpButton;
@@ -60,6 +63,7 @@ public:
 	void setMode(sendingMode);
 	void show_info();
 	bool sendBySetup();
+	void showPrevDoc();
 private slots:
 	void httpChosen();
 	void localChosen();
@@ -67,6 +71,7 @@ private slots:
 	void requestFail(QString stack = QString(),QString message = QString(), int code = 0);
 	void requestTimeout();
 	void localFail(QString msg);
+	void cleanPrevDoc();
 signals:
 	void sendingSuccess();
 	void sendStateChanged(int state);

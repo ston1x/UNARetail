@@ -4,6 +4,9 @@
 #include <QTimer>
 #include <QLinkedList>
 #include "communicationCore.h"
+#ifdef DEBUG
+#include "debugtrace.h"
+#endif
 bool AsyncRequestEngine::_setReply(QNetworkReply* reply)
 {
 	if (awaitedReply != Q_NULLPTR)
@@ -52,6 +55,9 @@ void AsyncRequestEngine::reinit(QString CoreLink, int timeoutInterval)
 void AsyncRequestEngine::responseArrived()
 {
 	QString response = QString::fromUtf8(awaitedReply->readAll());
+#ifdef DEBUG
+	detrace_NETRESPARR(response, awaitedReply->url().toString(), "Async");
+#endif
 	if (!response.isEmpty())
 	{
 		emit clearResponse(response);
@@ -67,6 +73,12 @@ void AsyncRequestEngine::responseArrived()
 			parsed << splitted.at(1);
 			emit parsedResponse(parsed);
 		}
+	}
+	else
+	{
+#ifdef DEBUG
+		detrace_NETERROR("no content", response);
+#endif
 	}
 }
 

@@ -134,32 +134,55 @@ bool SqlDataProvider::replaceEntityIn(Modes mode, Entity oldOne, Entity newOne, 
 bool SqlDataProvider::wipeAll()
 {
 	_assertAndOpenSession();
+	mainDb.transaction();
 	QList<Modes> modes;
-	modes << Modes::Inventory << Modes::Simple << Modes::Supplies;
 	QList<TableNames> tabs;
 	tabs << TableNames::Scanned << TableNames::Uploaded;
-	QList<Modes>::iterator mode = modes.begin();
-	while (mode != modes.end())
+	for (int i = 0; i < MODES_TOTAL; ++i)
 	{
+		Modes mode = AppSettings->getModeDescription(i).getMode();
 		QList<TableNames>::iterator tabname = tabs.begin();
 		while (tabname != tabs.end())
 		{
-			dropTableOf(*tabname, *mode);
-			createTableOf(*tabname, *mode);
+			dropTableOf(*tabname, mode);
+			createTableOf(*tabname, mode);
 			++tabname;
 		}
-		++mode;
-	}
-	QList<TableNames>::iterator tabname = tabs.begin();
-	while (tabname != tabs.end())
-	{
-		dropTableOf(*tabname, Modes::Prices);
-		createTableOf(*tabname, Modes::Prices);
-		++tabname;
 	}
 	mainDb.commit();
 	_assertAndCloseSession();
 	return true;
+}
+bool SqlDataProvider::wipeMode(Modes mode)
+{
+	_assertAndOpenSession();
+	mainDb.transaction();
+	bool ok = true;
+	ok &= dropTableOf(TableNames::Scanned, mode);
+	ok &= createTableOf(TableNames::Scanned, mode);
+	ok &= dropTableOf(TableNames::Uploaded, mode);
+	ok &= createTableOf(TableNames::Uploaded, mode);
+	mainDb.commit();
+	_assertAndCloseSession();
+	return ok;
+
+}
+int SqlDataProvider::countDownloaded()
+{
+	_assertAndOpenSession();
+	QueryPtr q = runQuery(ShortBarcodeEntity::getTableHandler()->count());
+	int quantity = 0;
+	if (q == Q_NULLPTR)
+		return 0;
+	if (q->next())
+	{
+		bool ok = false;
+		quantity = q->value(0).toInt(&ok);
+		if (!ok)
+			quantity = 0;
+	}
+	_assertAndCloseSession();
+	return quantity;
 }
 bool SqlDataProvider::createDefaultTables()
 // creates lists of default tables and databases and initiates it's creation
@@ -319,8 +342,14 @@ bool SqlDataProvider::pushIntoDownloaded(ShortBarcodeEntity& shb)
 }
 bool SqlDataProvider::pushIntoDownloaded(QLinkedList<QSharedPointer<ShortBarcodeEntity>>& l)
 {
+	if (l.isEmpty())
+		return true;
 	_assertAndOpenSession();
 	mainDb.transaction();
+	if (!(mainDb.tables().contains(l.first()->getAssociatedTable()->declaration())))
+	{
+		recreateDownloadTable();
+	}
 	QLinkedList<QSharedPointer<ShortBarcodeEntity>>::iterator begin = l.begin();
 	while (begin != l.end())
 	{
@@ -377,28 +406,36 @@ QString SqlDataProvider::uploadFullList(Modes mode, Entity prototype, sendingMod
 	switch (sendmode)
 	{
 	case sendSent:
+		if (AppData->countAllIn(mode, TableNames::Uploaded) == 0)
+			return QString();
 		sql = runQuery(
-			prototype->getAssociatedTable()->select_some_fields(AppSettings->serializationOrder
-				[prototype->myType()],
-				scanedTableName)
+			prototype->getAssociatedTable()->select_some_fields(AppSettings->getModeDescription(mode).getSerializationOrder(),
+				ModePrefixes[int(mode)] + prototype->getAssociatedTable()->declaration()
+				+ TableSuffixes[int(TableNames::Uploaded)])
 		);
+
 		break;
 	case sendUnsent:
+		if (AppData->countAllIn(mode, TableNames::Scanned) == 0)
+			return QString();
 		sql = runQuery
 		(
 			prototype->getAssociatedTable()->select_some_fields_filtered(
                 " uploaded != 2"
-				" order by scanedtime desc", AppSettings->serializationOrder
-				[prototype->myType()], scanedTableName)
+				" order by scanedtime desc", AppSettings->getModeDescription(mode).getSerializationOrder()
+				, scanedTableName)
 		);
 		break;
 	case sendAll:
+		if ((AppData->countAllIn(mode, TableNames::Uploaded) +
+			AppData->countAllIn(mode, TableNames::Scanned)) == 0)
+			return QString();
 		sql = runQuery(
-			prototype->getAssociatedTable()->select_some_fields(AppSettings->serializationOrder
-				[prototype->myType()],
+			prototype->getAssociatedTable()->select_some_fields(AppSettings->getModeDescription(
+				mode).getSerializationOrder(),
 				scanedTableName) +
 			" union all " + prototype->getAssociatedTable()->select_some_fields(
-				AppSettings->serializationOrder[prototype->myType()],
+				AppSettings->getModeDescription(mode).getSerializationOrder(),
 				ModePrefixes[int(mode)] + prototype->getAssociatedTable()->declaration()
 				+ TableSuffixes[int(TableNames::Uploaded)]
 			)
@@ -406,7 +443,18 @@ QString SqlDataProvider::uploadFullList(Modes mode, Entity prototype, sendingMod
 	}
 	if (sql == Q_NULLPTR)
 		return "";
-    QString formatedResponce(DataFormater::getFormatedSql(*sql, dbnameToMode(mode), lang, format, dest, int(mode)) );
+	QString formatedResponce;
+	if (sendmode == sendingMode::sendAll)
+	{
+		bool clean = AppSettings->getModeDescription(mode).mustClearBeforeAttaching();
+		AppSettings->getModeDescription(mode).setCleanBeforeAttaching(true);
+		formatedResponce = DataFormater::getFormatedSql(*sql, dbnameToMode(mode), lang, format, dest, int(mode));
+		AppSettings->getModeDescription(mode).setCleanBeforeAttaching(clean);
+	}
+	else
+	{
+		formatedResponce = DataFormater::getFormatedSql(*sql, dbnameToMode(mode), lang, format, dest, int(mode));
+	}
 	switch (sendmode)
 	{
 	case sendUnsent:
@@ -540,7 +588,6 @@ bool SqlDataProvider::dropTableOf(TableNames tab, Modes mode)
 int SqlDataProvider::countAllIn(Modes mode, Entity prototype, TableNames tab)
 {
 	_assertAndOpenSession();
-	mainDb.commit();
 	mainDb.transaction();
 	QString fname = formatTableName(mode, prototype, tab);
 	QueryPtr q = runQuery(prototype->getAssociatedTable()->count(fname));

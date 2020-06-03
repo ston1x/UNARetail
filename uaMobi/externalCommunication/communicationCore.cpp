@@ -4,7 +4,9 @@
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QHostInfo>
 #include "dataFormats/formats.h"
-
+#ifdef DEBUG
+#include "debugtrace.h"
+#endif
 
 
 communicationCore::communicationCore(QObject* parent)
@@ -25,16 +27,25 @@ communicationCore* communicationCore::instanse()
 
 QNetworkReply* communicationCore::get(QString url)
 {
+#ifdef DEBUG
+	detrace_NETREQSENT("commcore::get", url, "");
+#endif
 	return manager->get(QNetworkRequest(url));
 }
 
 QNetworkReply* communicationCore::get(QUrl url)
 {
+#ifdef DEBUG
+	detrace_NETREQSENT("commcore::get", url.toString(), "");
+#endif
 	return manager->get(QNetworkRequest(url));
 }
 
 QNetworkReply* communicationCore::post(QNetworkRequest& request, QByteArray& data)
 {
+#ifdef DEBUG
+	detrace_NETREQSENT("commcore::get", request.url().toString(), QString::fromUtf8(data));
+#endif
 	return manager->post(request, data);
 }
 

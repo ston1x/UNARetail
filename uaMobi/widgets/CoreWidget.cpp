@@ -5,7 +5,7 @@
 #ifdef DEBUG
 #include "debugtrace.h"
 #endif
-
+#include "widgets/UtilityElements/ExtendedDialogs.h"
 CoreWidget::CoreWidget(QWidget* parent)
 	: QWidget(parent), abstractDynamicNode( new inframedWidget(this), new QVBoxLayout(this)),
 	innerLayout(new QGridLayout(untouchable)),
@@ -16,7 +16,6 @@ CoreWidget::CoreWidget(QWidget* parent)
 	controlPanel(new QHBoxLayout(untouchable)), exitButton(new IgnorantButton(untouchable)),
 	settingsButton(new MegaIconButton(untouchable)), lock(false)
 {
-	
 	innerLayout->setContentsMargins(0, 0, 0, 0);
 	innerLayout->setSpacing(0);
 	qobject_cast<QVBoxLayout*>(mainLayout)->setDirection(QBoxLayout::BottomToTop);
@@ -99,7 +98,6 @@ void CoreWidget::exitPressed()
 }
 void CoreWidget::settingsPressed()
 {
-	// Checking that this branch has no more valid settings windows
 	if (currentlyOpened != untouchable)
 	{
 		if (!currentlyOpened->giveSettings())

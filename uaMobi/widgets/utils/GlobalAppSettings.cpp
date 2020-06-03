@@ -6,10 +6,10 @@
 #include "debugtrace.h"
 #endif
 
-const float VERSION = 0.79f;
+const float VERSION = 0.836f;
 const char* SUFFIX = "nigthly";
 
-
+static ModeDescription defaultMode;
 
 GlobalAppSettings::GlobalAppSettings()
 {
@@ -44,23 +44,23 @@ GlobalAppSettings::GlobalAppSettings()
 	fontPercent = settings.value("fontPercent", QVariant(0.03)).toDouble();
 	QStringList temp = settings.value("serializationOrder", QStringList()).toStringList();
 	QList<int> orderForOneMode;
-	serializationOrder.reserve(temp.count());
-	for (int i = 0; i < temp.count(); ++i)
-	{
-		QStringList splitted(temp[i].split("|", QString::SplitBehavior::SkipEmptyParts));
-		for (int j = 0; j < splitted.count(); ++j)
-		{
-			orderForOneMode << splitted[j].toInt();
-		}
-		serializationOrder.push_back(orderForOneMode);
-	}
-	if (serializationOrder.isEmpty())
-	{
-		serializationOrder.push_back(QList<int>());
-		serializationOrder.push_back(QList<int>());
-		serializationOrder.push_back(QList<int>());
-		serializationOrder.push_back(QList<int>());
-	}
+//	serializationOrder.reserve(temp.count());
+	//for (int i = 0; i < temp.count(); ++i)
+	//{
+	//	QStringList splitted(temp[i].split("|", QString::SplitBehavior::SkipEmptyParts));
+	//	for (int j = 0; j < splitted.count(); ++j)
+	//	{
+	//		orderForOneMode << splitted[j].toInt();
+	//	}
+	//	serializationOrder.push_back(orderForOneMode);
+	//}
+	//if (serializationOrder.isEmpty())
+	//{
+	//	serializationOrder.push_back(QList<int>());
+	//	serializationOrder.push_back(QList<int>());
+	//	serializationOrder.push_back(QList<int>());
+	//	serializationOrder.push_back(QList<int>());
+	//}
 	separatorCode = settings.value("separatorCode", QVariant(QChar(','))).toChar();
 	QStringList dlist = settings.value("deserializationOrder", QStringList()).toStringList();
 	for (int i = 0; i < dlist.count(); ++i)
@@ -74,43 +74,41 @@ GlobalAppSettings::GlobalAppSettings()
 		deserializationPoints.push_back(dlist.at(i).toInt());
 	}
 	dlist.clear();
-	dlist = settings.value("floatControl", QVariant()).toStringList();
-	if (dlist.count() != MODES_TOTAL)
-	{
-		floatControl << false << false << false << false << true << false;
-	}
-	else
-	{
-		QString b;
-		for (int i = 0; i < MODES_TOTAL; ++i)
-		{
-			b = dlist.at(i);
-			if (b.isEmpty())
-			{
-				floatControl << false;
-			}
-			else
-			{
-				floatControl << ((b.at(0) == 't'));
-			}
-		}
-	}
+	//dlist = settings.value("floatControl", QVariant()).toStringList();
+	//if (dlist.count() != MODES_TOTAL)
+	//{
+	//	floatControl << false << false << false << false << true << false;
+	//}
+	//else
+	//{
+	//	QString b;
+	//	for (int i = 0; i < MODES_TOTAL; ++i)
+	//	{
+	//		b = dlist.at(i);
+	//		if (b.isEmpty())
+	//		{
+	//			floatControl << false;
+	//		}
+	//		else
+	//		{
+	//			floatControl << ((b.at(0) == 't'));
+	//		}
+	//	}
+	//}
 	placeAsItem = settings.value("placeAsItem", QVariant()).toString();
 	placeAsCode = settings.value("placeAsCode", QVariant()).toString();
 	dlist.clear();
-	dlist = settings.value("sysfeed", QStringList()).toStringList();
+	/*dlist = settings.value("sysfeed", QStringList()).toStringList();
 	for (int i = 0; i < dlist.count(); ++i)
 	{
 		sysfeed.push_back(dlist.at(i).toInt());
 	}
 	while (sysfeed.count() < MODES_TOTAL)
-		sysfeed.push_back(-1);
+		sysfeed.push_back(-1);*/
 	extrasearchPrefix = settings.value("extrasearchPrefix", QString()).toString();
 	clearScanBuffer = settings.value("clearScanBuffer", QVariant(false)).toBool();
 	sendLogin = settings.value("sendLogin", QVariant(false)).toBool();
 	userLogin = settings.value("userLogin", QVariant()).toString();
-	userPass = settings.value("userPass", QVariant()).toString();
-	modes.resize(MODES_TOTAL);
 	QStringList modesSerialized = settings.value("modesSettings", QStringList()).toStringList();
 	for (int i = 0; i < MODES_TOTAL; ++i)
 	{
@@ -126,6 +124,8 @@ GlobalAppSettings::GlobalAppSettings()
 		}
 	}
 	SetTranslator();
+	autoFillQuantity = settings.value("autoFillQuantity", QVariant(false)).toBool();
+	netEncoding = settings.value("netEncoding", QVariant("CP1251")).toByteArray();
 }
 
 void GlobalAppSettings::SetTranslator()
@@ -167,8 +167,8 @@ void GlobalAppSettings::Save()
 	settings.setValue("scanButtonCode", scanButtonCode);
 	settings.setValue("navigation", navigationElements);
 	settings.setValue("localDatabase", localDatabase);
-    QStringList a = serializeLists<int>(serializationOrder);
-	settings.setValue("serializationOrder", a);
+	QStringList a;/*serializeLists<int>(serializationOrder);*//*
+	settings.setValue("serializationOrder", a);*/
 	settings.setValue("fontMaxHeight", fontMaxHeight);
 	settings.setValue("fontMinHeight", fontMinHeight);
 	settings.setValue("fontPercent", fontPercent);
@@ -189,29 +189,77 @@ void GlobalAppSettings::Save()
 	settings.setValue("placeAsItem", placeAsItem);
 	settings.setValue("placeAsCode", placeAsCode);
 	a.clear();
-	for (int i = 0; i < sysfeed.count(); ++i)
+	/*for (int i = 0; i < sysfeed.count(); ++i)
 	{
 		a <<QString::number(sysfeed.at(i));
-	}
+	}*/
 	settings.setValue("sysfeed", a);
-	a.clear();
+	a.clear();/*
 	for (int i = 0; i < floatControl.count(); ++i)
 	{
 		a <<( (floatControl.at(i)) ? "true" : "false");
-	}
+	}*/
 
 	settings.setValue("floatControl", a);
 	settings.setValue("extrasearchPrefix", extrasearchPrefix);
 	settings.setValue("clearScanBuffer", clearScanBuffer);
 	settings.setValue("sendLogin", sendLogin);
 	settings.setValue("userLogin", userLogin);
-	settings.setValue("userPass", userPass);
 	QStringList serializedModes;
 	for (int i = 0; i < modes.count(); ++i)
 	{
 		serializedModes << modes.at(i).serialize();
 	}
 	settings.setValue("modesSettings", serializedModes);
+	settings.setValue("autoFillQuantity", autoFillQuantity);
+	settings.setValue("netEncoding", netEncoding);
+}
+
+ModeDescription& GlobalAppSettings::getModeDescription(Modes m)
+{
+	if (int(m) >= 0 && int(m) < modes.count())
+	{
+		return modes[int(m)];
+	}
+#ifdef DEBUG
+	detrace_FAIL;
+	detrace_METHPERROR("GlobalAppSettings::getModeDescription", "Attempt to get inexistent mode on index " << int(m));
+#endif
+	return defaultMode;
+}
+
+ModeDescription& GlobalAppSettings::getModeDescription(int m)
+{
+	return (*this)[m];
+}
+
+
+const QByteArray& GlobalAppSettings::getNetworkEncoding()
+{
+	return netEncoding;
+}
+
+void GlobalAppSettings::setNetworkEncoding(const QString& enc)
+{
+	netEncoding = enc.toLocal8Bit();
+}
+
+ModeDescription& GlobalAppSettings::operator[](Modes m)
+{
+	return getModeDescription(m);
+}
+
+ModeDescription& GlobalAppSettings::operator[](int m)
+{
+	if (m >= 0 && m < modes.count())
+	{
+		return modes[m];
+	}
+#ifdef DEBUG
+	detrace_FAIL;
+	detrace_METHPERROR("GlobalAppSettings::getModeDescription", "Attempt to get inexistent mode on index " << m);
+#endif
+	return defaultMode;
 }
 
 GlobalAppSettings::~GlobalAppSettings()

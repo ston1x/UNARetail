@@ -27,7 +27,7 @@ ExtraSendSettings::ExtraSendSettings(Modes cmode, QWidget* parent)
 {
 	mainLayout->addRow(tr("Push in document"), sysfeedPicker);
 	mainLayout->addRow(tr("Custom sysfeed"), customSysfeedPicker);
-
+	mainLayout->setRowWrapPolicy(QFormLayout::WrapAllRows);
 	customSysfeedPicker->setMinimum(-1);
 	customSysfeedPicker->setMaximum(200000);
 
@@ -37,7 +37,7 @@ ExtraSendSettings::ExtraSendSettings(Modes cmode, QWidget* parent)
 	int ok = false;
 	for (int i = 0; i < sysfeeds.count(); ++i)
 	{
-		if (AppSettings->sysfeed.at(int(currentMode)) == sysfeeds.at(i))
+		if (AppSettings->getModeDescription(currentMode).getSysfeed() == sysfeeds.at(i))
 		{
 			sysfeedPicker->setCurrentIndex(i);
 			ok = true;
@@ -51,7 +51,7 @@ ExtraSendSettings::ExtraSendSettings(Modes cmode, QWidget* parent)
 	else
 	{
 		sysfeedPicker->setCurrentIndex(sysfeeds.count() - 1);
-		customSysfeedPicker->setValue(AppSettings->sysfeed.at(int(currentMode)));
+		customSysfeedPicker->setValue(AppSettings->getModeDescription(currentMode).getSysfeed());
 	}
 
 
@@ -66,11 +66,11 @@ void ExtraSendSettings::extractAndSave()
 {
 	if (sysfeeds.at(sysfeedPicker->currentIndex()) == -1)
 	{
-		AppSettings->sysfeed[int(currentMode)] = customSysfeedPicker->value();
+		AppSettings->getModeDescription(currentMode).setSysfeed( customSysfeedPicker->value());
 	}
 	else
 	{
-		AppSettings->sysfeed[int(currentMode)] = sysfeeds.at(sysfeedPicker->currentIndex());
+		AppSettings->getModeDescription(currentMode).setSysfeed(sysfeeds.at(sysfeedPicker->currentIndex()));
 	}
 }
 

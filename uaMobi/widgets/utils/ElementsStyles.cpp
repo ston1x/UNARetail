@@ -153,7 +153,8 @@ const QString DOWNLOAD_BUTTONS_STYLESHEET("QPushButton{ "
 	"background-color:#4a7039;"
 	"}");
 
-
+const QString ERROR_LINEEDIT_STYLESHEET(
+        "QLineEdit { border: 2px solid red; background-color: #f7d0cd;}");
 const QFont& makeFont(double /*perc*/)
 {
 	return *(FontAdapter::general());

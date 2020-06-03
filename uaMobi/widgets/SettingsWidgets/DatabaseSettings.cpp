@@ -64,7 +64,8 @@ void DatabaseSettings::wipeDatabaseConfirmed()
 	int result = QMessageBox::question(this, tr("Deleting scanned"), tr("Do you wish deleting scanned?"), QMessageBox::Ok, QMessageBox::Abort);
 	if (result == QMessageBox::Ok)
 	{
-		AppData->wipeAll();
+		AppData->wipeMode(currentMode);
+		AppSettings->getModeDescription(currentMode).setPreviousDocument(0);
 	}
 }
 

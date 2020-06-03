@@ -50,6 +50,8 @@ PriceScaningWidget::PriceScaningWidget(QWidget* parent)
 	discountPrice->show();
 #ifdef QT_VERSION5X
 	QObject::connect(okButton, &QPushButton::clicked, this, &PriceScaningWidget::okPressed);
+	if (!QObject::connect(barcodeInfo, &ReturnableTextEdit::returnPressed, generalPrice, &abs_control::setFocus))
+		barcodeInfo->debugLine += "CERR";
 	QObject::connect(generalPrice, &QuantityControl::editingFinished, discountPrice, 
 		&QuantityControl::setFocus);
 	QObject::connect(discountPrice, &QuantityControl::editingFinished, this, &PriceScaningWidget::barcodeReady);
@@ -69,7 +71,7 @@ void PriceScaningWidget::show()
 	AbstractScaningWidget::show();
 }
 
-void PriceScaningWidget::_emplaceBarcode(QString barcode)
+void PriceScaningWidget::_emplaceBarcode(QString barcode, ShortBarcode info)
 {
 	if (!barcode.isEmpty())
 	{
@@ -77,22 +79,21 @@ void PriceScaningWidget::_emplaceBarcode(QString barcode)
         pendingBarcode.clear();
         pendingBarcode = PricedBarcode(new PricedBarcodeEntity(barcode));
 		barcodeInput->setText(barcode);
-		if (AppSettings->autoSearch)
+		if (info != Q_NULLPTR)
 		{
-			ShortBarcode info = upcastEntity<ShortBarcodeEntity>(AppData->barcodeInfo(barcode));
-			if (info != Q_NULLPTR)
-			{
-				barcodeInfo->setText(info->info);
-				pendingBarcode->comment = info->info;
-			}
-			else
-			{
-				barcodeInfo->clear();
-			}
+			barcodeInfo->setText(info->info);
+			pendingBarcode->comment = info->info;
+		}
+		else
+		{
+			barcodeInfo->clear();
 		}
 		setLen();
 		setTotal(AppData->sumAllIn(currentMode, 3, pendingBarcode, TableNames::Scanned));
-		generalPrice->setFocus();
+		if (barcodeInfo->toPlainText().isEmpty())
+            barcodeInfo->setFocus(Qt::MouseFocusReason);
+		else
+            generalPrice->setFocus();
 	}
 }
 
@@ -144,6 +145,8 @@ void PriceScaningWidget::barcodeReady()
 			barcodeInfo->clear();
 			totalCounter->clear();
 			lengthCounter->clear();
+            barcodeInput->setFocus(Qt::FocusReason::MouseFocusReason);
+
 		}
 		else
 		{
@@ -156,8 +159,10 @@ void PriceScaningWidget::barcodeReady()
 #ifdef CAMERA_SUPPORT
 void PriceScaningWidget::handleCameraBarcode(QString value)
 {
-    barcodeReady();
     hideCurrent();
+    update();
+    qApp->processEvents();
+    barcodeReady();
     barcodeConfirmed(value);
 }
 #endif
@@ -198,6 +203,6 @@ void PriceScaningWidget::okPressed()
 //	submits data to connected widget
 {
     barcodeReady();
-	if (AppSettings->clearScanBuffer)
+	if (!AppSettings->clearScanBuffer)
 		emit backRequired();
 }

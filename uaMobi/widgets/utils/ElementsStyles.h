@@ -144,6 +144,8 @@ extern const QString LARGE_BUTTON_STYLESHEET;
 extern QString BETTER_CALENDAR_STYLESHEET();
 // Enhanced calendar
 
+extern const QString ERROR_LINEEDIT_STYLESHEET;
+
 extern const QString COUNTERS_LABEL_STYLESHEET;
 // bold big letters and borders
 

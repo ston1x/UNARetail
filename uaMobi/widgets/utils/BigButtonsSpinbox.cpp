@@ -2,7 +2,7 @@
 #include "widgets/utils/ElementsStyles.h"
 #include <cmath>
 #include <qcalendarwidget.h>
-
+#include <QTimer>
 #ifndef QStringLiteral
 #define QStringLiteral(A) QString::fromUtf8("" A "" , sizeof(A)-1)
 #endif
@@ -113,7 +113,7 @@ BigButtonsSpinbox::BigButtonsSpinbox(spintype type, QWidget* parent, double adap
 			isp->setSpecialValueText("");
 #ifdef QT_VERSION5X
 			QObject::connect(isp, QOverload<int>::of(&ReturnReactingSpinBox::valueChanged), this, &BigButtonsSpinbox::intValueChanged);
-			QObject::connect(isp, &ReturnReactingSpinBox::returnPressed, this, &BigButtonsSpinbox::returnPressed);
+			QObject::connect(isp, &ReturnReactingSpinBox::returnPressed, this, &BigButtonsSpinbox::editingDone);
 #else
 			QObject::connect(isp, SIGNAL(valueChanged(int)), this, SLOT(intValueChanged(int)));
 			QObject::connect(isp, SIGNAL(returnPressed()), this, SIGNAL(returnPressed()));
@@ -132,7 +132,7 @@ BigButtonsSpinbox::BigButtonsSpinbox(spintype type, QWidget* parent, double adap
 			dsp->setLocale(QLocale::c());
 #ifdef QT_VERSION5X
 			QObject::connect(dsp, QOverload<double>::of(&ReturnReactingDoubleSpinBox::valueChanged), this, &BigButtonsSpinbox::doubleValueChanged);
-			QObject::connect(dsp, &ReturnReactingDoubleSpinBox::returnPressed, this, &BigButtonsSpinbox::returnPressed);
+			QObject::connect(dsp, &ReturnReactingDoubleSpinBox::returnPressed, this, &BigButtonsSpinbox::editingDone);
 #else
 			QObject::connect(dsp, SIGNAL(returnPressed()), this, SIGNAL(returnPressed()));
 			QObject::connect(dsp, SIGNAL(valueChanged(double)), this, SLOT(doubleValueChanged(double)));
@@ -153,7 +153,7 @@ BigButtonsSpinbox::BigButtonsSpinbox(spintype type, QWidget* parent, double adap
 				dsp->setDisplayFormat(QStringLiteral("dd:MM:yyyy")); 
 #ifdef QT_VERSION5X
 				QObject::connect(dsp, &ReturnReactingDateEdit::dateChanged, this, &BigButtonsSpinbox::dateChanged);
-				QObject::connect(dsp, &ReturnReactingDateEdit::returnPressed, this, &BigButtonsSpinbox::returnPressed);
+				QObject::connect(dsp, &ReturnReactingDateEdit::returnPressed, this, &BigButtonsSpinbox::editingDone);
 #else
                 QObject::connect(dsp, SIGNAL(dateChanged(const QDate&)), this, SIGNAL(dateChanged(const QDate&)));
 				QObject::connect(dsp, SIGNAL(returnPressed()), this, SIGNAL(returnPressed()));
@@ -174,7 +174,7 @@ BigButtonsSpinbox::BigButtonsSpinbox(spintype type, QWidget* parent, double adap
 				tsp->setDisplayFormat(QStringLiteral("HH:mm"));
 #ifdef QT_VERSION5X
 				QObject::connect(tsp, &ReturnReactingTimeEdit::timeChanged, this, &BigButtonsSpinbox::timeChanged);
-				QObject::connect(tsp, &ReturnReactingTimeEdit::returnPressed, this, &BigButtonsSpinbox::returnPressed);
+				QObject::connect(tsp, &ReturnReactingTimeEdit::returnPressed, this, &BigButtonsSpinbox::editingDone);
 #else
                 QObject::connect(tsp, SIGNAL(timeChanged(const QTime&)), this, SIGNAL(timeChanged(const QTime&)));
 				QObject::connect(tsp, SIGNAL(returnPressed()), this, SIGNAL(returnPressed()));
@@ -195,7 +195,7 @@ BigButtonsSpinbox::BigButtonsSpinbox(spintype type, QWidget* parent, double adap
 				dtp->setDisplayFormat(QStringLiteral("dd:MM:yyyy"));
 #ifdef QT_VERSION5X
 				QObject::connect(dtp, &ReturnReactingDateTimeEdit::dateTimeChanged, this, &BigButtonsSpinbox::dateTimeChanged);
-				QObject::connect(dtp, &ReturnReactingDateTimeEdit::returnPressed, this, &BigButtonsSpinbox::returnPressed);
+				QObject::connect(dtp, &ReturnReactingDateTimeEdit::returnPressed, this, &BigButtonsSpinbox::editingDone);
 #else
                 QObject::connect(dtp, SIGNAL(dateTimeChanged(const QDateTime&)), this, SIGNAL(dateTimeChanged(const QDateTime&)));
 				QObject::connect(dtp, SIGNAL(returnPressed()), this, SIGNAL(returnPressed()));
@@ -521,12 +521,31 @@ void BigButtonsSpinbox::intValueChanged(int t)
 	emit valueChanged(coreSpinbox->text());
 }
 
+void ReturnReactingSpinBox::keyPressEvent(QKeyEvent* kev)
+{
+	if (kev->key() == Qt::Key_Return) {
+		kev->accept();
+		return;
+	}
+	else
+		QSpinBox::keyPressEvent(kev);
+}
+
 void ReturnReactingSpinBox::keyReleaseEvent(QKeyEvent* kev)
 {
 	if (kev->key() == Qt::Key_Return)
+	{
 		emit returnPressed();
+		kev->accept();
+	}
 	else
 		QSpinBox::keyReleaseEvent(kev);
+}
+
+void ReturnReactingSpinBox::focusInEvent(QFocusEvent*e)
+{
+	QSpinBox::focusInEvent(e);
+	QTimer::singleShot(10, this, &ReturnReactingSpinBox::selectAll);
 }
 
 ReturnReactingSpinBox::ReturnReactingSpinBox(QWidget* parent)
@@ -534,12 +553,32 @@ ReturnReactingSpinBox::ReturnReactingSpinBox(QWidget* parent)
 {
 }
 
+void ReturnReactingDoubleSpinBox::keyPressEvent(QKeyEvent* kev)
+{
+	if (kev->key() == Qt::Key_Return)
+	{
+		kev->accept();
+		return;
+	}
+	else
+		QDoubleSpinBox::keyPressEvent(kev);
+}
+
 void ReturnReactingDoubleSpinBox::keyReleaseEvent(QKeyEvent* kev)
 {
 	if (kev->key() == Qt::Key_Return)
+	{
 		emit returnPressed();
+		kev->accept();
+	}
 	else
 		QDoubleSpinBox::keyReleaseEvent(kev);
+}
+
+void ReturnReactingDoubleSpinBox::focusInEvent(QFocusEvent* e)
+{
+	QDoubleSpinBox::focusInEvent(e);
+	QTimer::singleShot(10, this, &ReturnReactingDoubleSpinBox::selectAll);
 }
 
 ReturnReactingDoubleSpinBox::ReturnReactingDoubleSpinBox(QWidget* parent)
@@ -550,7 +589,10 @@ ReturnReactingDoubleSpinBox::ReturnReactingDoubleSpinBox(QWidget* parent)
 void ReturnReactingDateEdit::keyReleaseEvent(QKeyEvent* kev)
 {
 	if (kev->key() == Qt::Key_Return)
+	{
 		emit returnPressed();
+		kev->accept();
+	}
 	else
 		QDateEdit::keyReleaseEvent(kev);
 }
@@ -563,7 +605,10 @@ ReturnReactingDateEdit::ReturnReactingDateEdit(QWidget* parent)
 void ReturnReactingDateTimeEdit::keyReleaseEvent(QKeyEvent* kev)
 {
 	if (kev->key() == Qt::Key_Return)
+	{
 		emit returnPressed();
+		kev->accept();
+	}
 	else
 		QDateTimeEdit::keyReleaseEvent(kev);
 }
@@ -576,7 +621,10 @@ ReturnReactingDateTimeEdit::ReturnReactingDateTimeEdit(QWidget* parent)
 void ReturnReactingTimeEdit::keyReleaseEvent(QKeyEvent* kev)
 {
 	if (kev->key() == Qt::Key_Return)
+	{
 		emit returnPressed();
+		kev->accept();
+	}
 	else
 		QTimeEdit::keyReleaseEvent(kev);
 }

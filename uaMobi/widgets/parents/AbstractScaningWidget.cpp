@@ -9,6 +9,8 @@
 #endif
 #include "widgets/utils/ZebraListItemDelegate.h"
 #include "widgets/utils/GlobalAppSettings.h"
+
+
 AbstractScaningWidget::AbstractScaningWidget(Modes mode, QWidget* parent)
 	: inframedWidget(parent), abstractDynamicNode(new inframedWidget(this), new QVBoxLayout(this)),
 	innerLayout(new QVBoxLayout(untouchable)), counterLayout(new QHBoxLayout(untouchable)),
@@ -16,8 +18,11 @@ AbstractScaningWidget::AbstractScaningWidget(Modes mode, QWidget* parent)
 	buttonLayout(new QHBoxLayout(untouchable)),
 	additionalInputLayout(new QHBoxLayout(untouchable)),
 	modeName(new QLabel(untouchable)),
-	barcodeInfo(new QTextEdit(untouchable)),
-	barcodeInput(new QLineEdit(untouchable)),
+#ifdef DEBUG
+	debugInfo(new QLabel(untouchable)),
+#endif
+	barcodeInfo(new ReturnableTextEdit(untouchable)),
+	barcodeInput(new ReturnEatingLineEdit(untouchable)),
 	backButton(new MegaIconButton(untouchable)),
 	keyboardButton(new MegaIconButton(untouchable)),
 #ifdef CAMERA_SUPPORT
@@ -31,6 +36,10 @@ AbstractScaningWidget::AbstractScaningWidget(Modes mode, QWidget* parent)
 
 	untouchable->setLayout(innerLayout);
 	innerLayout->addWidget(modeName);
+#ifdef DEBUG
+	innerLayout->addWidget(debugInfo);
+	debugInfo->setWordWrap(true);
+#endif
 	innerLayout->addWidget(barcodeInput);
 	innerLayout->addWidget(barcodeInfo);
 	innerLayout->addLayout(counterLayout);
@@ -113,8 +122,12 @@ AbstractScaningWidget::AbstractScaningWidget(Modes mode, QWidget* parent)
 		backButton->hide();
 	}
 
-	
-
+#ifdef DEBUG
+	QTimer* dtimer(new QTimer(this));
+	dtimer->setInterval(200);
+	QObject::connect(dtimer, &QTimer::timeout, this, &AbstractScaningWidget::refreshDebugState);
+	dtimer->start();
+#endif
 	BarcodeObs->activate();
 #ifdef QT_VERSION5X
 	QObject::connect(backButton, &QPushButton::clicked, this, &AbstractScaningWidget::backRequired);
@@ -171,8 +184,11 @@ void AbstractScaningWidget::hide()
 
 void AbstractScaningWidget::barcodeConfirmed(QString barcode)
 {
-	_emplaceBarcode(barcode);
-	_clearControls();
+	if (_validateBarcode(barcode)) 
+	{
+		_emplaceBarcode(barcode, _barcodeSearch(barcode));
+		_clearControls();
+	}
 }
 #ifdef CAMERA_SUPPORT
 void AbstractScaningWidget::cameraRequired()
@@ -181,6 +197,12 @@ void AbstractScaningWidget::cameraRequired()
 	_hideAndDeleteCurrent(new ScaningCameraWidget(this));
 	QObject::connect(_upCO<ScaningCameraWidget>(), &ScaningCameraWidget::backRequired, this, &AbstractScaningWidget::hideCurrent);
 	QObject::connect(_upCO<ScaningCameraWidget>(), &ScaningCameraWidget::hasBarcode, this, &AbstractScaningWidget::handleCameraBarcode);
+}
+#endif
+#ifdef DEBUG
+void AbstractScaningWidget::refreshDebugState()
+{
+	debugInfo->setText(barcodeInfo->debugLine);
 }
 #endif
 void AbstractScaningWidget::keyboardRequired()
@@ -234,6 +256,11 @@ void AbstractScaningWidget::_pushToHistory(Entity barcode)
 	}
 }
 
+bool AbstractScaningWidget::_validateBarcode(QString barcode)
+{
+	return !barcode.isEmpty();
+}
+
 QString AbstractScaningWidget::_extractionCheck(QString barcode)
 {
 	if (AppSettings->extrasearchPrefix.isEmpty())
@@ -279,6 +306,15 @@ QString AbstractScaningWidget::_extractionCheck(QString barcode)
 	}
 }
 
+ShortBarcode AbstractScaningWidget::_barcodeSearch(QString barcode)
+{
+	if (AppSettings->autoSearch)
+	{
+		return upcastEntity<ShortBarcodeEntity>(AppData->barcodeInfo(barcode));
+	}
+	return ShortBarcode();
+}
+
 bool checkBarcodeIntegrity(const QString& bc)
 //	Realization of checking. No null barcodes, no too long
 {
@@ -287,4 +323,63 @@ bool checkBarcodeIntegrity(const QString& bc)
 		return false;
 	}
 	return true;
+}
+
+void ReturnableTextEdit::focusInEvent(QFocusEvent* fev)
+{
+	debugLine += "F";
+	QTextEdit::focusInEvent(fev);
+    qApp->inputMethod()->show();
+}
+
+void ReturnableTextEdit::keyPressEvent(QKeyEvent* kev)
+{
+	if (kev->key() == Qt::Key_Return && this->hasFocus())
+	{
+		debugLine += "RPE";
+		kev->accept();
+		return;
+	}
+	QTextEdit::keyPressEvent(kev);
+}
+
+void ReturnableTextEdit::keyReleaseEvent(QKeyEvent* kev)
+{
+	if (kev->key() == Qt::Key_Return && this->hasFocus())
+	{
+		debugLine += "RRS";
+		emit returnPressed();
+		kev->accept();
+		return;
+	}
+	else
+		QTextEdit::keyReleaseEvent(kev);
+}
+
+ReturnableTextEdit::ReturnableTextEdit(QWidget* parent)
+	:QTextEdit(parent)
+{
+	debugLine.reserve(200);
+}
+
+void ReturnEatingLineEdit::keyPressEvent(QKeyEvent* kev) 
+{
+	if (kev->key() == Qt::Key_Return)
+	{
+		kev->accept();
+		return;
+	}
+	QLineEdit::keyPressEvent(kev);
+}
+
+void ReturnEatingLineEdit::keyReleaseEvent(QKeyEvent* kev)
+{
+	if (kev->key() == Qt::Key_Return)
+	{
+		emit returnPressed();
+		kev->accept();
+		return;
+	}
+	else
+		QLineEdit::keyReleaseEvent(kev);
 }

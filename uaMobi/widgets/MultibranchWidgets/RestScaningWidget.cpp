@@ -4,35 +4,14 @@
 
 
 
-void RestScaningWidget::_emplaceBarcode(QString barcode)
+void RestScaningWidget::_emplaceBarcode(QString barcode, ShortBarcode info)
 {
-	if (!barcode.isEmpty())
+    ScaningWidget::_emplaceBarcode(barcode, info);
+	if (info != Q_NULLPTR)
 	{
-		barcode = _extractionCheck(barcode);
-		pendingBarcode.clear();
-		itemCode.clear();
-		pendingBarcode = Barcode(new BarcodeEntity(barcode));
-		quantityControl->setFocus();
-		quantityControl->setValue("0");
-		barcodeInput->setText(barcode);
-		if (AppSettings->autoSearch)
-		{
-			ShortBarcode info = upcastEntity<ShortBarcodeEntity>(AppData->barcodeInfo(barcode));
-			if (info != Q_NULLPTR)
-			{
-				barcodeInfo->setText(info->info);
-				pendingBarcode->comment = info->info;
-				itemCode = QString::number(info->code);
-			}
-			else
-			{
-				barcodeInfo->clear();
-			}
-		}
-		setLen();
-		setTotal(AppData->sumAllFilteredIn(currentMode, barcode, BarcodeEntity::getEnumerableFieldIndex(), pendingBarcode, TableNames::Scanned));
-		sendRestRequest();
+		itemCode = QString::number(info->code);
 	}
+    sendRestRequest();
 }
 
 void RestScaningWidget::operateOverResponse(QStringList parsedResponse)
@@ -72,7 +51,8 @@ void RestScaningWidget::sendRestRequest()
 		).arg(
 			AppSettings->placeAsCode
 		).arg(
-			AppSettings->sysfeed.at(int(Modes::Invoices))
+			AppSettings->getModeDescription(currentMode).getSysfeed()
 		)
 	);
+    restLabel->clearValue();
 }

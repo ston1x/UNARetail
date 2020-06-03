@@ -44,11 +44,19 @@ inframedWidget* InvoiceBranchWidget::_allocateSettings()
 InvoiceBranchWidget::InvoiceBranchWidget(QWidget* parent)
 	: BranchRootWidget(Modes::Invoices, parent)
 {
-	pageName->setText(tr("simple_widget_title_Invoices\n") + QString::number(AppSettings->sysfeed.at(int(currentMode))));
+	pageName->setText(tr("simple_widget_title_Invoices\n") +
+		QString::number(AppSettings->getModeDescription(Modes::Invoices).getSysfeed())
+		+ "\n"
+		+ ((AppSettings->userLogin.isEmpty()) ? tr("No user") : AppSettings->userLogin) 
+	);
 }
 
 void InvoiceBranchWidget::backRequire()
 {
 	BranchRootWidget::backRequire();
-	pageName->setText(tr("simple_widget_title_Invoices\n") + QString::number(AppSettings->sysfeed.at(int(currentMode))));
+	pageName->setText(tr("simple_widget_title_Invoices\n") +
+		QString::number(AppSettings->getModeDescription(Modes::Invoices).getSysfeed())
+		+ "\n"
+		+ ((AppSettings->userLogin.isEmpty()) ? tr("No user") : AppSettings->userLogin)
+	);
 }

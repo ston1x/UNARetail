@@ -1,6 +1,9 @@
 #include "ViewSettings.h"
 #include "widgets/utils/ElementsStyles.h"
 #include "widgets/utils/GlobalAppSettings.h"
+
+
+
 ViewSettings::ViewSettings(QWidget* parent)
 	: QWidget(parent), mainLayout(new QFormLayout(this)),
 	example(new QLabel(tr("Font example"), this)),
@@ -12,6 +15,7 @@ ViewSettings::ViewSettings(QWidget* parent)
 	mainLayout->addRow(tr("Minimum:"), fontMin);
 	mainLayout->addRow(tr("Maximum:"), fontMax);
 	mainLayout->addRow(tr("Percent:"), fontPercent);
+	mainLayout->setRowWrapPolicy(QFormLayout::WrapAllRows);
 	example->setFont(AppGenFont);
 	fontMin->setMinimum(5);
 	fontMin->setMaximum(calculateAdaptiveButtonHeight(0.03));

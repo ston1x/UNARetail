@@ -6,7 +6,7 @@
 #include "widgets/utils/MegaIconButton.h"
 #include <QListWidget>
 #include "Datacore/DataEntities.h"
-
+#include "dataproviders/ModesDescriptions.h"
 
 class SerializationSettings : public QWidget
 {
@@ -17,7 +17,8 @@ protected:
 
 	QStringList fieldsModel;
 	Entity prototype;
+	Modes currentMode;
 public:
-	SerializationSettings(Entity prototype, QWidget* parent);
+	SerializationSettings(Modes mode, Entity prototype, QWidget* parent);
 	void extractAndSave();
 };

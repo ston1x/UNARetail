@@ -1,13 +1,28 @@
 #include "DatabaseLoadSettings.h"
 #include "widgets/utils/GlobalAppSettings.h"
 #include "widgets/utils/ElementsStyles.h"
+#include <QTextCodec>
 #include <QMessageBox>
 #include "Datacore/ShortBarcodeEntity.h"
 #include <QMimeData>
 #include "widgets/ExtendedDelegates/ExtraSelectionDelegate.h"
-#include "debugtrace.h"
 #include <qapplication.h>
 #include "dataproviders/sqldataprovider.h"
+#include <qlinkedlist.h>
+#include <QBoxLayout>
+#include "widgets/utils/MegaIconButton.h"
+#include <QComboBox>
+#include <QLineEdit>
+#include <QSpinBox>
+#include <QFormLayout>
+#include <QLabel>
+#include <QListView>
+#include <QTextEdit>
+#ifdef DEBUG
+#include "debugtrace.h"
+#endif
+
+
 QVector<int> DatabaseLoadSettings::extractInsertionIndexes()
 {
 	
@@ -95,7 +110,7 @@ DatabaseLoadSettings::DatabaseLoadSettings(QWidget* parent)
 	mainLayout(new QVBoxLayout(this)),
 	model(new IndexedListModel(this)),
 	databasePathInfo(new QLabel(this)),
-	databasePath(new QLineEdit(this)),
+	databasePath(new QTextEdit(this)),
 	separatorCodeInfo(new QLabel(this)),
 	separatorCode(new QSpinBox(this)),
 	fieldSelector(new QListView(this)),
@@ -156,6 +171,9 @@ fromFileLoad(new MegaIconButton(this))
 	separatorCode->setValue(AppSettings->separatorCode.unicode());
 	model->selectIndexes(AppSettings->deserializationOrder);
 	fieldSelector->setItemDelegate(new ExtraSelectionDelegate(this));
+	databasePath->setWordWrapMode(QTextOption::WrapMode::WrapAnywhere);
+	databasePath->setFixedHeight(calculateAdaptiveButtonHeight(0.2));
+	databasePath->setInputMethodHints(Qt::InputMethodHint::ImhNoPredictiveText);
 #ifdef QT_VERSION5X
 	QObject::connect(fromFileLoad, &MegaIconButton::clicked, this, &DatabaseLoadSettings::loadDatabaseFromFile);
 	QObject::connect(deleteButton, &MegaIconButton::clicked, this, &DatabaseLoadSettings::deleteEmpty);
@@ -175,7 +193,7 @@ fromFileLoad(new MegaIconButton(this))
 
 void DatabaseLoadSettings::extractAndSave()
 {
-	AppSettings->localDatabase = databasePath->text();
+	AppSettings->localDatabase = databasePath->toPlainText();
 	AppSettings->separatorCode = separatorCode->value();
 	QList<int> indexes;
 	AppSettings->deserializationOrder = model->getSelected();
@@ -213,19 +231,22 @@ void DatabaseLoadSettings::dropDB()
 
 void DatabaseLoadSettings::loadDatabaseFromFile()
 {
-	if (databasePath->text().isEmpty())
+	if (databasePath->toPlainText().isEmpty())
 	{
 		return;
 	}
 	else
 	{
-		QFile f(databasePath->text());
+		QFile f(databasePath->toPlainText());
 		f.open(QIODevice::ReadOnly);
 		if (!f.isOpen() || !f.isReadable())
 			return;
 		QVector<int> indexes = extractInsertionIndexes();
 		QTextStream in(&f);
+		in.setCodec(QTextCodec::codecForName(AppSettings->getNetworkEncoding()));
 		ShortBarcode shb(new ShortBarcodeEntity());
+		QLinkedList<ShortBarcode> templist;
+		int iteration = 1;
 		while (!in.atEnd())
 		{
 			QString line = in.readLine();
@@ -254,9 +275,12 @@ void DatabaseLoadSettings::loadDatabaseFromFile()
 					break;
 				}
 			}
-			AppData->pushIntoDownloaded(*shb);
+			shb->GUID = iteration++;
+			templist.push_back(ShortBarcode(upcastEntity(shb, shb->clone())));
 			qApp->processEvents();
 		}
+		AppData->recreateDownloadTable();
+		AppData->pushIntoDownloaded(templist);
 		QMessageBox::warning(this, tr("Success"), tr("File read succesfully"));
 		f.close();
 	}

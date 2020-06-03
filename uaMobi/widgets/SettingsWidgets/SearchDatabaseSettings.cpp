@@ -21,6 +21,7 @@ SearchDatabaseSettings::SearchDatabaseSettings(QWidget* parent)
 	innerLayout(new QVBoxLayout(this)),
 	innerWidget(new inframedWidget(this)),
 	mainLayout(new QFormLayout(innerWidget)),
+	storedBarcodes(new QLabel(innerWidget)),
 	httpDownloadUrl(new QLineEdit(innerWidget)),
 	placeLayout(new QHBoxLayout(innerWidget)),
 	placeInfo(new QLabel(innerWidget)),
@@ -44,9 +45,12 @@ SearchDatabaseSettings::SearchDatabaseSettings(QWidget* parent)
 	untouchable = innerWidget;
 	innerLayout->addWidget(innerWidget);
 	innerWidget->setLayout(mainLayout);
+	mainLayout->setRowWrapPolicy(QFormLayout::WrapAllRows);
+	mainLayout->addRow(tr("size of the base"), storedBarcodes);
 	mainLayout->addRow(tr("Remote database url"), httpDownloadUrl);
 	mainLayout->addWidget(downloadProgress);
 	mainLayout->addItem(placeLayout);
+	
 	placeLayout->addWidget(placeInfo);
 	placeLayout->addWidget(selectPlaceButton);
 	placeLayout->addWidget(deletePlaceButton);
@@ -95,10 +99,14 @@ SearchDatabaseSettings::SearchDatabaseSettings(QWidget* parent)
 	QScroller::grabGesture(placeSelectionList, QScroller::LeftMouseButtonGesture);
 	placeSelectionList->setFont(AppFonts->makeFont(2.0));
 #endif
-
+	placeSelectionList->setHorizontalScrollMode(QListView::ScrollPerPixel);
+	placeSelectionList->setVerticalScrollMode(QListView::ScrollPerPixel);
+	placeSelectionList->setWordWrap(true);
 	timeoutTimer->setInterval(40000);
 	timeoutTimer->setSingleShot(true);
 	placeSelectionWidget->hide();
+	downloadProgress->setTextVisible(true);
+	downloadProgress->setAlignment(Qt::AlignCenter);
 #ifdef QT_VERSION5X
 	QObject::connect(downloadNow, &QPushButton::clicked, this, &SearchDatabaseSettings::downloadDatabase);
 	QObject::connect(&downloadcenter, &toHttp::progressLeap, this, &SearchDatabaseSettings::downloadProcess);
@@ -108,7 +116,7 @@ SearchDatabaseSettings::SearchDatabaseSettings(QWidget* parent)
 	QObject::connect(selectPlaceButton, &MegaIconButton::clicked, this, &SearchDatabaseSettings::getPlaceList);
 	QObject::connect(&downloadcenter, &toHttp::placelistReceived, this, &SearchDatabaseSettings::placeListReceived);
 	QObject::connect(placeSelectionList, &QListWidget::itemDoubleClicked, this, &SearchDatabaseSettings::placeSelected);
-	QObject::connect(&downloadcenter, &toHttp::productlistReceived, this, &SearchDatabaseSettings::productListReceived);
+	QObject::connect(&downloadcenter, &toHttp::downloadStateChanged, this, &SearchDatabaseSettings::downloadStateChanged);
 	QObject::connect(&downloadcenter, &toHttp::errorReceived, this, &SearchDatabaseSettings::downloadTimeout);
 #else
 	QObject::connect(httpDownloadUrl, SIGNAL(returnPressed()), httpUploadUrl,
@@ -117,6 +125,7 @@ SearchDatabaseSettings::SearchDatabaseSettings(QWidget* parent)
 	QObject::connect(&downloadcenter, SIGNAL(progressLeap(int)), this, SLOT(downloadProcess(int)));
 	QObject::connect(timeoutTimer,SIGNAL(timeout()), this, SLOT(downloadTimeout()));
 #endif
+	refreshStoredCounter();
 }
 
 void SearchDatabaseSettings::extractAndSave()
@@ -209,11 +218,21 @@ void SearchDatabaseSettings::hideCurrent()
 	_hideCurrent(untouchable);
 }
 
-void SearchDatabaseSettings::productListReceived(QLinkedList<ShortBarcode>& products)
+void SearchDatabaseSettings::downloadStateChanged(QString state)
 {
-	downloadcenter.clear();
-	QMessageBox::information(this, tr("done"), tr("Product list received succesfully"));
+	if (state.isEmpty())
+	{
+		int downloadedQ = downloadcenter.count();
+		downloadcenter.clear();
+		QMessageBox::information(this, tr("done"), tr("Product list received succesfully") + " " + QString::number(downloadedQ));
+		refreshStoredCounter();
+	}
+	else
+	{
+		downloadProgress->setFormat(state);
+	}
 }
+
 
 void SearchDatabaseSettings::downloadError()
 {
@@ -228,4 +247,9 @@ void SearchDatabaseSettings::deletePlace()
 	currentPlace.clear();
 	currentPlaceName.clear();
 	placeInfo->setText(tr("no place"));
+}
+
+void SearchDatabaseSettings::refreshStoredCounter()
+{
+	storedBarcodes->setText(QString::number(AppData->countDownloaded()));
 }

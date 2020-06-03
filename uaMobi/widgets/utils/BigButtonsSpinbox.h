@@ -36,7 +36,9 @@ class ReturnReactingSpinBox : public QSpinBox
 {
 	Q_OBJECT
 protected:
+	virtual void keyPressEvent(QKeyEvent* kev)override;
 	virtual void keyReleaseEvent(QKeyEvent*) override;
+	virtual void focusInEvent(QFocusEvent*) override;
 public:
 	ReturnReactingSpinBox(QWidget* parent);
 signals:
@@ -47,7 +49,9 @@ class ReturnReactingDoubleSpinBox : public QDoubleSpinBox
 {
 	Q_OBJECT
 protected:
+	virtual void keyPressEvent(QKeyEvent* kev)override;
 	virtual void keyReleaseEvent(QKeyEvent*) override;
+	virtual void focusInEvent(QFocusEvent*) override;
 public:
 	ReturnReactingDoubleSpinBox(QWidget* parent);
 signals:

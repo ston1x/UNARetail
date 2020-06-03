@@ -3,13 +3,14 @@
 SimpleBranchWidget::SimpleBranchWidget( QWidget* parent)
 	: BranchRootWidget( Modes::Simple, parent)
 {
-	pageName->setText(tr("simple_widget_title_Simple\n") + QString::number(AppSettings->sysfeed.at(int(Modes::Simple)) ));
+	pageName->setText(tr("simple_widget_title_Simple\n") + QString::number(
+		AppSettings->getModeDescription(Modes::Simple).getSysfeed()));
 }
 
 void SimpleBranchWidget::backRequire()
 {
 	BranchRootWidget::backRequire();
-	pageName->setText(tr("simple_widget_title_Simple\n") + QString::number(AppSettings->sysfeed.at(int(Modes::Simple))));
+	pageName->setText(tr("simple_widget_title_Simple\n") + QString::number(AppSettings->getModeDescription(Modes::Simple).getSysfeed()));
 }
 
 

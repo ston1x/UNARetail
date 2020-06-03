@@ -26,10 +26,11 @@ public:
 	int code;		
 	QString info;
 	QString count;
-
+	double price;
+	double discount;
 	explicit ShortBarcodeEntity(QString barcode = QString(),
 		int cod = 0,
-		QString info = QString(), QString count = QString());
+		QString info = QString(), QString count = QString(), double Price = 0.0, double discount = 0.0);
 
 	void clear();
 

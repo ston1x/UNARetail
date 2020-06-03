@@ -1,18 +1,22 @@
 #pragma once
 #include <QWidget>
-#include <QBoxLayout>
-#include "widgets/utils/MegaIconButton.h"
-#include <QComboBox>
-#include <QLineEdit>
-#include <QSpinBox>
-#include <QFormLayout>
-#include <QLabel>
-#include <QListView>
 #include "Datacore/ShortBarcodeEntity.h"
 #include <qabstractitemmodel.h>
 #include <qmetatype.h>
 
 
+
+
+class QTextEdit;
+class QSpinBox;
+class MegaIconButton;
+class QLabel;
+class QFormLayout;
+class QLineEdit;
+class QComboBox;
+class QListView;
+class QHBoxLayout;
+class QVBoxLayout;
 struct indexedString
 {
 	QString string;
@@ -77,7 +81,7 @@ protected:
 	QVBoxLayout* mainLayout;
 	IndexedListModel* model;
 	QLabel* databasePathInfo;
-	QLineEdit* databasePath;
+	QTextEdit* databasePath;
 	QLabel* separatorCodeInfo;
 	QSpinBox* separatorCode;
 	QListView* fieldSelector;

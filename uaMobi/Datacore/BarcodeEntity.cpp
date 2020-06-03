@@ -13,7 +13,8 @@ static QString tableDefinition ( QStringLiteral( "("
 		"quantity number,"
 		"uploaded number,"
 		"expDateTime datetime,"
-		"expComment TEXT"
+		"expComment TEXT,"
+		"taxInvoiceNumber TEXT"
 	")"));
 QStringList _initTBF()
 {
@@ -25,7 +26,8 @@ QStringList _initTBF()
     QStringLiteral("quantity")<<
     QStringLiteral("uploaded")<<
     QStringLiteral("expDateTime")<<
-    QStringLiteral("expComment");
+    QStringLiteral("expComment") <<
+	QStringLiteral("taxInvoiceNumber");
     return t;
 }
 
@@ -48,7 +50,8 @@ QString BarcodeEntity::_toSql() const
 	return "(" + serializeId() + ",'" + barcode + "' , '" + addDate.toString(datetimeDBEncoding) 
 		+ "', " + QString::number(quantity)  + " , " + QString::number(isUploaded) + " , '" 
 		+ expDate.toString(datetimeDBEncoding)
-		 + "' , '" + QString(comment).replace("'", "''").replace("\"", "\"\"") + "')";
+		 + "' , '" + QString(comment).replace("'", "''").replace("\"", "\"\"") + "','" 
+		+ taxInvoiceNumber + "')";
 }
 
 const TemplatedTableHandler* BarcodeEntity::_assocTable() const
@@ -74,7 +77,7 @@ QString BarcodeEntity::_maximumInfoView(QString sep, QString dform) const
 {
 	return barcode + "\n" + sep + QString::number(quantity) + sep +
 		addDate.toString(datetimeDBEncoding) + "\n"
-		+ comment;
+		+ comment + "\n" + taxInvoiceNumber;
 }
 
 QString BarcodeEntity::_normalizedCsvView() const
@@ -91,17 +94,18 @@ bool BarcodeEntity::_isValid() const
 }
 
 BarcodeEntity::BarcodeEntity(QString Barcode, QDateTime adddt, int isupl, 
-	QDateTime expdt, QString comm, double Quantity)
+	QDateTime expdt, QString comm, double Quantity, QString tIN)
 	: AbsEntity(int(barcodeUtil::barcodetypes::uniformBc)),
 	barcode(Barcode), addDate(adddt), isUploaded(isupl),
-	expDate(expdt), comment(comm), quantity(Quantity)
+	expDate(expdt), comment(comm), quantity(Quantity), taxInvoiceNumber(tIN)
 {
 }
 
 BarcodeEntity::BarcodeEntity(QString bc, QString comm)
 : AbsEntity(int(barcodeUtil::barcodetypes::uniformBc)),
 barcode(bc), addDate(QDateTime::currentDateTime()), isUploaded(0),
-expDate(QDateTime::currentDateTime()), comment(comm), quantity(0)
+expDate(QDateTime::currentDateTime()), comment(comm), quantity(0),
+taxInvoiceNumber()
 {
 
 }
@@ -137,7 +141,7 @@ int BarcodeEntity::_getHeight() const
 {
 	return (std::ceil(double(barcode.count() + comment.count() 
 		+ datetimeDBEncoding.count() 
-		)  / double(AppFonts->howMuchCharacterFitsIntoScreen())) + comment.count("\n") + 2);
+		)  / double(AppFonts->howMuchCharacterFitsIntoScreen())) + comment.count("\n") + 3);
 }
 
 const QStringList& BarcodeEntity::_getFields() const
@@ -171,6 +175,7 @@ bool BarcodeEntity::_fromSql(QSqlQuery* q)
 	expDate =
 		QDateTime::fromString(q->value(5).toString(), datetimeDBEncoding);
 	comment = q->value(6).toString();
+	taxInvoiceNumber = q->value(7).toString();
 	return true;
 }
 

@@ -19,6 +19,7 @@ protected:
 	QVBoxLayout* innerLayout;
 	inframedWidget* innerWidget;
 	QFormLayout* mainLayout;
+	QLabel* storedBarcodes;
 	QLineEdit* httpDownloadUrl;
 	QHBoxLayout* placeLayout;
 	QLabel* placeInfo;
@@ -39,11 +40,14 @@ protected:
 	QString currentPlace;
 	QString currentPlaceName;
 
+	int nextPage;
+
 	QString _getCurrentPlace();
 public:
 	SearchDatabaseSettings(QWidget* parent);
 	void extractAndSave();
 	void retranslate();
+	void refreshStoredCounter();
 protected slots:
 	void downloadDatabase();
 	void downloadTimeout();
@@ -53,7 +57,7 @@ protected slots:
 	void placeListTimeout();
 	void placeSelected(QListWidgetItem*);
 	void hideCurrent();
-	void productListReceived(QLinkedList<ShortBarcode>& products);
+	void downloadStateChanged(QString);
 	void downloadError();
 	void deletePlace();
 };

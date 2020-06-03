@@ -70,6 +70,10 @@ void abs_control::subcontrolEditingFinished()
 		emit editingFinished();
 		emit valueReceived(prepareAndReturnValue());
 	}
+	else
+	{
+		emit editingFinished();
+	}
 }
 
 

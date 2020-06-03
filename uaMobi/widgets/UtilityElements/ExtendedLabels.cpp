@@ -4,7 +4,7 @@
 #include <QStyleOption>
 #include <qstylepainter.h>
 #include <QMouseEvent>
-
+#include <cmath>
 
 void TwoLevelCounterLabel::paintEvent(QPaintEvent* pev)
 {
@@ -27,7 +27,7 @@ void TwoLevelCounterLabel::paintEvent(QPaintEvent* pev)
 	textBox.setTopLeft(textBox.bottomLeft());
 	textBox.setBottomRight(qso.rect.bottomRight());
 	qsp.setFont(counterFont);
-	if (isnan(value))
+    if (qIsNaN(value))
 	{
 		qsp.drawText(textBox, Qt::AlignCenter, "?");
 	}
@@ -66,8 +66,9 @@ void TwoLevelCounterLabel::setValue(const double& val)
 
 void TwoLevelCounterLabel::clearValue()
 {
-	value = NAN;
+    value = qQNaN();
 	textValue.clear();
+    update();
 }
 
 void ClickableTLCounterLabel::mouseReleaseEvent(QMouseEvent* qme)

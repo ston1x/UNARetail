@@ -1,15 +1,10 @@
 #pragma once
 #include <QWidget>
-#include <QBoxLayout>
-#include "widgets/utils/MegaIconButton.h"
-#include <QComboBox>
-#include <QLineEdit>
-#include <QSpinBox>
-#include <QFormLayout>
-#include <QLabel>
-#include "dataproviders/sqldataprovider.h"
+#include "dataproviders/ModesDescriptions.h"
 
-
+class QFormLayout;
+class MegaIconButton;
+class QLineEdit;
 class ExtraScaningSettings : public QWidget
 {
 	Q_OBJECT
@@ -19,6 +14,7 @@ protected:
 	MegaIconButton* allowPrefixScaning;
 	QLineEdit* prefixExtrabarcode;
 	MegaIconButton* clearScanBuffer;
+	MegaIconButton* autoFillQuantity;
 	Modes currentMode;
 public:
 	ExtraScaningSettings(Modes mode, QWidget* parent);

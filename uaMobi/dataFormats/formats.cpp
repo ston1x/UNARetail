@@ -142,10 +142,11 @@ QString getFormatedSqlAsXml(QSqlQuery query, QString dbname, int mode, Destinati
 		QDomElement place(xml.createElement("place"));
 		place.appendChild(xml.createTextNode(AppSettings->placeAsCode));
 		file.appendChild(place);
-		if (AppSettings->sysfeed.at(mode) > 0)
+		if (AppSettings->getModeDescription(mode).getSysfeed() > 0)
 		{
 			QDomElement sysfeed(xml.createElement("sysfid"));
-			sysfeed.appendChild(xml.createTextNode(QString::number(AppSettings->sysfeed.at(mode))));
+			sysfeed.appendChild(xml.createTextNode(QString::number(
+				AppSettings->getModeDescription(mode).getSysfeed())));
 			file.appendChild(sysfeed);
 		}
 		if (AppSettings->sendLogin)
@@ -158,7 +159,21 @@ QString getFormatedSqlAsXml(QSqlQuery query, QString dbname, int mode, Destinati
 			pass.appendChild(xml.createTextNode(AppSettings->userPass));
 			file.appendChild(pass);
 		}
+		if (AppSettings->getModeDescription(mode).requiresAttachingToPreviousDoc())
+		{
+			if (AppSettings->getModeDescription(mode).getPreviousDocNumber() != 0)
+			{
+				QDomElement nrdoc(xml.createElement("nrdoc"));
+				QString prevDoc =
+					((AppSettings->getModeDescription(mode).mustClearBeforeAttaching()) ?
+						QString::number(-AppSettings->getModeDescription(mode).getPreviousDocNumber()) :
+						QString::number(AppSettings->getModeDescription(mode).getPreviousDocNumber()));
+				nrdoc.appendChild(xml.createTextNode(prevDoc));
+				file.appendChild(nrdoc);
+			}
+		}
 	}
+
 	file.appendChild(_XML_sqlColumnNames(query.record(), xml));
 	file.appendChild(_XML_sqlAllRowsValues(query, xml));
 	xml.appendChild(file);

@@ -8,15 +8,22 @@
 #ifdef DEBUG
 #include "debugtrace.h"
 #endif
-
+#include <qmessagebox.h>
+#include <cmath>
 ScaningWidget::ScaningWidget(Modes mode, QWidget* parent)
 	: AbstractScaningWidget(mode, parent),
-	lengthInfo(new TwoLevelCounterLabel(tr("scaning_widget_TOTAL:"), NAN, untouchable)),
-	totalInfo(new TwoLevelCounterLabel(tr("scaning_widget_LEN:"), NAN, untouchable)),
+    lengthInfo(new TwoLevelCounterLabel(tr("scaning_widget_LEN:"), qQNaN(), untouchable)),
+    totalInfo(new TwoLevelCounterLabel(tr("scaning_widget_TOTAL:"), qQNaN(), untouchable)),
 	okButton(new MegaIconButton(untouchable)),
 	quantityControl(new QuantityControl(   
-		(!AppSettings->floatControl[int(mode)])
+		!(AppSettings->getModeDescription(mode).requiresFloatControl())
 		, tr("Quantity"), untouchable)),
+	taxInvoiceInfo((AppSettings->getModeDescription(mode).isInsertingTaxInvoiceNumAllowed()) ? 
+		(new QLabel(tr("tax invoice info"), this)) : Q_NULLPTR),
+	taxInvoiceField(
+		(AppSettings->getModeDescription(mode).isInsertingTaxInvoiceNumAllowed())? 
+		new QLineEdit(this) : Q_NULLPTR
+	),
 	pendingBarcode(new BarcodeEntity())
 {
 	counterLayout->addWidget(lengthInfo);
@@ -49,11 +56,19 @@ ScaningWidget::ScaningWidget(Modes mode, QWidget* parent)
 	}
 
 	controlLayout->addWidget(quantityControl->myWidget());
-
+	if (AppSettings->getModeDescription(mode).isInsertingTaxInvoiceNumAllowed())
+	{
+		controlLayout->addWidget(taxInvoiceInfo);
+		taxInvoiceInfo->setAlignment(Qt::AlignCenter);
+		controlLayout->addWidget(taxInvoiceField);
+		taxInvoiceField->setText(AppSettings->taxInvoiceTemporary);
+	}
 	quantityControl->show();
 #ifdef QT_VERSION5X
 	QObject::connect(okButton, &QPushButton::clicked, this, &ScaningWidget::okPressed);
 	QObject::connect(quantityControl, &abs_control::editingFinished, this, &ScaningWidget::barcodeReady);
+	if (!QObject::connect(barcodeInfo, &ReturnableTextEdit::returnPressed, quantityControl, &abs_control::setFocus))
+		barcodeInfo->debugLine += "CERR";
 #ifdef Q_OS_ANDROID
     QObject::connect(quantityControl, &abs_control::editingFinished, qApp->inputMethod(),&QInputMethod::hide);
 #endif
@@ -93,7 +108,7 @@ void ScaningWidget::handleValueFromKeyboard(QString val)
 	{
 		barcodeInput->setText(val);
         hideCurrent();
-		_emplaceBarcode(val);
+		_emplaceBarcode(val, _barcodeSearch(val));
 		_clearControls();
 	}
 	else
@@ -109,6 +124,17 @@ void ScaningWidget::barcodeReady()
 	pendingBarcode->quantity = quantityControl->getPureValue();
 	if (pendingBarcode->isValid())
 	{
+		if (AppSettings->getModeDescription(currentMode).isInsertingTaxInvoiceNumAllowed())
+		{
+			if (AppSettings->getModeDescription(currentMode).isForbiddenInsertingWithoutTaxInvoice()
+				&& taxInvoiceField->text().isEmpty())
+			{
+                taxInvoiceField->setStyleSheet(ERROR_LINEEDIT_STYLESHEET);
+				return;
+			}
+			pendingBarcode->taxInvoiceNumber = taxInvoiceField->text();
+			AppSettings->taxInvoiceTemporary = pendingBarcode->taxInvoiceNumber;
+		}
 		pendingBarcode->comment = barcodeInfo->toPlainText();
 		_pushToHistory(pendingBarcode);
 		emit barcodeReceived(pendingBarcode);
@@ -123,6 +149,7 @@ void ScaningWidget::barcodeReady()
 			barcodeInfo->clear();
 			totalInfo->clear();
 			lengthInfo->clear();
+			barcodeInput->setFocus();
 		}
 		else
 		{
@@ -133,6 +160,35 @@ void ScaningWidget::barcodeReady()
 		}
 	}
 }
+bool ScaningWidget::_validateBarcode(QString bc)
+{
+	if (AppSettings->getModeDescription(currentMode).isInsertingTaxInvoiceNumAllowed())
+	{
+		bool startsWithAlpha = true;
+		switch (bc.count())
+		{
+		default:
+		case 2:
+			startsWithAlpha &= bc.at(1).isLetter();
+		case 1:
+			startsWithAlpha &= bc.at(0).isLetter();
+			break;
+		case 0:
+			startsWithAlpha = false;
+		}
+		if (startsWithAlpha)
+		{
+			taxInvoiceField->setText(bc);
+			AppSettings->taxInvoiceTemporary = pendingBarcode->taxInvoiceNumber;
+			if (AppSettings->getModeDescription(currentMode).isForbiddenInsertingWithoutTaxInvoice())
+			{
+				taxInvoiceField->setStyleSheet("");
+			}
+			return false;
+		}
+	}
+	return AbstractScaningWidget::_validateBarcode(bc);
+}
 #ifdef CAMERA_SUPPORT
 void ScaningWidget::handleCameraBarcode(QString value)
 {
@@ -142,7 +198,7 @@ void ScaningWidget::handleCameraBarcode(QString value)
 	}
 	barcodeReady();
     hideCurrent();
-	_emplaceBarcode(value);
+	barcodeConfirmed(value);
 }
 #endif
 void ScaningWidget::okPressed()
@@ -153,7 +209,7 @@ void ScaningWidget::okPressed()
 		emit backRequired();
 }
 
-void ScaningWidget::_emplaceBarcode(QString barcode)
+void ScaningWidget::_emplaceBarcode(QString barcode, ShortBarcode info)
 {
 	if (!barcode.isEmpty())
 	{
@@ -161,20 +217,19 @@ void ScaningWidget::_emplaceBarcode(QString barcode)
         pendingBarcode.clear();
         pendingBarcode = Barcode(new BarcodeEntity(barcode));
 		quantityControl->setFocus();
-		quantityControl->setValue("0");
+		if (AppSettings->autoFillQuantity)
+			quantityControl->setValue("1");
+		else
+			quantityControl->setValue("0");
 		barcodeInput->setText(barcode);
-		if (AppSettings->autoSearch)
+		if (info != Q_NULLPTR)
 		{
-			ShortBarcode info  = upcastEntity<ShortBarcodeEntity>(AppData->barcodeInfo(barcode));
-			if (info != Q_NULLPTR)
-			{
-				barcodeInfo->setText(info->info);
-				pendingBarcode->comment = info->info;
-			}
-			else
-			{
-				barcodeInfo->clear();
-			}
+			barcodeInfo->setText(info->info);
+			pendingBarcode->comment = info->info;
+		}
+		else
+		{
+			barcodeInfo->clear();
 		}
 		setLen();
 		setTotal(AppData->sumAllFilteredIn(currentMode, barcode, BarcodeEntity::getEnumerableFieldIndex(), pendingBarcode, TableNames::Scanned));

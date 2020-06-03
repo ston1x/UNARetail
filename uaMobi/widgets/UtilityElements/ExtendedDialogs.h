@@ -10,6 +10,7 @@ class QVBoxLayout;
 class QGridLayout;
 class QLabel;
 class QToolButton;
+class ClickableLabel;
 class LoginPassDialog : public QDialog
 {
 	Q_OBJECT
@@ -39,7 +40,7 @@ protected:
 	QLabel* topic;
 	QToolButton* quitButton;
     QHBoxLayout* middleLayout;
-	QLabel* errorMessage;
+	ClickableLabel* errorMessage;
 	QLabel* errorImage;
     QHBoxLayout* bottomLayout;
 	MegaIconButton* okButton;

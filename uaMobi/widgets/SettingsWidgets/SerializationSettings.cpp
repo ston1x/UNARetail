@@ -5,9 +5,9 @@
 #endif
 
 
-SerializationSettings::SerializationSettings(Entity Prototype, QWidget* parent)
+SerializationSettings::SerializationSettings(Modes mode, Entity Prototype, QWidget* parent)
 	: QWidget(parent), mainLayout(new QVBoxLayout(this)), fieldPicker(new QListWidget(this)),
-	fieldsModel(Prototype->getFields()), prototype(Prototype)
+	fieldsModel(Prototype->getFields()), prototype(Prototype), currentMode(mode)
 {
 	setLayout(mainLayout);
 	mainLayout->addWidget(fieldPicker);
@@ -17,13 +17,19 @@ SerializationSettings::SerializationSettings(Entity Prototype, QWidget* parent)
 #ifdef Q_OS_ANDROID
 	QScroller::grabGesture(fieldPicker, QScroller::LeftMouseButtonGesture);
 #endif
-	QList<int> & toSerialize =  AppSettings->serializationOrder[prototype->myType()];
-	for (int i = 0; i < toSerialize.count(); ++i)
+	const QList<int>& toSerialize = AppSettings->getModeDescription(currentMode).getSerializationOrder();
+	if (toSerialize.isEmpty())
 	{
-		fieldPicker->setItemSelected(fieldPicker->item(toSerialize.at(i)), true);
+		fieldPicker->selectAll();
+	}
+	else
+	{
+		for (int i = 0; i < toSerialize.count(); ++i)
+		{
+			fieldPicker->setItemSelected(fieldPicker->item(toSerialize.at(i)), true);
+		}
 	}
 }
-
 void SerializationSettings::extractAndSave()
 {
 	QList<int> toSerialize;
@@ -34,6 +40,6 @@ void SerializationSettings::extractAndSave()
 		if (*begin != Q_NULLPTR)
 			toSerialize << fieldPicker->row((*begin++));
 	}
-	AppSettings->serializationOrder[prototype->myType()] = toSerialize;
+	AppSettings->getModeDescription(currentMode).setSerializationOrder(toSerialize);
 
 }

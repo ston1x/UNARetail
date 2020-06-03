@@ -36,7 +36,7 @@ ScaningSettings::ScaningSettings(QWidget* parent)
 	mainLayout->addRow(tr("Scan history"), historyButton);
 	mainLayout->setContentsMargins(0, 0, 0, 0);
 	mainLayout->setSpacing(0);
-
+	mainLayout->setRowWrapPolicy(QFormLayout::WrapAllRows);
 	this->setFont(AppGenFont);
 	scanButtonCapturer->setText(QString::number(AppSettings->scanButtonCode));
 	suffixCapturer->setValue(AppSettings->scanSuffix);

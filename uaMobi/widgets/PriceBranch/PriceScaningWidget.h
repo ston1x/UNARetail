@@ -19,7 +19,7 @@ protected:
 	PricedBarcode pendingBarcode;
 
 	// Inherited via AbstractScaningWidget
-	virtual void _emplaceBarcode(QString barcode) override;
+	virtual void _emplaceBarcode(QString barcode, ShortBarcode info) override;
 	virtual void _clearControls() override;
 	virtual void _pushToHistory(Entity e) override;
 	virtual void handleValueFromKeyboard(QString value) override;
