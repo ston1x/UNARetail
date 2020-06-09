@@ -5,9 +5,14 @@
 #ifdef DEBUG
 #include "debugtrace.h"
 #endif
+#include "client_specific_defaults.h"
 
 const float VERSION = 0.836f;
+#ifdef LINELLA
+const char* SUFFIX = "linella_release";
+#else
 const char* SUFFIX = "nigthly";
+#endif
 
 static ModeDescription defaultMode;
 
@@ -17,6 +22,7 @@ GlobalAppSettings::GlobalAppSettings()
 	detrace_METHCALL("initializeGlobalAppSettings");
 #endif
 	QSettings settings("uaMobi.ini", QSettings::IniFormat);
+	initialize_default_file(settings);
 #ifdef DEBUG
 	detrace_METHEXPL("if errors: " << settings.status());
 #endif
@@ -44,23 +50,6 @@ GlobalAppSettings::GlobalAppSettings()
 	fontPercent = settings.value("fontPercent", QVariant(0.03)).toDouble();
 	QStringList temp = settings.value("serializationOrder", QStringList()).toStringList();
 	QList<int> orderForOneMode;
-//	serializationOrder.reserve(temp.count());
-	//for (int i = 0; i < temp.count(); ++i)
-	//{
-	//	QStringList splitted(temp[i].split("|", QString::SplitBehavior::SkipEmptyParts));
-	//	for (int j = 0; j < splitted.count(); ++j)
-	//	{
-	//		orderForOneMode << splitted[j].toInt();
-	//	}
-	//	serializationOrder.push_back(orderForOneMode);
-	//}
-	//if (serializationOrder.isEmpty())
-	//{
-	//	serializationOrder.push_back(QList<int>());
-	//	serializationOrder.push_back(QList<int>());
-	//	serializationOrder.push_back(QList<int>());
-	//	serializationOrder.push_back(QList<int>());
-	//}
 	separatorCode = settings.value("separatorCode", QVariant(QChar(','))).toChar();
 	QStringList dlist = settings.value("deserializationOrder", QStringList()).toStringList();
 	for (int i = 0; i < dlist.count(); ++i)
@@ -74,37 +63,9 @@ GlobalAppSettings::GlobalAppSettings()
 		deserializationPoints.push_back(dlist.at(i).toInt());
 	}
 	dlist.clear();
-	//dlist = settings.value("floatControl", QVariant()).toStringList();
-	//if (dlist.count() != MODES_TOTAL)
-	//{
-	//	floatControl << false << false << false << false << true << false;
-	//}
-	//else
-	//{
-	//	QString b;
-	//	for (int i = 0; i < MODES_TOTAL; ++i)
-	//	{
-	//		b = dlist.at(i);
-	//		if (b.isEmpty())
-	//		{
-	//			floatControl << false;
-	//		}
-	//		else
-	//		{
-	//			floatControl << ((b.at(0) == 't'));
-	//		}
-	//	}
-	//}
 	placeAsItem = settings.value("placeAsItem", QVariant()).toString();
 	placeAsCode = settings.value("placeAsCode", QVariant()).toString();
 	dlist.clear();
-	/*dlist = settings.value("sysfeed", QStringList()).toStringList();
-	for (int i = 0; i < dlist.count(); ++i)
-	{
-		sysfeed.push_back(dlist.at(i).toInt());
-	}
-	while (sysfeed.count() < MODES_TOTAL)
-		sysfeed.push_back(-1);*/
 	extrasearchPrefix = settings.value("extrasearchPrefix", QString()).toString();
 	clearScanBuffer = settings.value("clearScanBuffer", QVariant(false)).toBool();
 	sendLogin = settings.value("sendLogin", QVariant(false)).toBool();
@@ -167,8 +128,7 @@ void GlobalAppSettings::Save()
 	settings.setValue("scanButtonCode", scanButtonCode);
 	settings.setValue("navigation", navigationElements);
 	settings.setValue("localDatabase", localDatabase);
-	QStringList a;/*serializeLists<int>(serializationOrder);*//*
-	settings.setValue("serializationOrder", a);*/
+	QStringList a;
 	settings.setValue("fontMaxHeight", fontMaxHeight);
 	settings.setValue("fontMinHeight", fontMinHeight);
 	settings.setValue("fontPercent", fontPercent);
@@ -189,17 +149,8 @@ void GlobalAppSettings::Save()
 	settings.setValue("placeAsItem", placeAsItem);
 	settings.setValue("placeAsCode", placeAsCode);
 	a.clear();
-	/*for (int i = 0; i < sysfeed.count(); ++i)
-	{
-		a <<QString::number(sysfeed.at(i));
-	}*/
 	settings.setValue("sysfeed", a);
-	a.clear();/*
-	for (int i = 0; i < floatControl.count(); ++i)
-	{
-		a <<( (floatControl.at(i)) ? "true" : "false");
-	}*/
-
+	a.clear();
 	settings.setValue("floatControl", a);
 	settings.setValue("extrasearchPrefix", extrasearchPrefix);
 	settings.setValue("clearScanBuffer", clearScanBuffer);

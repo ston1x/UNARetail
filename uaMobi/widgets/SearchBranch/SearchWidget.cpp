@@ -53,6 +53,7 @@ void SearchWidget::barcodeReady()
 
 void SearchWidget::_emplaceBarcode(QString barcode, ShortBarcode e)
 {
+	barcodeInput->setText(barcode);
 	if (e != Q_NULLPTR)
 	{
 		barcodeInfo->setText(e->formatedView("\n", dateDBEncoding));

@@ -901,6 +901,9 @@
     <ClInclude Include="dataFormats\formats.h">
       <Filter>Header Files\commcore</Filter>
     </ClInclude>
+    <ClInclude Include="widgets\utils\client_specific_defaults.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="debug\moc_predefs.h.cbt">
